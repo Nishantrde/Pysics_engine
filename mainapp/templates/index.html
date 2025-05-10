@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Two Circles + Radius + Colors + Smooth Scroll</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+  <style>
+    html, body { margin: 0; padding: 0; overflow: hidden }
+    canvas { display: block }
+  </style>
+</head>
+<body>
+<script>
+  const BIG_RADIUS   = 200;
+  const SMALL_RADIUS = 8;
+  const MAX_ANGLE    = 137;   // max angle
+  const SHIFT_X      = -250;  // shift left by 250px
+  let BLACK, WHITE, GREY, RED, BLUE, GREEN, PURPLE, YELLOW, CYAN, ORANGE;
+  let currentAngle, targetAngle;    // for rotation
+  let currentShift, targetShift;    // for smooth translation
+  let overshot;                     // flag when scroll beyond max
+
+  function setup() {
+    createCanvas(windowWidth, windowHeight);
+    angleMode(DEGREES);
+    smooth();
+
+    BLACK  = color(0);
+    WHITE  = color(255);
+    GREY   = color(100);
+    RED    = color(255, 0, 0);
+    BLUE   = color(25, 150, 255);
+    GREEN  = color(0, 255, 0);
+    PURPLE = color(255, 0, 255);
+    YELLOW = color(255, 255, 0);
+    CYAN   = color(0, 255, 255);
+    ORANGE = color(255, 100, 0);
+
+    currentAngle = targetAngle = 0;
+    currentShift = targetShift = 0;
+    overshot = false;
+
+    // text settings
+    textFont('Arial');
+    textAlign(CENTER, CENTER);
+  }
+
+  function draw() {
+    background(BLACK);
+
+    // ease rotation
+    currentAngle = lerp(currentAngle, targetAngle, 0.1);
+
+    // smooth translation based on overshoot flag
+    targetShift  = overshot ? SHIFT_X : 0;
+    currentShift = lerp(currentShift, targetShift, 0.1);
+
+    // draw structure with left shift on overshoot
+    push();
+      translate(currentShift, 0);
+      drawStructure();
+    pop();
+
+    // draw text opposite to structure shift
+    if (targetShift){
+    push();
+      translate(-(currentShift+140), 0);
+      drawLabel();
+    pop();
+    }
+  }
+
+  function drawStructure() {
+    noFill(); stroke(WHITE); strokeWeight(3);
+    ellipse(width/2, height/2, BIG_RADIUS*2);
+    stroke(GREY);
+    line(width/2 - BIG_RADIUS, height/2, width/2 + BIG_RADIUS, height/2);
+    line(width/2, height/2 - BIG_RADIUS, width/2, height/2 + BIG_RADIUS);
+
+    let cx = BIG_RADIUS * cos(-currentAngle);
+    let cy = BIG_RADIUS * sin(-currentAngle);
+    stroke(RED);    line(width/2, height/2, width/2 + cx, height/2 + cy);
+    stroke(PURPLE); line(width/2, height/2 + cy, width/2 + cx, height/2 + cy);
+    stroke(GREEN);  line(width/2 + cx, height/2, width/2 + cx, height/2 + cy);
+    stroke(YELLOW);
+    line(
+      width/2 + BIG_RADIUS * (1/cos(currentAngle)), height/2,
+      width/2 + cx, height/2 + cy
+    );
+    stroke(CYAN);
+    line(
+      width/2,
+      height/2 - BIG_RADIUS * (1/sin(currentAngle)),
+      width/2 + cx, height/2 + cy
+    );
+    stroke(ORANGE);
+    line(
+      width/2,
+      height/2 - BIG_RADIUS * (1/sin(currentAngle)),
+      width/2,
+      height/2
+    );
+    stroke(BLUE);
+    line(
+      width/2 + BIG_RADIUS * (1/cos(currentAngle)),
+      height/2,
+      width/2,
+      height/2
+    );
+
+    noStroke(); fill(WHITE);
+    ellipse(width/2 + cx, height/2 + cy, SMALL_RADIUS*2);
+  }
+
+  function drawLabel() {
+  const label = 'Pysics';
+  const colors = [
+    GREEN, PURPLE, YELLOW, CYAN, BLUE, ORANGE
+  ];
+
+  textSize(80);
+  textFont('Courier New');
+  noStroke();
+  
+  // Start drawing in the center — we’ll shift back by half the total width:
+  let totalW = 0;
+  for (let ch of label) totalW += textWidth(ch);
+  let x = width/2 - totalW/2;
+  let y = height/2;
+
+  // Draw each character in its color
+  for (let i = 0; i < label.length; i++) {
+    fill(colors[i % colors.length]);
+    let ch = label[i];
+    text(ch, x + textWidth(ch)/2, y);
+    x += textWidth(ch);
+  }
+}
+
+
+  function mouseWheel(event) {
+    let next = targetAngle + event.delta * 0.1;
+    if (next > MAX_ANGLE) {
+      targetAngle = MAX_ANGLE;
+      overshot = true;
+    } else if (next < 0) {
+      targetAngle = 0;
+      overshot = false;
+    } else {
+      targetAngle = next;
+      if (targetAngle <= MAX_ANGLE) overshot = false;
+    }
+    return false;
+  }
+
+  function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+  }
+</script>
+</body>
+</html>
