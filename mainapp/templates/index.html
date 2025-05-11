@@ -1,180 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Responsive Two Circles + Smooth Scroll</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
   <style>
-    html, body {
+    html,
+    body {
       margin: 0;
       padding: 0;
       overflow: hidden;
       touch-action: none;
     }
-    canvas { display: block; }
+
+    canvas {
+      display: block;
+    }
   </style>
 </head>
-<body>
-<script>
-  const MAX_ANGLE = 137;   // maximum rotation
-  let currentAngle = 0, targetAngle = 0;
-  let currentShift = 0, targetShift = 0;
-  let overshot = false;
-  let prevTouchY = null;
 
-  // colors
-  let BLACK, WHITE, GREY,
+<body>
+  <script>
+    let currentAngle = 0;
+    let targetAngle = 0;
+    let currentShiftX = 0;
+    let currentShiftY = 0;
+    let prevTouchY = null;
+
+    // colors
+    let BLACK, WHITE, GREY,
       RED, BLUE, GREEN,
       PURPLE, YELLOW, CYAN, ORANGE;
 
-  function setup() {
-    createCanvas(windowWidth, windowHeight);
-    angleMode(DEGREES);
-    smooth();
+    function setup() {
+      createCanvas(windowWidth, windowHeight);
+      angleMode(DEGREES);
+      smooth();
 
-    BLACK  = color(0);
-    WHITE  = color(255);
-    GREY   = color(100);
-    RED    = color(255, 0, 0);
-    BLUE   = color(25, 150, 255);
-    GREEN  = color(0, 255, 0);
-    PURPLE = color(255, 0, 255);
-    YELLOW = color(255, 255, 0);
-    CYAN   = color(0, 255, 255);
-    ORANGE = color(255, 100, 0);
+      BLACK = color(0);
+      WHITE = color(255);
+      GREY = color(100);
+      RED = color(255, 0, 0);
+      BLUE = color(25, 150, 255);
+      GREEN = color(0, 255, 0);
+      PURPLE = color(255, 0, 255);
+      YELLOW = color(255, 255, 0);
+      CYAN = color(0, 255, 255);
+      ORANGE = color(255, 100, 0);
 
-    textAlign(CENTER, CENTER);
-    textFont('Courier New');
-  }
+      textAlign(CENTER, CENTER);
+      textFont('Courier New');
+    }
 
-  function draw() {
-    background(BLACK);
+    function draw() {
+      background(BLACK);
 
-    // compute sizes relative to screen
-    let bigR   = min(width, height) * 0.20;   // 25% of smaller side
-    let smallR = bigR * 0.05;                 // 5% of bigR
-    let shiftX = bigR * 1.3;                  // shift amount = 120% of bigR
-    let labelSize = bigR * 0.5;               // text size = 50% of bigR
+      // compute sizes relative to screen
+      let bigR = min(width, height) * 0.20;
+      let smallR = bigR * 0.05;
+      let shiftX = bigR * 1.3;
+      let shiftY = bigR * 1.0;
 
-    // ease rotation and shift
-    currentAngle = lerp(currentAngle, targetAngle, 0.1);
-    targetShift  = overshot ? -shiftX : 0;
-    currentShift = lerp(currentShift, targetShift, 0.1);
+      let labelSize = bigR * 0.5;
 
-    // draw your circle structure
-    push();
-      translate(currentShift, 0);
-      drawStructure(bigR, smallR);
-    pop();
+      // ease rotation and shifts
+      currentAngle = lerp(currentAngle, targetAngle, 0.1);
+      let horizTrigger = (currentAngle >= 137);
+      let vertTrigger = (currentAngle >= 165);
+      let targetShiftX = horizTrigger ? shiftX : 0;
+      let targetShiftY = vertTrigger ? -shiftY : 0;
+      currentShiftX = lerp(currentShiftX, targetShiftX, 0.1);
+      currentShiftY = lerp(currentShiftY, targetShiftY, 0.1);
 
-    // draw the rainbow text on the opposite side
-    if (overshot) {
+      // draw structure swiping right
       push();
-        translate(-(currentShift + bigR * 0.56), 0);
-        drawLabel(labelSize);
+      translate(-currentShiftX, currentShiftY);
+      drawStructure(bigR, smallR);
       pop();
+
+      if (horizTrigger){
+        // draw label swiping left and up
+        push();
+        translate(currentShiftX, currentShiftY);
+        drawLabel(labelSize);
+        pop();
+      }
     }
-  }
 
-  function drawStructure(BIG_RADIUS, SMALL_RADIUS) {
-    noFill(); stroke(WHITE); strokeWeight(3);
-    ellipse(width/2, height/2, BIG_RADIUS * 2);
+    function drawStructure(BIG_RADIUS, SMALL_RADIUS) {
+      if (currentAngle < 0){
+          currentAngle = 0
+      }
+      if (currentAngle < 137) c_angle = currentAngle
+      else c_angle = 137
+      noFill(); stroke(WHITE); strokeWeight(3);
+      ellipse(width / 2, height / 2, BIG_RADIUS * 2);
+      // ... rest unchanged structure drawing ...
+      stroke(GREY);
+      line(width / 2 - BIG_RADIUS, height / 2,
+        width / 2 + BIG_RADIUS, height / 2);
+      line(width / 2, height / 2 - BIG_RADIUS,
+        width / 2, height / 2 + BIG_RADIUS);
 
-    stroke(GREY);
-    line(width/2 - BIG_RADIUS, height/2,
-         width/2 + BIG_RADIUS, height/2);
-    line(width/2, height/2 - BIG_RADIUS,
-         width/2, height/2 + BIG_RADIUS);
+      let cx = BIG_RADIUS * cos(-c_angle);
+      let cy = BIG_RADIUS * sin(-c_angle);
 
-    let cx = BIG_RADIUS * cos(-currentAngle);
-    let cy = BIG_RADIUS * sin(-currentAngle);
+      stroke(RED); line(width / 2, height / 2, width / 2 + cx, height / 2 + cy);
+      stroke(PURPLE); line(width / 2, height / 2 + cy, width / 2 + cx, height / 2 + cy);
+      stroke(GREEN); line(width / 2 + cx, height / 2, width / 2 + cx, height / 2 + cy);
+      stroke(YELLOW);
+      line(
+        width / 2 + BIG_RADIUS * (1 / cos(c_angle)), height / 2,
+        width / 2 + cx, height / 2 + cy
+      );
+      stroke(CYAN);
+      line(
+        width / 2,
+        height / 2 - BIG_RADIUS * (1 / sin(c_angle)),
+        width / 2 + cx, height / 2 + cy
+      );
+      stroke(ORANGE);
+      line(
+        width / 2,
+        height / 2 - BIG_RADIUS * (1 / sin(c_angle)),
+        width / 2,
+        height / 2
+      );
+      stroke(BLUE);
+      line(
+        width / 2 + BIG_RADIUS * (1 / cos(c_angle)),
+        height / 2,
+        width / 2,
+        height / 2
+      );
 
-    stroke(RED);    line(width/2, height/2, width/2 + cx, height/2 + cy);
-    stroke(PURPLE); line(width/2, height/2 + cy, width/2 + cx, height/2 + cy);
-    stroke(GREEN);  line(width/2 + cx, height/2, width/2 + cx, height/2 + cy);
-    stroke(YELLOW);
-    line(
-      width/2 + BIG_RADIUS * (1/cos(currentAngle)), height/2,
-      width/2 + cx, height/2 + cy
-    );
-    stroke(CYAN);
-    line(
-      width/2,
-      height/2 - BIG_RADIUS * (1/sin(currentAngle)),
-      width/2 + cx, height/2 + cy
-    );
-    stroke(ORANGE);
-    line(
-      width/2,
-      height/2 - BIG_RADIUS * (1/sin(currentAngle)),
-      width/2,
-      height/2
-    );
-    stroke(BLUE);
-    line(
-      width/2 + BIG_RADIUS * (1/cos(currentAngle)),
-      height/2,
-      width/2,
-      height/2
-    );
-
-    noStroke(); fill(WHITE);
-    ellipse(width/2 + cx, height/2 + cy, SMALL_RADIUS * 2);
-  }
-
-  function drawLabel(size) {
-    const label = 'Pysics';
-    const colors = [ GREEN, PURPLE, YELLOW, CYAN, BLUE, ORANGE ];
-    textSize(size);
-
-    // center rainbow text
-    let totalW = 0;
-    for (let ch of label) totalW += textWidth(ch);
-    let x = width/2 - totalW/2;
-    let y = height/2;
-
-    for (let i = 0; i < label.length; i++) {
-      fill(colors[i % colors.length]);
-      let ch = label[i];
-      text(ch, x + textWidth(ch)/2, y);
-      x += textWidth(ch);
+      noStroke(); fill(WHITE);
+      ellipse(width / 2 + cx, height / 2 + cy, SMALL_RADIUS * 2);
     }
-  }
 
-  function mouseWheel(event) {
-    let next = targetAngle + event.delta * 0.1;
-    if      (next > MAX_ANGLE) { targetAngle = MAX_ANGLE; overshot = true;  }
-    else if (next < 0        ) { targetAngle = 0;         overshot = false; }
-    else                        { targetAngle = next;
-                                 overshot = (targetAngle >= MAX_ANGLE);
-                               }
-    return false;
-  }
+    function drawLabel(size) {
+      const label = 'Pysics';
+      const colors = [GREEN, PURPLE, YELLOW, CYAN, BLUE, ORANGE];
+      textSize(size);
 
-  function touchStarted() {
-    prevTouchY = touches[0].y;
-    return false;
-  }
+      // center rainbow text
+      let totalW = 0;
+      for (let ch of label) totalW += textWidth(ch);
+      let x = width / 2 - totalW / 2;
+      let y = height / 2;
 
-  function touchMoved() {
-    let y = touches[0].y;
-    let d = y - prevTouchY;
-    prevTouchY = y;
+      for (let i = 0; i < label.length; i++) {
+        fill(colors[i % colors.length]);
+        let ch = label[i];
+        text(ch, x + textWidth(ch) / 2, y);
+        x += textWidth(ch);
+      }
+    }
 
-    let next = targetAngle + d * 0.1;
-    if      (next > MAX_ANGLE) { targetAngle = MAX_ANGLE; overshot = true;  }
-    else if (next < 0        ) { targetAngle = 0;         overshot = false; }
-    else                        { targetAngle = next;
-                                 overshot = (targetAngle >= MAX_ANGLE);
-                               }
-    return false;
-  }
+    function mouseWheel(event) {
+      targetAngle += event.delta * 0.1;
+      return false;
+    }
 
-  function windowResized() {
-    resizeCanvas(windowWidth, windowHeight);
-  }
-</script>
+    function touchStarted() {
+      prevTouchY = touches[0].y;
+      return false;
+    }
+
+    function touchMoved() {
+      let y = touches[0].y;
+      let d = y - prevTouchY;
+      prevTouchY = y;
+      targetAngle += d * 0.1;
+      return false;
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+    }
+  </script>
 </body>
+
 </html>
