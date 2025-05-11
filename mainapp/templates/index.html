@@ -58,69 +58,90 @@
       background(BLACK);
 
       // compute sizes relative to screen
-      let bigR = min(width, height) * 0.20;
-      let smallR = bigR * 0.05;
-      let shiftX = bigR * 1.3;
-      let shiftY = bigR * 1.0;
+      let bigR      = min(width, height) * 0.20;       // used for circle drawing
+      let bigR_vert = max(width, height) * 0.15;       // used for vertical shift
+      let smallR    = bigR * 0.05;
+      let shiftX    = bigR * 1.3;
+      let shiftY    = bigR_vert * 0.7;                 // now robust on mobile
 
       let labelSize = bigR * 0.5;
 
       // ease rotation and shifts
       currentAngle = lerp(currentAngle, targetAngle, 0.1);
       let horizTrigger = (currentAngle >= 137);
-      let vertTrigger = (currentAngle >= 165);
-      let targetShiftX = horizTrigger ? shiftX : 0;
-      let targetShiftY = vertTrigger ? -shiftY : 0;
+      let vertTrigger  = (currentAngle >= 165);
+
+      let targetShiftX = horizTrigger ? shiftX  : 0;
+      let targetShiftY = vertTrigger  ? -shiftY : 0;
+
       currentShiftX = lerp(currentShiftX, targetShiftX, 0.1);
       currentShiftY = lerp(currentShiftY, targetShiftY, 0.1);
 
-      // draw structure swiping right
+      // draw structure swiping right/down
       push();
-      translate(-currentShiftX, currentShiftY);
-      drawStructure(bigR, smallR);
+        translate(-currentShiftX, currentShiftY);
+        drawStructure(bigR, smallR);
       pop();
 
-      if (horizTrigger){
-        // draw label swiping left and up
+      // once rotated enough, draw the label swiping in
+      if (horizTrigger) {
         push();
-        translate(currentShiftX, currentShiftY);
-        drawLabel(labelSize);
+          translate(currentShiftX, currentShiftY);
+          drawLabel(labelSize);
         pop();
       }
     }
 
     function drawStructure(BIG_RADIUS, SMALL_RADIUS) {
-      if (currentAngle < 0){
-          currentAngle = 0
-      }
-      if (currentAngle < 137) c_angle = currentAngle
-      else c_angle = 137
-      noFill(); stroke(WHITE); strokeWeight(3);
+      // cap angle for geometry
+      let c_angle = constrain(currentAngle, 0, 137);
+
+      noFill();
+      stroke(WHITE);
+      strokeWeight(3);
       ellipse(width / 2, height / 2, BIG_RADIUS * 2);
-      // ... rest unchanged structure drawing ...
+
+      // crosshairs
       stroke(GREY);
       line(width / 2 - BIG_RADIUS, height / 2,
-        width / 2 + BIG_RADIUS, height / 2);
+           width / 2 + BIG_RADIUS, height / 2);
       line(width / 2, height / 2 - BIG_RADIUS,
-        width / 2, height / 2 + BIG_RADIUS);
+           width / 2, height / 2 + BIG_RADIUS);
 
+      // compute offset point
       let cx = BIG_RADIUS * cos(-c_angle);
       let cy = BIG_RADIUS * sin(-c_angle);
 
-      stroke(RED); line(width / 2, height / 2, width / 2 + cx, height / 2 + cy);
-      stroke(PURPLE); line(width / 2, height / 2 + cy, width / 2 + cx, height / 2 + cy);
-      stroke(GREEN); line(width / 2 + cx, height / 2, width / 2 + cx, height / 2 + cy);
+      // radius line
+      stroke(RED);
+      line(width / 2, height / 2, width / 2 + cx, height / 2 + cy);
+
+      // horizontal leg
+      stroke(PURPLE);
+      line(width / 2, height / 2 + cy,
+           width / 2 + cx, height / 2 + cy);
+
+      // vertical leg
+      stroke(GREEN);
+      line(width / 2 + cx, height / 2,
+           width / 2 + cx, height / 2 + cy);
+
+      // hypotenuse beyond circle (x direction)
       stroke(YELLOW);
       line(
         width / 2 + BIG_RADIUS * (1 / cos(c_angle)), height / 2,
-        width / 2 + cx, height / 2 + cy
+        width / 2 + cx,                        height / 2 + cy
       );
+
+      // hypotenuse beyond circle (y direction)
       stroke(CYAN);
       line(
         width / 2,
         height / 2 - BIG_RADIUS * (1 / sin(c_angle)),
         width / 2 + cx, height / 2 + cy
       );
+
+      // extra orange & blue connectors
       stroke(ORANGE);
       line(
         width / 2,
@@ -136,7 +157,9 @@
         height / 2
       );
 
-      noStroke(); fill(WHITE);
+      // moving small circle
+      noStroke();
+      fill(WHITE);
       ellipse(width / 2 + cx, height / 2 + cy, SMALL_RADIUS * 2);
     }
 
@@ -145,12 +168,13 @@
       const colors = [GREEN, PURPLE, YELLOW, CYAN, BLUE, ORANGE];
       textSize(size);
 
-      // center rainbow text
+      // measure total width for centering
       let totalW = 0;
       for (let ch of label) totalW += textWidth(ch);
       let x = width / 2 - totalW / 2;
       let y = height / 2;
 
+      // draw each character in rainbow
       for (let i = 0; i < label.length; i++) {
         fill(colors[i % colors.length]);
         let ch = label[i];
