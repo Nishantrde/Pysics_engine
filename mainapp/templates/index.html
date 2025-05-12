@@ -20,6 +20,7 @@
 <body>
   <script>
     let currentAngle = 0, targetAngle = 0;
+    let csx = 0;
     let currentShiftX = 0, currentShiftY = 0;
     let prevTouchY = null;
 
@@ -66,12 +67,15 @@
       // 2) easing rotation & shifts
       currentAngle = lerp(currentAngle, targetAngle, 0.1);
       let doHoriz = currentAngle >= 137;
-      let doVert  = currentAngle >= 165;
+      let doVert  = currentAngle >= 165 && currentAngle <= 190;
+      let py_sics_lable_side  = currentAngle >= 190;
 
+      let ts = py_sics_lable_side? shiftX  : 0;
       let targetShiftX = doHoriz ? shiftX  : 0;
       // negative because we move _up_ by shiftY
-      let targetShiftY = doVert  ? -shiftY : 0;
+      let targetShiftY = doVert||py_sics_lable_side  ? -shiftY : 0;
 
+      csx = lerp(csx, ts, 0.1);
       currentShiftX = lerp(currentShiftX, targetShiftX, 0.1);
       currentShiftY = lerp(currentShiftY, targetShiftY, 0.1);
 
@@ -86,6 +90,19 @@
         push();
           translate(width/2 + currentShiftX, initialCY + currentShiftY);
           drawLabel(labelSize);
+        pop();
+        
+      }
+      if (doVert){
+        push();
+          translate(width/2 + currentShiftX, initialCY - currentShiftY-120);
+          draw_python_physics(labelSize-35);
+        pop();
+      }
+      if (py_sics_lable_side){
+        push();
+          translate(width/2 - csx-30, initialCY - currentShiftY-120);
+          draw_python_physics(labelSize-35);
         pop();
       }
     }
@@ -139,6 +156,23 @@
 
     function drawLabel(size) {
       const label  = 'Pysics';
+      const colors = [GREEN, PURPLE, YELLOW, CYAN, BLUE, ORANGE];
+      textSize(size);
+
+      let totalW = 0;
+      for (let ch of label) totalW += textWidth(ch);
+      let x = -totalW/2, y = 0;
+
+      for (let i = 0; i < label.length; i++) {
+        fill(colors[i % colors.length]);
+        let ch = label[i];
+        text(ch, x + textWidth(ch)/2, y);
+        x += textWidth(ch);
+      }
+    }
+
+    function draw_python_physics(size){
+      const label  = 'Python+Physics';
       const colors = [GREEN, PURPLE, YELLOW, CYAN, BLUE, ORANGE];
       textSize(size);
 
