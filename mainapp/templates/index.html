@@ -63,6 +63,7 @@
       let shiftY   = initialCY - topCY;          // positive value
 
       let labelSize = bigR * 0.5;
+      let labelSize2 = bigR * 0.25;
 
       // 2) easing rotation & shifts
       currentAngle = lerp(currentAngle, targetAngle, 0.1);
@@ -95,14 +96,14 @@
       }
       if (doVert){
         push();
-          translate(width/2 + currentShiftX, initialCY - currentShiftY-120);
-          draw_python_physics(labelSize-35);
+          translate(width/2 + currentShiftX, initialCY - currentShiftY-bigR+bigR*0.15);
+          draw_python_physics(labelSize2);
         pop();
       }
       if (py_sics_lable_side){
         push();
-          translate(width/2 - csx-30, initialCY - currentShiftY-120);
-          draw_python_physics(labelSize-35);
+          translate(width/2 - csx-30, initialCY - currentShiftY-bigR+bigR*0.15);
+          draw_python_physics(labelSize2);
         pop();
       }
     }
