@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Center then Shift to Top</title>
+  <title>Center then Shift to Top with Twinkling Star Background</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
   <style>
     html, body {
@@ -12,6 +12,7 @@
       padding: 0;
       overflow: hidden;
       touch-action: none;
+      background: black;
     }
     canvas { display: block; }
   </style>
@@ -20,83 +21,85 @@
 <body>
   <script>
     let currentAngle = 0, targetAngle = 0;
-    let csx = 0;
-    let currentShiftX = 0, currentShiftY = 0;
+    let csx = 0, currentShiftX = 0, currentShiftY = 0;
     let prevTouchY = null;
-
-    // Colors
-    let BLACK, WHITE, GREY,
-        RED, BLUE, GREEN,
-        PURPLE, YELLOW, CYAN, ORANGE;
+    let stars = [];
+    const NUM_STARS = 800;
+    let maxSpread;
 
     function setup() {
       createCanvas(windowWidth, windowHeight);
       angleMode(DEGREES);
       smooth();
-
-      BLACK = color(0);
-      WHITE = color(255);
-      GREY  = color(100);
-      RED   = color(255, 0, 0);
-      BLUE  = color(25, 150, 255);
-      GREEN = color(0, 255, 0);
-      PURPLE= color(255, 0, 255);
-      YELLOW= color(255, 255, 0);
-      CYAN  = color(0, 255, 255);
-      ORANGE= color(255, 100, 0);
-
-      trans_RED   = color(255, 0, 0, 128);
-      trans_BLUE  = color(25, 150, 255, 128);
-      trans_GREEN = color(0, 255, 0, 128);
-      trans_PURPLE= color(255, 0, 255, 128);
-      trans_YELLOW= color(255, 255, 0, 128);
-      trans_CYAN  = color(0, 255, 255, 128);
-      trans_ORANGE= color(255, 100, 0, 128);
-
       textAlign(CENTER, CENTER);
       textFont('Courier New');
+
+      // initialize stars with twinkle parameters
+      for (let i = 0; i < NUM_STARS; i++) {
+        stars.push({
+          rf: random(),                   // spread factor
+          a: random(0, 360),              // angle for position
+          size: random(1, 3),             // base diameter
+          phase: random(0, 360),          // starting phase in degrees
+          twinkleSpeed: random(0.5, 2.0)  // speed of phase advance
+        });
+      }
     }
 
     function draw() {
-      background(BLACK);
+      background(0);
 
-      // 1) sizing
-      let bigR     = min(width, height) * 0.15;   // circle radius
-      let smallR   = bigR * 0.05;                // dot radius
-      let shiftX   = bigR * 1.0;                 // horizontal travel
-      // compute upward travel so final center sits at bigR+margin
-      let margin   = bigR * 0.5;
-      let initialCY= height / 2;
-      let topCY    = bigR + margin;
-      let shiftY   = initialCY - topCY;          // positive value
-
-      let labelSize = bigR * 0.5;
-      let labelSize2 = bigR * 0.35;
-
-      let offset = bigR * 0.2;
-
-      // 2) easing rotation & shifts
+      // — update main angle and compute star spread —
       currentAngle = lerp(currentAngle, targetAngle, 0.1);
-      let doHoriz = currentAngle >= 137;
-      let doVert  = currentAngle >= 165 && currentAngle <= 190;
-      let py_sics_lable_side  = currentAngle >= 190;
+      let clamped = constrain(currentAngle, 0, 137);
+      maxSpread = map(clamped, 0, 137, 0, max(width, height));
 
-      let ts = py_sics_lable_side? shiftX  : 0;
-      let targetShiftX = doHoriz ? shiftX  : 0;
-      // negative because we move _up_ by shiftY
-      let targetShiftY = doVert||py_sics_lable_side  ? -shiftY : 0;
+      // — draw twinkling stars —
+      noStroke();
+      for (let s of stars) {
+        // advance and wrap phase
+        s.phase = (s.phase + s.twinkleSpeed) % 360;
+        // convert to [0,1]
+        let t = (sin(radians(s.phase)) + 1) / 2;
+        // map to alpha range
+        let alpha = map(t, 0, 1, 50, 255);
+        fill(255, alpha);
 
-      csx = lerp(csx, ts, 0.1);
-      currentShiftX = lerp(currentShiftX, targetShiftX, 0.1);
-      currentShiftY = lerp(currentShiftY, targetShiftY, 0.1);
+        // polar → Cartesian
+        let r = s.rf * maxSpread;
+        let x = width / 2 + r * cos(s.a);
+        let y = height / 2 + r * sin(s.a);
+        ellipse(x, y, s.size);
+      }
 
-      // 3) draw at (width/2, height/2) plus current shifts
+      // — geometry & labels logic (unchanged) —
+      let bigR   = min(width, height) * 0.15;
+      let smallR = bigR * 0.05;
+      let shiftX = bigR, margin = bigR * 0.5;
+      let initialCY = height / 2, topCY = bigR + margin;
+      let shiftY = initialCY - topCY;
+      let labelSize  = bigR * 0.5;
+      let labelSize2 = bigR * 0.35;
+      let offset     = bigR * 0.2;
+
+      let doHoriz    = currentAngle >= 137;
+      let doVert     = currentAngle >= 165 && currentAngle <= 190;
+      let doSide     = currentAngle >= 190;
+      let ts         = doSide ? shiftX : 0;
+      let targetSX   = doHoriz ? shiftX : 0;
+      let targetSY   = (doVert || doSide) ? -shiftY : 0;
+
+      csx            = lerp(csx, ts, 0.1);
+      currentShiftX  = lerp(currentShiftX, targetSX, 0.1);
+      currentShiftY  = lerp(currentShiftY, targetSY, 0.1);
+
+      // draw main structure
       push();
         translate(width/2 - currentShiftX, initialCY + currentShiftY);
         drawStructure(bigR, smallR);
       pop();
 
-      // 4) label
+      // horizontal label
       if (doHoriz) {
         push();
           translate(width/2 + currentShiftX, initialCY + currentShiftY);
@@ -104,7 +107,7 @@
         pop();
       }
 
-      // vertical "Python+Physics" label, one radius below circle center
+      // vertical label
       if (doVert) {
         push();
           translate(
@@ -115,8 +118,8 @@
         pop();
       }
 
-      // side "Python+Physics" label, one radius below circle center
-      if (py_sics_lable_side) {
+      // side label
+      if (doSide) {
         push();
           translate(
             width/2 - csx - 30,
@@ -131,59 +134,41 @@
       let c = constrain(currentAngle, 0, 137);
 
       noFill();
-      stroke(WHITE);
-      strokeWeight(3);
+      stroke(255); strokeWeight(3);
       ellipse(0, 0, BIG_RADIUS * 2);
 
-      // crosshairs
-      stroke(GREY);
+      stroke(100);
       line(-BIG_RADIUS, 0, BIG_RADIUS, 0);
       line(0, -BIG_RADIUS, 0, BIG_RADIUS);
 
-      // moving point
       let px = BIG_RADIUS * cos(-c),
           py = BIG_RADIUS * sin(-c);
 
-      // radius
-      stroke(RED);
-      line(0, 0, px, py);
+      stroke(255, 0,   0);    line(0, 0, px, py);
+      stroke(255, 0, 255);    line(0, py, px, py);
+      stroke(0, 255, 0);      line(px, 0, px, py);
+      stroke(255, 255, 0);    line(BIG_RADIUS*(1/cos(c)), 0, px, py);
+      stroke(0, 255, 255);    line(0, -BIG_RADIUS*(1/sin(c)), px, py);
+      stroke(255, 100, 0);    line(0, -BIG_RADIUS*(1/sin(c)), 0, 0);
+      stroke(25, 150, 255);   line(BIG_RADIUS*(1/cos(c)), 0, 0, 0);
 
-      // legs & extras
-      stroke(PURPLE);
-      line(0, py, px, py);
-
-      stroke(GREEN);
-      line(px, 0, px, py);
-
-      stroke(YELLOW);
-      line(BIG_RADIUS * (1 / cos(c)), 0, px, py);
-
-      stroke(CYAN);
-      line(0, -BIG_RADIUS * (1 / sin(c)), px, py);
-
-      stroke(ORANGE);
-      line(0, -BIG_RADIUS * (1 / sin(c)), 0, 0);
-
-      stroke(BLUE);
-      line(BIG_RADIUS * (1 / cos(c)), 0, 0, 0);
-
-      // dot
       noStroke();
-      fill(WHITE);
+      fill(255);
       ellipse(px, py, SMALL_RADIUS * 2);
     }
 
     function drawLabel(size) {
-      const label  = 'Pysics';
-      const colors = [GREEN, PURPLE, YELLOW, CYAN, BLUE, ORANGE];
+      const label = 'Pysics';
+      const cols  = [
+        color(0,255,0), color(255,0,255), color(255,255,0),
+        color(0,255,255), color(25,150,255), color(255,100,0)
+      ];
       textSize(size);
 
-      let totalW = 0;
-      for (let ch of label) totalW += textWidth(ch);
+      let totalW = label.split('').reduce((sum,ch) => sum + textWidth(ch), 0);
       let x = -totalW/2, y = 0;
-
       for (let i = 0; i < label.length; i++) {
-        fill(colors[i % colors.length]);
+        fill(cols[i % cols.length]);
         let ch = label[i];
         text(ch, x + textWidth(ch)/2, y);
         x += textWidth(ch);
@@ -191,22 +176,24 @@
     }
 
     function draw_python_physics(size) {
-      const label  = 'Python+Physics';
-      const colors = [GREEN, PURPLE, YELLOW, CYAN, BLUE, ORANGE];
+      const label = 'Python+Physics';
+      const cols  = [
+        color(0,255,0), color(255,0,255), color(255,255,0),
+        color(0,255,255), color(25,150,255), color(255,100,0)
+      ];
       textSize(size);
 
-      let totalW = 0;
-      for (let ch of label) totalW += textWidth(ch);
+      let totalW = label.split('').reduce((sum,ch) => sum + textWidth(ch), 0);
       let x = -totalW/2, y = 0;
-
       for (let i = 0; i < label.length; i++) {
-        fill(colors[i % colors.length]);
+        fill(cols[i % cols.length]);
         let ch = label[i];
         text(ch, x + textWidth(ch)/2, y);
         x += textWidth(ch);
       }
     }
 
+    // input handlers
     function mouseWheel(e) {
       targetAngle += e.delta * 0.1;
       return false;
@@ -223,6 +210,17 @@
     }
     function windowResized() {
       resizeCanvas(windowWidth, windowHeight);
+      // re-init stars for new size
+      stars = [];
+      for (let i = 0; i < NUM_STARS; i++) {
+        stars.push({
+          rf: random(),
+          a: random(0, 360),
+          size: random(1, 3),
+          phase: random(0, 360),
+          twinkleSpeed: random(0.5, 2.0)
+        });
+      }
     }
   </script>
 </body>
