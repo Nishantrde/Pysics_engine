@@ -45,6 +45,14 @@
       CYAN  = color(0, 255, 255);
       ORANGE= color(255, 100, 0);
 
+      trans_RED   = color(255, 0, 0, 128);
+      trans_BLUE  = color(25, 150, 255, 128);
+      trans_GREEN = color(0, 255, 0, 128);
+      trans_PURPLE= color(255, 0, 255, 128);
+      trans_YELLOW= color(255, 255, 0, 128);
+      trans_CYAN  = color(0, 255, 255, 128);
+      trans_ORANGE= color(255, 100, 0, 128);
+
       textAlign(CENTER, CENTER);
       textFont('Courier New');
     }
@@ -53,7 +61,7 @@
       background(BLACK);
 
       // 1) sizing
-      let bigR     = min(width, height) * 0.20;   // circle radius
+      let bigR     = min(width, height) * 0.15;   // circle radius
       let smallR   = bigR * 0.05;                // dot radius
       let shiftX   = bigR * 1.0;                 // horizontal travel
       // compute upward travel so final center sits at bigR+margin
@@ -63,7 +71,9 @@
       let shiftY   = initialCY - topCY;          // positive value
 
       let labelSize = bigR * 0.5;
-      let labelSize2 = bigR * 0.25;
+      let labelSize2 = bigR * 0.35;
+
+      let offset = bigR * 0.2;
 
       // 2) easing rotation & shifts
       currentAngle = lerp(currentAngle, targetAngle, 0.1);
@@ -92,24 +102,32 @@
           translate(width/2 + currentShiftX, initialCY + currentShiftY);
           drawLabel(labelSize);
         pop();
-        
       }
-      if (doVert){
+
+      // vertical "Python+Physics" label, one radius below circle center
+      if (doVert) {
         push();
-          translate(width/2 + currentShiftX, height/2 - currentShiftY-bigR);
+          translate(
+            width/2 + currentShiftX,
+            initialCY + currentShiftY + bigR + offset
+          );
           draw_python_physics(labelSize2);
         pop();
       }
-      if (py_sics_lable_side){
+
+      // side "Python+Physics" label, one radius below circle center
+      if (py_sics_lable_side) {
         push();
-          translate(width/2 - csx-30, initialCY - currentShiftY-bigR);
+          translate(
+            width/2 - csx - 30,
+            initialCY + currentShiftY + bigR + offset
+          );
           draw_python_physics(labelSize2);
         pop();
       }
     }
 
     function drawStructure(BIG_RADIUS, SMALL_RADIUS) {
-      // cap angle for geometry
       let c = constrain(currentAngle, 0, 137);
 
       noFill();
@@ -172,7 +190,7 @@
       }
     }
 
-    function draw_python_physics(size){
+    function draw_python_physics(size) {
       const label  = 'Python+Physics';
       const colors = [GREEN, PURPLE, YELLOW, CYAN, BLUE, ORANGE];
       textSize(size);
