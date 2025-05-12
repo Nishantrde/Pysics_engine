@@ -96,13 +96,13 @@
       }
       if (doVert){
         push();
-          translate(width/2 + currentShiftX, initialCY - currentShiftY-bigR+bigR*0.15);
+          translate(width/2 + currentShiftX, initialCY - currentShiftY-bigR);
           draw_python_physics(labelSize2);
         pop();
       }
       if (py_sics_lable_side){
         push();
-          translate(width/2 - csx-30, initialCY - currentShiftY-bigR+bigR*0.15);
+          translate(width/2 - csx-30, initialCY - currentShiftY-bigR);
           draw_python_physics(labelSize2);
         pop();
       }
