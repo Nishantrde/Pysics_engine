@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Center then Shift to Top with Twinkling Star Background</title>
+  <title>Stars Flying Forward with Wander & Perspective</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
   <style>
     html, body {
@@ -17,212 +16,161 @@
     canvas { display: block; }
   </style>
 </head>
-
 <body>
-  <script>
-    let currentAngle = 0, targetAngle = 0;
-    let csx = 0, currentShiftX = 0, currentShiftY = 0;
-    let prevTouchY = null;
-    let stars = [];
-    const NUM_STARS = 800;
-    let maxSpread;
+<script>
+  let stars = [];
+  const NUM_STARS = 800;
 
-    function setup() {
-      createCanvas(windowWidth, windowHeight);
-      angleMode(DEGREES);
-      smooth();
-      textAlign(CENTER, CENTER);
-      textFont('Courier New');
+  let currentAngle = 0, targetAngle = 0;
+  let currentShiftX = 0;
+  let prevTouchY = null;
+  let maxSpread;
 
-      // initialize stars with twinkle parameters
-      for (let i = 0; i < NUM_STARS; i++) {
-        stars.push({
-          rf: random(),                   // spread factor
-          a: random(0, 360),              // angle for position
-          size: random(1, 3),             // base diameter
-          phase: random(0, 360),          // starting phase in degrees
-          twinkleSpeed: random(0.5, 2.0)  // speed of phase advance
-        });
+  function setup() {
+    createCanvas(windowWidth, windowHeight);
+    angleMode(DEGREES);
+    smooth();
+    textAlign(CENTER, CENTER);
+    textFont('Courier New');
+    // initialize star objects
+    for (let i = 0; i < NUM_STARS; i++) {
+      stars.push(spawnStar(true));
+    }
+  }
+
+  function draw() {
+    background(0);
+
+    // control maxSpread via mouse/touch scroll
+    currentAngle = lerp(currentAngle, targetAngle, 0.1);
+    let clamped = constrain(currentAngle, 0, 137);
+    maxSpread = map(clamped, 0, 137, 0, max(width, height));
+
+    noStroke();
+    for (let s of stars) {
+      // advance each star outward
+      s.r += s.speed;
+
+      // respawn when past the visible radius
+      if (s.r > maxSpread) {
+        Object.assign(s, spawnStar(false));
       }
+
+      // twinkle
+      s.phase = (s.phase + s.twinkleSpeed) % 360;
+      let t = (sin(radians(s.phase)) + 1) / 2;
+      let alpha = map(t, 0, 1, 80, 255);
+      fill(255, alpha);
+
+      // wandering offsets
+      s.ox = constrain(s.ox + random(-s.wanderSpeed, s.wanderSpeed), -s.jitterMax, s.jitterMax);
+      s.oy = constrain(s.oy + random(-s.wanderSpeed, s.wanderSpeed), -s.jitterMax, s.jitterMax);
+
+      // perspective scaling: grows as it moves outward
+      let drawSize = map(s.r, 0, maxSpread, 1.0 * s.baseSize, 3.5 * s.baseSize);
+
+      // compute on‐canvas position
+      let x = width/2 + (s.r * cos(s.a)) + s.ox;
+      let y = height/2 + (s.r * sin(s.a)) + s.oy;
+
+      ellipse(x, y, drawSize);
     }
 
-    function draw() {
-      background(0);
+    // --- draw your central geometry & label as before ---
+    let bigR      = min(width, height) * 0.15;
+    let smallR    = bigR * 0.05;
+    let shiftX    = bigR;
+    let initialCY = height / 2;
+    let doHoriz   = currentAngle >= 137;
+    let targetSX  = doHoriz ? shiftX : 0;
+    currentShiftX = lerp(currentShiftX, targetSX, 0.1);
 
-      // — update main angle and compute star spread —
-      currentAngle = lerp(currentAngle, targetAngle, 0.1);
-      let clamped = constrain(currentAngle, 0, 137);
-      maxSpread = map(clamped, 0, 137, 0, max(width, height));
-
-      // — draw twinkling stars —
-      noStroke();
-      for (let s of stars) {
-        // advance and wrap phase
-        s.phase = (s.phase + s.twinkleSpeed) % 360;
-        // convert to [0,1]
-        let t = (sin(radians(s.phase)) + 1) / 2;
-        // map to alpha range
-        let alpha = map(t, 0, 1, 50, 255);
-        fill(255, alpha);
-
-        // polar → Cartesian
-        let r = s.rf * maxSpread;
-        let x = width / 2 + r * cos(s.a);
-        let y = height / 2 + r * sin(s.a);
-        ellipse(x, y, s.size);
-      }
-
-      // — geometry & labels logic (unchanged) —
-      let bigR   = min(width, height) * 0.15;
-      let smallR = bigR * 0.05;
-      let shiftX = bigR, margin = bigR * 0.5;
-      let initialCY = height / 2, topCY = bigR + margin;
-      let shiftY = initialCY - topCY;
-      let labelSize  = bigR * 0.5;
-      let labelSize2 = bigR * 0.35;
-      let offset     = bigR * 0.2;
-
-      let doHoriz    = currentAngle >= 137;
-      let doVert     = currentAngle >= 165 && currentAngle <= 190;
-      let doSide     = currentAngle >= 190;
-      let ts         = doSide ? shiftX : 0;
-      let targetSX   = doHoriz ? shiftX : 0;
-      let targetSY   = (doVert || doSide) ? -shiftY : 0;
-
-      csx            = lerp(csx, ts, 0.1);
-      currentShiftX  = lerp(currentShiftX, targetSX, 0.1);
-      currentShiftY  = lerp(currentShiftY, targetSY, 0.1);
-
-      // draw main structure
+    push();
+      translate(width/2 - currentShiftX, initialCY);
+      drawStructure(bigR, smallR);
+    pop();
+    if (doHoriz) {
       push();
-        translate(width/2 - currentShiftX, initialCY + currentShiftY);
-        drawStructure(bigR, smallR);
+        translate(width/2 + currentShiftX, initialCY);
+        drawLabel(bigR * 0.5);
       pop();
-
-      // horizontal label
-      if (doHoriz) {
-        push();
-          translate(width/2 + currentShiftX, initialCY + currentShiftY);
-          drawLabel(labelSize);
-        pop();
-      }
-
-      // vertical label
-      if (doVert) {
-        push();
-          translate(
-            width/2 + currentShiftX,
-            initialCY + currentShiftY + bigR + offset
-          );
-          draw_python_physics(labelSize2);
-        pop();
-      }
-
-      // side label
-      if (doSide) {
-        push();
-          translate(
-            width/2 - csx - 30,
-            initialCY + currentShiftY + bigR + offset
-          );
-          draw_python_physics(labelSize2);
-        pop();
-      }
     }
+  }
 
-    function drawStructure(BIG_RADIUS, SMALL_RADIUS) {
-      let c = constrain(currentAngle, 0, 137);
+  // Helper: spawn a star either at r=0 or at random r
+  function spawnStar(initial) {
+    const bSize = random(2, 3.5);
+    return {
+      a: random(0, 360),           // angle
+      r: initial ? random(0, maxSpread) : 0,
+      speed: random(0.8, 3),       // how fast it flies forward
+      baseSize: bSize,
+      phase: random(0, 360),
+      twinkleSpeed: random(0.5, 2.0),
+      ox: 0, oy: 0,
+      wanderSpeed: random(0.05, 0.2),
+      jitterMax: bSize * 2
+    };
+  }
 
-      noFill();
-      stroke(255); strokeWeight(3);
-      ellipse(0, 0, BIG_RADIUS * 2);
+  function drawStructure(BIG_RADIUS, SMALL_RADIUS) {
+    let c = constrain(currentAngle, 0, 137);
+    noFill(); stroke(255); strokeWeight(3);
+    ellipse(0, 0, BIG_RADIUS * 2);
+    stroke(100);
+    line(-BIG_RADIUS, 0, BIG_RADIUS, 0);
+    line(0, -BIG_RADIUS, 0, BIG_RADIUS);
+    let px = BIG_RADIUS * cos(-c);
+    let py = BIG_RADIUS * sin(-c);
+    stroke(255, 0, 0);    line(0, 0, px, py);
+    stroke(255, 0, 255);  line(0, py, px, py);
+    stroke(0, 255, 0);    line(px, 0, px, py);
+    stroke(255,255,0);    line(BIG_RADIUS*(1/cos(c)), 0, px, py);
+    stroke(0,255,255);    line(0, -BIG_RADIUS*(1/sin(c)), px, py);
+    stroke(255,100,0);    line(0, -BIG_RADIUS*(1/sin(c)), 0, 0);
+    stroke(25,150,255);   line(BIG_RADIUS*(1/cos(c)), 0, 0, 0);
+    noStroke(); fill(255);
+    ellipse(px, py, SMALL_RADIUS * 2);
+  }
 
-      stroke(100);
-      line(-BIG_RADIUS, 0, BIG_RADIUS, 0);
-      line(0, -BIG_RADIUS, 0, BIG_RADIUS);
-
-      let px = BIG_RADIUS * cos(-c),
-          py = BIG_RADIUS * sin(-c);
-
-      stroke(255, 0,   0);    line(0, 0, px, py);
-      stroke(255, 0, 255);    line(0, py, px, py);
-      stroke(0, 255, 0);      line(px, 0, px, py);
-      stroke(255, 255, 0);    line(BIG_RADIUS*(1/cos(c)), 0, px, py);
-      stroke(0, 255, 255);    line(0, -BIG_RADIUS*(1/sin(c)), px, py);
-      stroke(255, 100, 0);    line(0, -BIG_RADIUS*(1/sin(c)), 0, 0);
-      stroke(25, 150, 255);   line(BIG_RADIUS*(1/cos(c)), 0, 0, 0);
-
-      noStroke();
-      fill(255);
-      ellipse(px, py, SMALL_RADIUS * 2);
+  function drawLabel(size) {
+    const label = 'Pysics';
+    const cols  = [
+      color(0,255,0), color(255,0,255), color(255,255,0),
+      color(0,255,255), color(25,150,255), color(255,100,0)
+    ];
+    textSize(size);
+    let totalW = label.split('').reduce((sum,ch) => sum + textWidth(ch), 0);
+    let x = -totalW/2;
+    for (let i = 0; i < label.length; i++) {
+      fill(cols[i % cols.length]);
+      let ch = label[i];
+      text(ch, x + textWidth(ch)/2, 0);
+      x += textWidth(ch);
     }
+  }
 
-    function drawLabel(size) {
-      const label = 'Pysics';
-      const cols  = [
-        color(0,255,0), color(255,0,255), color(255,255,0),
-        color(0,255,255), color(25,150,255), color(255,100,0)
-      ];
-      textSize(size);
-
-      let totalW = label.split('').reduce((sum,ch) => sum + textWidth(ch), 0);
-      let x = -totalW/2, y = 0;
-      for (let i = 0; i < label.length; i++) {
-        fill(cols[i % cols.length]);
-        let ch = label[i];
-        text(ch, x + textWidth(ch)/2, y);
-        x += textWidth(ch);
-      }
+  function mouseWheel(e) {
+    targetAngle += e.delta * 0.1;
+    return false;
+  }
+  function touchStarted() {
+    prevTouchY = touches[0].y;
+    return false;
+  }
+  function touchMoved() {
+    let y = touches[0].y;
+    targetAngle += (y - prevTouchY) * 0.1;
+    prevTouchY = y;
+    return false;
+  }
+  function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+    stars = [];
+    for (let i = 0; i < NUM_STARS; i++) {
+      stars.push(spawnStar(true));
     }
-
-    function draw_python_physics(size) {
-      const label = 'Python+Physics';
-      const cols  = [
-        color(0,255,0), color(255,0,255), color(255,255,0),
-        color(0,255,255), color(25,150,255), color(255,100,0)
-      ];
-      textSize(size);
-
-      let totalW = label.split('').reduce((sum,ch) => sum + textWidth(ch), 0);
-      let x = -totalW/2, y = 0;
-      for (let i = 0; i < label.length; i++) {
-        fill(cols[i % cols.length]);
-        let ch = label[i];
-        text(ch, x + textWidth(ch)/2, y);
-        x += textWidth(ch);
-      }
-    }
-
-    // input handlers
-    function mouseWheel(e) {
-      targetAngle += e.delta * 0.1;
-      return false;
-    }
-    function touchStarted() {
-      prevTouchY = touches[0].y;
-      return false;
-    }
-    function touchMoved() {
-      let y = touches[0].y;
-      targetAngle += (y - prevTouchY) * 0.1;
-      prevTouchY = y;
-      return false;
-    }
-    function windowResized() {
-      resizeCanvas(windowWidth, windowHeight);
-      // re-init stars for new size
-      stars = [];
-      for (let i = 0; i < NUM_STARS; i++) {
-        stars.push({
-          rf: random(),
-          a: random(0, 360),
-          size: random(1, 3),
-          phase: random(0, 360),
-          twinkleSpeed: random(0.5, 2.0)
-        });
-      }
-    }
-  </script>
+  }
+</script>
 </body>
-
 </html>
