@@ -92,7 +92,7 @@
     if (doHoriz) {
       push();
         translate(width/2 + currentShiftX, initialCY);
-        drawLabel(bigR * 0.55);
+        drawLabel(bigR * 0.55, 0.1);
       pop();
     }
   }
@@ -133,22 +133,46 @@
     ellipse(px, py, SMALL_RADIUS * 2);
   }
 
-  function drawLabel(size) {
+  function drawLabel(size, thickness) {
     const label = 'Pysics';
     const cols  = [
       color(0,255,0), color(255,0,255), color(255,255,0),
       color(0,255,255), color(25,150,255), color(255,100,0)
     ];
+    
     textSize(size);
+    textStyle(BOLD);
+    textAlign(CENTER, CENTER);
+
+    // grab the raw Canvas 2D context so we can set lineWidth
+    const ctx = drawingContext;
+    ctx.textBaseline = 'middle';
+    
+    // compute total width
     let totalW = label.split('').reduce((sum,ch) => sum + textWidth(ch), 0);
     let x = -totalW/2;
+    
     for (let i = 0; i < label.length; i++) {
-      fill(cols[i % cols.length]);
       let ch = label[i];
-      text(ch, x + textWidth(ch)/2, 0);
-      x += textWidth(ch);
+      let w  = textWidth(ch);
+      let cx = x + w/2;
+      
+      // set fill and stroke to the same color
+      fill(cols[i % cols.length]);
+      stroke(cols[i % cols.length]);
+      
+      // control stroke thickness
+      ctx.lineWidth = thickness;
+      
+      // actually draw both stroke and fill
+      // use the lower‑level Canvas API so strokeText works
+      ctx.strokeText(ch, cx, 0);
+      ctx.fillText  (ch, cx, 0);
+      
+      x += w;
     }
   }
+
 
   function mouseWheel(e) {
     targetAngle += e.delta * 0.1;
