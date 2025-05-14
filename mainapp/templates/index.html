@@ -92,7 +92,7 @@
     if (doHoriz) {
       push();
         translate(width/2 + currentShiftX, initialCY);
-        drawLabel(bigR * 0.5);
+        drawLabel(bigR * 0.55);
       pop();
     }
   }
@@ -103,7 +103,7 @@
     return {
       a: random(0, 360),           // angle
       r: initial ? random(0, maxSpread) : 0,
-      speed: random(0.8, 3),       // how fast it flies forward
+      speed: random(0.8, 1.5),       // how fast it flies forward
       baseSize: bSize,
       phase: random(0, 360),
       twinkleSpeed: random(0.5, 2.0),
