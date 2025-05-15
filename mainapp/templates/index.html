@@ -26,6 +26,7 @@
 
   let currentAngle = 0, targetAngle = 0;
   let currentShiftX = 0;
+  let shiftIntro = 0 ;
   let prevTouchY = null;
   let maxSpread;
 
@@ -82,9 +83,12 @@
     const shiftX    = bigR;
     const initialCY = height / 2;
     const doHoriz   = currentAngle >= 137;
+    const IntroSwipeUp = currentAngle >= 180;
     const targetSX  = doHoriz ? shiftX : 0;
-    currentShiftX = lerp(currentShiftX, targetSX, 0.1);
+    const shift_intro = IntroSwipeUp ? shiftX*2 : 0;
 
+    currentShiftX = lerp(currentShiftX, targetSX, 0.1);
+    shiftIntro = lerp(shiftIntro, shift_intro, 0.1)
     // central geometry
     push();
       translate(width/2 - currentShiftX, initialCY);
@@ -110,7 +114,28 @@
         drawLabel(bigR * 0.55, 0.1);
         drawingContext.restore();
       pop();
+
     }
+    if(IntroSwipeUp){
+      // fade from 165° → 180°
+      const fadeStart = 180;
+      const fadeEnd   = 280;
+      let a = 255;
+      if (currentAngle > fadeStart) {
+        a = map(currentAngle, fadeStart, fadeEnd, 255, 0);
+        a = constrain(a, 0, 255);
+      }
+
+      push();
+        translate((width*3)/4 - shiftIntro, initialCY);
+        // apply global alpha
+        drawingContext.save();
+        drawingContext.globalAlpha = a / 255;
+        drawIntroLabel(bigR * 0.25, 0.1);
+        drawingContext.restore();
+      pop();
+    }
+
   }
 
   function spawnStar(initial) {
@@ -176,22 +201,52 @@
   }
 
   function drawIntroLabel(size, thickness) {
-    const label = 'Pysics is all about crafting\n physics simulations in Python—no lectures,\n just live code bringing concepts to life.';
-    const cols  = [GREEN];
-    textSize(size);
-    textStyle(BOLD);
-    textAlign(CENTER/2, CENTER);
-    const ctx = drawingContext;
-    ctx.textBaseline = 'middle';
-    let totalW = label.split('').reduce((sum,ch) => sum + textWidth(ch), 0);
-    let x = -totalW/2;
-    for (let i = 0; i < label.length; i++) {
-      let ch = label[i], w = textWidth(ch), cx = x + w/2;
-      fill(cols[i % cols.length]); stroke(cols[i % cols.length]); ctx.lineWidth = thickness;
-      ctx.strokeText(ch, cx, 0); ctx.fillText(ch, cx, 0);
-      x += w;
+      const label = 'Pysics\nis all about \ncrafting physics \nsimulations in\nPython';
+      const cols  = [GREEN];
+
+      textSize(size);
+      textStyle(BOLD);
+      // LEFT align each line
+      textAlign(CENTER, CENTER);
+
+      const ctx = drawingContext;
+      // ctx.textBaseline = 'middle';
+
+      // Split into lines and compute metrics
+      const lines = label.split('\n');
+      const lineHeight = textAscent() + textDescent();
+
+      // Find the maximum width among all lines
+      let maxLineWidth = 0;
+      for (let line of lines) {
+        maxLineWidth = max(maxLineWidth, textWidth(line));
+      }
+
+      const totalHeight = lines.length * lineHeight;
+
+      // Draw each line
+      lines.forEach((line, idx) => {
+        // compute y position for this line
+        const y = (idx * lineHeight) - (totalHeight / 2) + (lineHeight / 2);
+        // start x so that the block is centered, but line itself is LEFT‑aligned
+        const x = -maxLineWidth / 2;
+
+        // draw full line at once (you can remove per-character coloring if desired)
+        // but if you still want per-character coloring, use this loop:
+        let cursorX = x;
+        for (let i = 0; i < line.length; i++) {
+          const ch = line[i];
+          const w  = textWidth(ch);
+          fill(cols[i % cols.length]);
+          stroke(cols[i % cols.length]);
+          ctx.lineWidth = thickness;
+          ctx.strokeText(ch, cursorX, y);
+          ctx.fillText(ch, cursorX, y);
+          cursorX += w;
+        }
+      });
     }
-  }
+
 
   function mouseWheel(e) { targetAngle += e.delta * 0.1; return false; }
   function touchStarted() { prevTouchY = touches[0].y; return false; }
