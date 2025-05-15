@@ -1,268 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Stars Flying Forward with Wander & Perspective</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brilliant Clone</title>
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      touch-action: none;
-      background: black;
+    /* Reset & Base */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #f9fafb; color: #111827; overflow-x: hidden; }
+    a { text-decoration: none; color: inherit; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
+    .logo { font-size: 1.75rem; font-weight: 900; letter-spacing: -1px; }
+    nav ul { display: flex; gap: 24px; list-style: none; }
+    nav a { font-size: 0.95rem; font-weight: 500; padding: 8px 12px; transition: color 0.2s; }
+    nav a:hover { color: #10b981; }
+    .btn-outline { padding: 8px 20px; border: 2px solid #4b5563; border-radius: 9999px; background: transparent; font-size: 0.95rem; cursor: pointer; transition: background 0.3s, color 0.3s; }
+    .btn-outline:hover { background: #4b5563; color: #fff; }
+    .btn-primary { padding: 10px 24px; background: #10b981; color: #fff; border-radius: 9999px; font-size: 0.95rem; font-weight: 600; border: none; cursor: pointer; transition: background 0.3s, transform 0.2s; }
+    .btn-primary:hover { background: #059669; transform: translateY(-2px); }
+
+    main { position: relative; padding: 100px 20px 150px; text-align: left; max-width: 1200px; margin: 0 auto; }
+    .hero-content { width: 50%; display: inline-block; vertical-align: top; }
+    .hero-title { font-size: 5rem; font-weight: 900; line-height: 1; opacity: 0; animation: fadeInUp 1s ease-out forwards; }
+    .hero-title div { position: relative; }
+    .tagline { font-size: 1.25rem; margin-top: 24px; opacity: 0; animation: fadeInUp 1s ease-out 0.6s forwards; max-width: 400px; }
+    .hero-actions { margin-top: 32px; opacity: 0; animation: fadeInUp 1s ease-out 0.9s forwards; }
+
+    /* Decorative blobs */
+    .blob { position: absolute; border-radius: 50%; opacity: 0.4; animation: blobMove 20s infinite; }
+    .blob.one { width: 300px; height: 300px; background: #fcd34d; top: -60px; left: -100px; }
+    .blob.two { width: 200px; height: 200px; background: #a5b4fc; top: 200px; right: -80px; animation-delay: 5s; }
+    @keyframes blobMove {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33% { transform: translate(20px, -30px) scale(1.1); }
+      66% { transform: translate(-20px, 20px) scale(0.9); }
     }
-    canvas { display: block; }
+
+    /* Right illustration placeholder */
+    .hero-illustration { width: 45%; display: inline-block; vertical-align: top; opacity: 0; animation: fadeInRight 1s ease-out 1s forwards; }
+    .hero-illustration img { width: 100%; }
+
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInRight { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+
+    /* Stats section */
+    .stats { display: flex; justify-content: space-between; margin-top: 80px; opacity: 0; animation: fadeInUp 1s ease-out 1.2s forwards; }
+    .stat { text-align: center; }
+    .stat h3 { font-size: 2rem; font-weight: 700; color: #10b981; }
+    .stat p { font-size: 0.95rem; margin-top: 4px; color: #4b5563; }
+
+    /* Responsive */
+    @media(max-width: 1024px) { .hero-content, .hero-illustration { display: block; width: 100%; } .hero-illustration { margin-top: 40px; } }
+    @media(max-width: 640px) { header { flex-direction: column; gap: 16px; } nav ul { flex-wrap: wrap; justify-content: center; } }
   </style>
 </head>
 <body>
-<script>
-  // Global color constants
-  let RED, MAGENTA, GREEN, YELLOW, CYAN, ORANGE, SKYBLUE;
-
-  let stars = [];
-  const NUM_STARS = 800;
-
-  let currentAngle = 0, targetAngle = 0;
-  let currentShiftX = 0;
-  let shiftIntro = 0 ;
-  let prevTouchY = null;
-  let maxSpread;
-
-  function setup() {
-    createCanvas(windowWidth, windowHeight);
-    angleMode(DEGREES);
-    smooth();
-    textAlign(CENTER, CENTER);
-    textFont('Courier New');
-
-    // Initialize color constants
-    RED     = color(255, 0,   0  );
-    MAGENTA = color(255, 0, 255  );
-    GREEN   = color(0,   255, 0  );
-    YELLOW  = color(255, 255, 0  );
-    CYAN    = color(0,   255, 255);
-    ORANGE  = color(255, 100, 0  );
-    SKYBLUE = color(25,  150, 255);
-
-    // initialize star objects
-    for (let i = 0; i < NUM_STARS; i++) {
-      stars.push(spawnStar(true));
-    }
-  }
-
-  function draw() {
-    background(0);
-
-    // update spread based on scroll
-    currentAngle = lerp(currentAngle, targetAngle, 0.1);
-    let clamped = constrain(currentAngle, 0, 180);
-    maxSpread = map(clamped, 0, 137, 0, max(width, height));
-
-    // draw stars
-    noStroke();
-    for (let s of stars) {
-      s.r += s.speed;
-      if (s.r > maxSpread) Object.assign(s, spawnStar(false));
-      s.phase = (s.phase + s.twinkleSpeed) % 360;
-      let t = (sin(radians(s.phase)) + 1) / 2;
-      let alpha = map(t, 0, 1, 80, 255);
-      fill(255, alpha);
-      s.ox = constrain(s.ox + random(-s.wanderSpeed, s.wanderSpeed), -s.jitterMax, s.jitterMax);
-      s.oy = constrain(s.oy + random(-s.wanderSpeed, s.wanderSpeed), -s.jitterMax, s.jitterMax);
-      let drawSize = map(s.r, 0, maxSpread, 1.0 * s.baseSize, 3.5 * s.baseSize);
-      let x = width/2 + (s.r * cos(s.a)) + s.ox;
-      let y = height/2 + (s.r * sin(s.a)) + s.oy;
-      ellipse(x, y, drawSize);
-    }
-
-    // draw structure + label
-    const bigR      = min(width, height) * 0.15;
-    const smallR    = bigR * 0.05;
-    const shiftX    = bigR;
-    const initialCY = height / 2;
-    const doHoriz   = currentAngle >= 137;
-    const IntroSwipeUp = currentAngle >= 180;
-    const targetSX  = doHoriz ? shiftX : 0;
-    const shift_intro = IntroSwipeUp ? shiftX*2 : 0;
-
-    currentShiftX = lerp(currentShiftX, targetSX, 0.1);
-    shiftIntro = lerp(shiftIntro, shift_intro, 0.1)
-    // central geometry
-    push();
-      translate(width/2 - currentShiftX, initialCY);
-      drawStructure(bigR, smallR);
-    pop();
-
-    // fading label
-    if (doHoriz) {
-      // fade from 165° → 180°
-      const fadeStart = 165;
-      const fadeEnd   = 180;
-      let a = 255;
-      if (currentAngle > fadeStart) {
-        a = map(currentAngle, fadeStart, fadeEnd, 255, 0);
-        a = constrain(a, 0, 255);
-      }
-
-      push();
-        translate(width/2 + currentShiftX, initialCY);
-        // apply global alpha
-        drawingContext.save();
-        drawingContext.globalAlpha = a / 255;
-        drawLabel(bigR * 0.55, 0.1);
-        drawingContext.restore();
-      pop();
-
-    }
-    if(IntroSwipeUp){
-      // fade from 165° → 180°
-      const fadeStart = 180;
-      const fadeEnd   = 280;
-      let a = 255;
-      if (currentAngle > fadeStart) {
-        a = map(currentAngle, fadeStart, fadeEnd, 255, 0);
-        a = constrain(a, 0, 255);
-      }
-
-      push();
-        translate(((width/2)+bigR*3+(bigR*0.7)) - shiftIntro, initialCY);
-        // apply global alpha
-        drawingContext.save();
-        drawingContext.globalAlpha = a / 255;
-        drawIntroLabel(bigR * 0.28, 0.1);
-        drawingContext.restore();
-      pop();
-    }
-
-  }
-
-  function spawnStar(initial) {
-    const bSize = random(2, 3.5);
-    return {
-      a: random(0, 360),
-      r: initial ? random(0, maxSpread) : 0,
-      speed: random(0.4, 1.5),
-      baseSize: bSize,
-      phase: random(0, 360),
-      twinkleSpeed: random(0.5, 2.0),
-      ox: 0, oy: 0,
-      wanderSpeed: random(0.05, 0.2),
-      jitterMax: bSize * 2
-    };
-  }
-
-  function drawStructure(BIG_RADIUS, SMALL_RADIUS) {
-    let c = constrain(currentAngle, 0, 137);
-    noFill(); stroke(255); strokeWeight(3);
-    ellipse(0, 0, BIG_RADIUS * 2);
-    stroke(100);
-    line(-BIG_RADIUS, 0, BIG_RADIUS, 0);
-    line(0, -BIG_RADIUS, 0, BIG_RADIUS);
-
-    let px = BIG_RADIUS * cos(-c);
-    let py = BIG_RADIUS * sin(-c);
-    stroke(RED);     line(0, 0, px, py);
-    stroke(MAGENTA); line(0, py, px, py);
-    stroke(GREEN);   line(px, 0, px, py);
-    stroke(YELLOW);  line(BIG_RADIUS*(1/cos(c)), 0, px, py);
-    stroke(CYAN);    line(0, -BIG_RADIUS*(1/sin(c)), px, py);
-    stroke(ORANGE);  line(BIG_RADIUS*(1/cos(c)), 0, 0, 0);
-    stroke(SKYBLUE); line(0, -BIG_RADIUS*(1/sin(c)), 0, 0);
-    noStroke(); fill(255);
-    ellipse(px, py, SMALL_RADIUS * 2);
-  }
-
-  function drawLabel(size, thickness) {
-    const label = 'Pysics';
-    const cols  = [MAGENTA, GREEN, YELLOW, CYAN, SKYBLUE, ORANGE];
-    textSize(size);
-    textStyle(BOLD);
-    textAlign(CENTER, CENTER);
-
-    const ctx = drawingContext;
-    ctx.textBaseline = 'middle';
-
-    let totalW = label.split('').reduce((sum, ch) => sum + textWidth(ch), 0);
-    let x = -totalW / 2;
-
-    for (let i = 0; i < label.length; i++) {
-      const ch = label[i];
-      const w  = textWidth(ch);
-      const cx = x + w / 2;
-      fill(cols[i % cols.length]);
-      stroke(cols[i % cols.length]);
-      ctx.lineWidth = thickness;
-      ctx.strokeText(ch, cx, 0);
-      ctx.fillText(ch, cx, 0);
-      x += w;
-    }
-  }
-
-  function drawIntroLabel(size, thickness) {
-      const label = 'Pysics\nis all about \ncrafting physics \nsimulations in\nPython';
-      const rainbow = [MAGENTA, GREEN, YELLOW, CYAN, SKYBLUE, ORANGE];
-      const defaultColor = GREEN;
-
-      textSize(size);
-      textStyle(BOLD);
-      textAlign(CENTER, CENTER);
-
-      const ctx = drawingContext;
-
-      // Split into lines and compute metrics
-      const lines = label.split('\n');
-      const lineHeight = textAscent() + textDescent();
-
-      // Find the maximum width among all lines
-      let maxLineWidth = 0;
-      for (let line of lines) {
-        maxLineWidth = max(maxLineWidth, textWidth(line));
-      }
-
-      const totalHeight = lines.length * lineHeight;
-
-      // Draw each line
-      lines.forEach((line, idx) => {
-        const y = (idx * lineHeight) - (totalHeight / 2) + (lineHeight / 2);
-        const x = -maxLineWidth / 2;
-
-        let cursorX = x;
-        for (let i = 0; i < line.length; i++) {
-          const ch = line[i];
-          const w  = textWidth(ch);
-
-          // If it’s the first line, pick from rainbow; otherwise use default
-          const col = (idx === 0)
-            ? rainbow[i % rainbow.length]
-            : defaultColor;
-
-          fill(col);
-          stroke(col);
-          ctx.lineWidth = thickness;
-          ctx.strokeText(ch, cursorX, y);
-          ctx.fillText(ch, cursorX, y);
-          cursorX += w;
-        }
-      });
-    }
-
-
-
-  function mouseWheel(e) { targetAngle += e.delta * 0.1; return false; }
-  function touchStarted() { prevTouchY = touches[0].y; return false; }
-  function touchMoved() {
-    let y = touches[0].y;
-    targetAngle += (y - prevTouchY) * 0.1;
-    prevTouchY = y;
-    return false;
-  }
-  function windowResized() {
-    resizeCanvas(windowWidth, windowHeight);
-    stars = [];
-    for (let i = 0; i < NUM_STARS; i++) stars.push(spawnStar(true));
-  }
-</script>
+  <header>
+    <div class="logo">Brilliant</div>
+    <nav>
+      <ul>
+        <li><a href="#courses">Courses</a></li>
+        <li><a href="#topics">Topics</a></li>
+        <li><a href="#community">Community</a></li>
+        <li><a href="#blog">Blog</a></li>
+      </ul>
+    </nav>
+    <div>
+      <button class="btn-outline">Log in</button>
+      <button class="btn-primary">Sign up</button>
+    </div>
+  </header>
+  <main>
+    <div class="blob one"></div>
+    <div class="blob two"></div>
+    <div class="hero-content">
+      <h1 class="hero-title"><div>Learn</div><div>by doing</div></h1>
+      <p class="tagline">Interactive problem solving that’s effective and fun.<br>Get smarter in 15 minutes a day.</p>
+      <div class="hero-actions">
+        <button class="btn-primary">Get started</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><h3>8M+</h3><p>Users worldwide</p></div>
+        <div class="stat"><h3>4.8★</h3><p>Average rating</p></div>
+        <div class="stat"><h3>20K+</h3><p>Problems solved daily</p></div>
+      </div>
+    </div>
+    <div class="hero-illustration">
+      <img src="https://via.placeholder.com/500x400" alt="Interactive problem illustration" />
+    </div>
+  </main>
 </body>
 </html>
