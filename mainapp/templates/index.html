@@ -18,6 +18,9 @@
 </head>
 <body>
 <script>
+  // Global color constants
+  let RED, MAGENTA, GREEN, YELLOW, CYAN, ORANGE, SKYBLUE;
+
   let stars = [];
   const NUM_STARS = 800;
 
@@ -32,6 +35,16 @@
     smooth();
     textAlign(CENTER, CENTER);
     textFont('Courier New');
+
+    // Initialize color constants
+    RED     = color(255, 0,   0  );
+    MAGENTA = color(255, 0, 255  );
+    GREEN   = color(0,   255, 0  );
+    YELLOW  = color(255, 255, 0  );
+    CYAN    = color(0,   255, 255);
+    ORANGE  = color(255, 100, 0  );
+    SKYBLUE = color(25,  150, 255);
+
     // initialize star objects
     for (let i = 0; i < NUM_STARS; i++) {
       stars.push(spawnStar(true));
@@ -41,69 +54,71 @@
   function draw() {
     background(0);
 
-    // control maxSpread via mouse/touch scroll
+    // update spread based on scroll
     currentAngle = lerp(currentAngle, targetAngle, 0.1);
-    let clamped = constrain(currentAngle, 0, 137);
+    let clamped = constrain(currentAngle, 0, 180);
     maxSpread = map(clamped, 0, 137, 0, max(width, height));
 
+    // draw stars
     noStroke();
     for (let s of stars) {
-      // advance each star outward
       s.r += s.speed;
-
-      // respawn when past the visible radius
-      if (s.r > maxSpread) {
-        Object.assign(s, spawnStar(false));
-      }
-
-      // twinkle
+      if (s.r > maxSpread) Object.assign(s, spawnStar(false));
       s.phase = (s.phase + s.twinkleSpeed) % 360;
       let t = (sin(radians(s.phase)) + 1) / 2;
       let alpha = map(t, 0, 1, 80, 255);
       fill(255, alpha);
-
-      // wandering offsets
       s.ox = constrain(s.ox + random(-s.wanderSpeed, s.wanderSpeed), -s.jitterMax, s.jitterMax);
       s.oy = constrain(s.oy + random(-s.wanderSpeed, s.wanderSpeed), -s.jitterMax, s.jitterMax);
-
-      // perspective scaling: grows as it moves outward
       let drawSize = map(s.r, 0, maxSpread, 1.0 * s.baseSize, 3.5 * s.baseSize);
-
-      // compute on‐canvas position
       let x = width/2 + (s.r * cos(s.a)) + s.ox;
       let y = height/2 + (s.r * sin(s.a)) + s.oy;
-
       ellipse(x, y, drawSize);
     }
 
-    // --- draw your central geometry & label as before ---
-    let bigR      = min(width, height) * 0.15;
-    let smallR    = bigR * 0.05;
-    let shiftX    = bigR;
-    let initialCY = height / 2;
-    let doHoriz   = currentAngle >= 137;
-    let targetSX  = doHoriz ? shiftX : 0;
+    // draw structure + label
+    const bigR      = min(width, height) * 0.15;
+    const smallR    = bigR * 0.05;
+    const shiftX    = bigR;
+    const initialCY = height / 2;
+    const doHoriz   = currentAngle >= 137;
+    const targetSX  = doHoriz ? shiftX : 0;
     currentShiftX = lerp(currentShiftX, targetSX, 0.1);
 
+    // central geometry
     push();
       translate(width/2 - currentShiftX, initialCY);
       drawStructure(bigR, smallR);
     pop();
+
+    // fading label
     if (doHoriz) {
+      // fade from 165° → 180°
+      const fadeStart = 165;
+      const fadeEnd   = 180;
+      let a = 255;
+      if (currentAngle > fadeStart) {
+        a = map(currentAngle, fadeStart, fadeEnd, 255, 0);
+        a = constrain(a, 0, 255);
+      }
+
       push();
         translate(width/2 + currentShiftX, initialCY);
+        // apply global alpha
+        drawingContext.save();
+        drawingContext.globalAlpha = a / 255;
         drawLabel(bigR * 0.55, 0.1);
+        drawingContext.restore();
       pop();
     }
   }
 
-  // Helper: spawn a star either at r=0 or at random r
   function spawnStar(initial) {
     const bSize = random(2, 3.5);
     return {
-      a: random(0, 360),           // angle
+      a: random(0, 360),
       r: initial ? random(0, maxSpread) : 0,
-      speed: random(0.8, 1.5),       // how fast it flies forward
+      speed: random(0.4, 1.5),
       baseSize: bSize,
       phase: random(0, 360),
       twinkleSpeed: random(0.5, 2.0),
@@ -120,68 +135,66 @@
     stroke(100);
     line(-BIG_RADIUS, 0, BIG_RADIUS, 0);
     line(0, -BIG_RADIUS, 0, BIG_RADIUS);
+
     let px = BIG_RADIUS * cos(-c);
     let py = BIG_RADIUS * sin(-c);
-    stroke(255, 0, 0);    line(0, 0, px, py);
-    stroke(255, 0, 255);  line(0, py, px, py);
-    stroke(0, 255, 0);    line(px, 0, px, py);
-    stroke(255,255,0);    line(BIG_RADIUS*(1/cos(c)), 0, px, py);
-    stroke(0,255,255);    line(0, -BIG_RADIUS*(1/sin(c)), px, py);
-    stroke(255,100,0);    line(0, -BIG_RADIUS*(1/sin(c)), 0, 0);
-    stroke(25,150,255);   line(BIG_RADIUS*(1/cos(c)), 0, 0, 0);
+    stroke(RED);     line(0, 0, px, py);
+    stroke(MAGENTA); line(0, py, px, py);
+    stroke(GREEN);   line(px, 0, px, py);
+    stroke(YELLOW);  line(BIG_RADIUS*(1/cos(c)), 0, px, py);
+    stroke(CYAN);    line(0, -BIG_RADIUS*(1/sin(c)), px, py);
+    stroke(ORANGE);  line(BIG_RADIUS*(1/cos(c)), 0, 0, 0);
+    stroke(SKYBLUE); line(0, -BIG_RADIUS*(1/sin(c)), 0, 0);
     noStroke(); fill(255);
     ellipse(px, py, SMALL_RADIUS * 2);
   }
 
   function drawLabel(size, thickness) {
     const label = 'Pysics';
-    const cols  = [
-      color(0,255,0), color(255,0,255), color(255,255,0),
-      color(0,255,255), color(25,150,255), color(255,100,0)
-    ];
-    
+    const cols  = [MAGENTA, GREEN, YELLOW, CYAN, SKYBLUE, ORANGE];
     textSize(size);
     textStyle(BOLD);
     textAlign(CENTER, CENTER);
 
-    // grab the raw Canvas 2D context so we can set lineWidth
     const ctx = drawingContext;
     ctx.textBaseline = 'middle';
-    
-    // compute total width
-    let totalW = label.split('').reduce((sum,ch) => sum + textWidth(ch), 0);
-    let x = -totalW/2;
-    
+
+    let totalW = label.split('').reduce((sum, ch) => sum + textWidth(ch), 0);
+    let x = -totalW / 2;
+
     for (let i = 0; i < label.length; i++) {
-      let ch = label[i];
-      let w  = textWidth(ch);
-      let cx = x + w/2;
-      
-      // set fill and stroke to the same color
+      const ch = label[i];
+      const w  = textWidth(ch);
+      const cx = x + w / 2;
       fill(cols[i % cols.length]);
       stroke(cols[i % cols.length]);
-      
-      // control stroke thickness
       ctx.lineWidth = thickness;
-      
-      // actually draw both stroke and fill
-      // use the lower‑level Canvas API so strokeText works
       ctx.strokeText(ch, cx, 0);
-      ctx.fillText  (ch, cx, 0);
-      
+      ctx.fillText(ch, cx, 0);
       x += w;
     }
   }
 
+  function drawIntroLabel(size, thickness) {
+    const label = 'Pysics is all about crafting\n physics simulations in Python—no lectures,\n just live code bringing concepts to life.';
+    const cols  = [GREEN];
+    textSize(size);
+    textStyle(BOLD);
+    textAlign(CENTER/2, CENTER);
+    const ctx = drawingContext;
+    ctx.textBaseline = 'middle';
+    let totalW = label.split('').reduce((sum,ch) => sum + textWidth(ch), 0);
+    let x = -totalW/2;
+    for (let i = 0; i < label.length; i++) {
+      let ch = label[i], w = textWidth(ch), cx = x + w/2;
+      fill(cols[i % cols.length]); stroke(cols[i % cols.length]); ctx.lineWidth = thickness;
+      ctx.strokeText(ch, cx, 0); ctx.fillText(ch, cx, 0);
+      x += w;
+    }
+  }
 
-  function mouseWheel(e) {
-    targetAngle += e.delta * 0.1;
-    return false;
-  }
-  function touchStarted() {
-    prevTouchY = touches[0].y;
-    return false;
-  }
+  function mouseWheel(e) { targetAngle += e.delta * 0.1; return false; }
+  function touchStarted() { prevTouchY = touches[0].y; return false; }
   function touchMoved() {
     let y = touches[0].y;
     targetAngle += (y - prevTouchY) * 0.1;
@@ -191,9 +204,7 @@
   function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
     stars = [];
-    for (let i = 0; i < NUM_STARS; i++) {
-      stars.push(spawnStar(true));
-    }
+    for (let i = 0; i < NUM_STARS; i++) stars.push(spawnStar(true));
   }
 </script>
 </body>
