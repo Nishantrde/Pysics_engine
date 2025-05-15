@@ -127,11 +127,11 @@
       }
 
       push();
-        translate((width*3)/4 - shiftIntro, initialCY);
+        translate(((width/2)+bigR*3+(bigR*0.7)) - shiftIntro, initialCY);
         // apply global alpha
         drawingContext.save();
         drawingContext.globalAlpha = a / 255;
-        drawIntroLabel(bigR * 0.25, 0.1);
+        drawIntroLabel(bigR * 0.28, 0.1);
         drawingContext.restore();
       pop();
     }
@@ -202,15 +202,14 @@
 
   function drawIntroLabel(size, thickness) {
       const label = 'Pysics\nis all about \ncrafting physics \nsimulations in\nPython';
-      const cols  = [GREEN];
+      const rainbow = [MAGENTA, GREEN, YELLOW, CYAN, SKYBLUE, ORANGE];
+      const defaultColor = GREEN;
 
       textSize(size);
       textStyle(BOLD);
-      // LEFT align each line
       textAlign(CENTER, CENTER);
 
       const ctx = drawingContext;
-      // ctx.textBaseline = 'middle';
 
       // Split into lines and compute metrics
       const lines = label.split('\n');
@@ -226,19 +225,21 @@
 
       // Draw each line
       lines.forEach((line, idx) => {
-        // compute y position for this line
         const y = (idx * lineHeight) - (totalHeight / 2) + (lineHeight / 2);
-        // start x so that the block is centered, but line itself is LEFT‑aligned
         const x = -maxLineWidth / 2;
 
-        // draw full line at once (you can remove per-character coloring if desired)
-        // but if you still want per-character coloring, use this loop:
         let cursorX = x;
         for (let i = 0; i < line.length; i++) {
           const ch = line[i];
           const w  = textWidth(ch);
-          fill(cols[i % cols.length]);
-          stroke(cols[i % cols.length]);
+
+          // If it’s the first line, pick from rainbow; otherwise use default
+          const col = (idx === 0)
+            ? rainbow[i % rainbow.length]
+            : defaultColor;
+
+          fill(col);
+          stroke(col);
           ctx.lineWidth = thickness;
           ctx.strokeText(ch, cursorX, y);
           ctx.fillText(ch, cursorX, y);
@@ -246,6 +247,7 @@
         }
       });
     }
+
 
 
   function mouseWheel(e) { targetAngle += e.delta * 0.1; return false; }
