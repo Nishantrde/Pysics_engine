@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Brilliant Clone</title>
+  <title>Pysics Clone with Animated Illustration</title>
   <style>
     /* Reset & Base */
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -31,20 +31,32 @@
     .blob.one { width: 300px; height: 300px; background: #fcd34d; top: -60px; left: -100px; }
     .blob.two { width: 200px; height: 200px; background: #a5b4fc; top: 200px; right: -80px; animation-delay: 5s; }
     @keyframes blobMove {
-      0%,100% { transform: translate(0,0) scale(1); }
-      33% { transform: translate(20px, -30px) scale(1.1); }
-      66% { transform: translate(-20px, 20px) scale(0.9); }
+      0%,100% { transform: translate(0,0) scale(1) rotate(0deg); }
+      33%    { transform: translate(20px, -30px) scale(1.1) rotate(10deg); }
+      66%    { transform: translate(-20px, 20px) scale(0.9) rotate(-10deg); }
     }
 
-    /* Right illustration placeholder */
+    /* Animated illustration */
     .hero-illustration { width: 45%; display: inline-block; vertical-align: top; opacity: 0; animation: fadeInRight 1s ease-out 1s forwards; }
-    .hero-illustration img { width: 100%; }
+    .hero-illustration img {
+      width: 100%;
+      animation: float 6s ease-in-out 2s infinite, rotate360 20s linear 1s infinite;
+    }
 
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes fadeInRight { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+    @keyframes rotate360 { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
     /* Stats section */
-    .stats { display: flex; justify-content: space-between; margin-top: 80px; opacity: 0; animation: fadeInUp 1s ease-out 1.2s forwards; }
+    .stats {
+  display: flex;
+  justify-content: flex-start;  /* Align items left */
+  gap: 40px; /* space between items */
+  margin-top: 80px;
+  opacity: 0;
+  animation: fadeInUp 1s ease-out 1.2s forwards;
+}
     .stat { text-align: center; }
     .stat h3 { font-size: 2rem; font-weight: 700; color: #10b981; }
     .stat p { font-size: 0.95rem; margin-top: 4px; color: #4b5563; }
@@ -56,7 +68,7 @@
 </head>
 <body>
   <header>
-    <div class="logo">Brilliant</div>
+    <div class="logo">Pysics</div>
     <nav>
       <ul>
         <li><a href="#courses">Courses</a></li>
@@ -74,20 +86,34 @@
     <div class="blob one"></div>
     <div class="blob two"></div>
     <div class="hero-content">
-      <h1 class="hero-title"><div>Learn</div><div>by doing</div></h1>
-      <p class="tagline">Interactive problem solving that’s effective and fun.<br>Get smarter in 15 minutes a day.</p>
+      <h1 class="hero-title"><div>I’m Exploring—</div><div>Come Along!</div></h1>
+      <p class="tagline">Interactive videos every week! 📺 </p>
       <div class="hero-actions">
-        <button class="btn-primary">Get started</button>
+        <a href="https://www.youtube.com/@nishant.garg.pysics?sub_confirmation=1" target="_blank">
+          <button class="btn-primary">▶️ Sub Me here</button>
+        </a>
       </div>
-      <div class="stats">
-        <div class="stat"><h3>8M+</h3><p>Users worldwide</p></div>
-        <div class="stat"><h3>4.8★</h3><p>Average rating</p></div>
-        <div class="stat"><h3>20K+</h3><p>Problems solved daily</p></div>
-      </div>
+
+      <div class="hero-actions">
+  <div class="stats">
+  <div class="stat">
+    <h3>40+</h3>
+    <p>Shorts Uploaded</p>
+  </div>
+  <div class="stat">
+    <h3>10K+</h3>
+    <p>Total Views</p>
+  </div>
+  <div class="stat">
+    <h3>13K+</h3>
+    <p>Most pop short</p>
+  </div>
+</div>
+
+</div>
+
     </div>
-    <div class="hero-illustration">
-      <img src="https://via.placeholder.com/500x400" alt="Interactive problem illustration" />
-    </div>
+    
   </main>
 </body>
 </html>
