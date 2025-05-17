@@ -6,3 +6,6 @@ def index(request):
 def blog(request):
     return render(request, "blog.html")
 
+def simulation(request):
+    return render(request, "simulation.html")
+
