@@ -8,7 +8,9 @@
     /* Reset & Base */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', sans-serif; background: #f9fafb; color: #111827; overflow-x: hidden; }
-    a { text-decoration: none; color: inherit; }
+    a { text-decoration: none; color: inherit; cursor: pointer; }
+
+    /* Header & Buttons */
     header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
     .logo { display: flex; align-items: center; font-size: 1.75rem; font-weight: 900; letter-spacing: -1px; }
     .logo img.logo-img { width: 40px; height: auto; margin-right: 12px; border-radius: 50%; }
@@ -20,47 +22,62 @@
     .btn-primary { padding: 10px 24px; background: #10b981; color: #fff; border-radius: 9999px; font-size: 0.95rem; font-weight: 600; border: none; cursor: pointer; transition: background 0.3s, transform 0.2s; }
     .btn-primary:hover { background: #059669; transform: translateY(-2px); }
 
+    /* Sections */
+    section { padding: 80px 20px; scroll-margin-top: 80px; }
+    .container { max-width: 1000px; margin: 0 auto; text-align: center; }
+    section h2 { font-size: 2.5rem; font-weight: 800; color: #111827; margin-bottom: 16px; }
+
+    /* About Section */
+    #about { display: none; background: #ffffff; }
+    #about .container { background: #f3f4f6; padding: 40px; border-radius: 12px; }
+    #about p { font-size: 1.125rem; color: #374151; line-height: 1.8; margin-bottom: 32px; }
+    .highlights { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+    .highlight { background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); text-align: left; }
+    .highlight h4 { font-size: 1.25rem; font-weight: 700; color: #10b981; margin-bottom: 8px; }
+    .highlight p { font-size: 0.9rem; color: #6b7280; }
+
+    /* Community Section (hidden by default) */
+    #community { display: none; background: #ffffff; }
+    .community-links { display: flex; justify-content: center; gap: 40px; margin-top: 20px; }
+    .community-links img { width: 48px; height: 48px; transition: transform 0.2s; }
+    .community-links img:hover { transform: scale(1.1); }
+
+    /* Main Hero */
     main { position: relative; padding: 100px 20px 150px; text-align: left; max-width: 1200px; margin: 0 auto; }
     .hero-content { width: 50%; display: inline-block; vertical-align: top; }
     .hero-title { font-size: 5rem; font-weight: 900; line-height: 1; opacity: 0; animation: fadeInUp 1s ease-out forwards; }
     .hero-title div { position: relative; }
     .tagline { font-size: 1.25rem; margin-top: 24px; opacity: 0; animation: fadeInUp 1s ease-out 0.6s forwards; max-width: 400px; }
     .hero-actions { margin-top: 32px; opacity: 0; animation: fadeInUp 1s ease-out 0.9s forwards; }
+    .hero-illustration { width: 45%; display: inline-block; vertical-align: top; opacity: 0; animation: fadeInRight 1s ease-out 1s forwards; }
 
-    /* Decorative blobs */
+    /* Decorative & Animations */
     .blob { position: absolute; border-radius: 50%; opacity: 0.4; animation: blobMove 20s infinite; }
     .blob.one { width: 300px; height: 300px; background: #fcd34d; top: -60px; left: -100px; }
     .blob.two { width: 200px; height: 200px; background: #a5b4fc; top: 200px; right: -80px; animation-delay: 5s; }
     .blob.three { width: 250px; height: 250px; background: #f87171; top: 300px; left: -50px; animation-delay: 10s; }
     @keyframes blobMove { 0%,100% { transform: translate(0,0) scale(1) rotate(0deg); } 33% { transform: translate(20px, -30px) scale(1.1) rotate(10deg); } 66% { transform: translate(-20px, 20px) scale(0.9) rotate(-10deg); } }
-
-    /* Animated illustration */
-    .hero-illustration { width: 45%; display: inline-block; vertical-align: top; opacity: 0; animation: fadeInRight 1s ease-out 1s forwards; }
-    .hero-illustration img { width: 100%; animation: float 6s ease-in-out 2s infinite, rotate360 20s linear 1s infinite; }
-
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes fadeInRight { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
     @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
     @keyframes rotate360 { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    /* Stats section */
-    .stats { display: flex; justify-content: flex-start; gap: 40px; margin-top: 80px; opacity: 0; animation: fadeInUp 1s ease-out 1.2s forwards; }
+    /* Stats and Videos */
+    .stats { display: flex; gap: 40px; margin-top: 80px; opacity: 0; animation: fadeInUp 1s ease-out 1.2s forwards; }
     .stat { text-align: center; }
     .stat h3 { font-size: 2rem; font-weight: 700; color: #10b981; }
     .stat p { font-size: 0.95rem; margin-top: 4px; color: #4b5563; }
-
-    /* Top Videos Section (YouTube Shorts style) */
     .top-videos { margin: 80px auto; max-width: 1200px; text-align: center; }
-    .top-videos h2 { font-size: 2rem; font-weight: 800; margin-bottom: 24px; color: #111827; }
+    .top-videos h2 { font-size: 2rem; font-weight: 800; margin-bottom: 24px; }
     .videos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 24px; }
     .video-card { position: relative; width: 100%; aspect-ratio: 9/16; border-radius: 1rem; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .video-card img { width: 100%; height: 100%; object-fit: cover; }
-    .video-card p { position: absolute; bottom: 0; width: 100%; margin: 0; padding: 6px; font-size: 0.8rem; font-weight: 600; color: #fff; background: rgba(0,0,0,0.6); box-sizing: border-box; }
+    .video-card p { position: absolute; bottom: 0; width: 100%; padding: 6px; font-size: 0.8rem; font-weight: 600; color: #fff; background: rgba(0,0,0,0.6); }
     .video-card::after { content: 'Shorts'; position: absolute; top: 8px; left: 8px; font-size: 0.7rem; padding: 2px 6px; background: rgba(0,0,0,0.6); color: #fff; border-radius: 12px; }
 
     /* Responsive */
-    @media(max-width: 1024px) { .hero-content, .hero-illustration { display: block; width: 100%; } .hero-illustration { margin-top: 40px; } }
-    @media(max-width: 640px) { header { flex-direction: column; gap: 16px; } nav ul { flex-wrap: wrap; justify-content: center; } }
+    @media(max-width: 1024px) { .hero-content, .hero-illustration { display: block; width: 100%; } }
+    @media(max-width: 640px) { header { flex-direction: column; } nav ul { flex-wrap: wrap; justify-content: center; } }
   </style>
 </head>
 <body>
@@ -71,8 +88,8 @@
     </div>
     <nav>
       <ul>
-        <li><a href="#about">About</a></li>
-        <li><a href="#community">Community</a></li>
+        <li><a id="aboutLink">About</a></li>
+        <li><a id="communityLink">Community</a></li>
         <li><a href="#blog">Blog</a></li>
         <li><a href="#simulations">Simulations</a></li>
       </ul>
@@ -82,6 +99,53 @@
       <button class="btn-primary">Sign up</button>
     </div>
   </header>
+
+  <!-- About Section (initially hidden) -->
+  <section id="about">
+    <div class="container">
+      <h2>About Pysics</h2>
+      <p>
+        <strong>Pysics</strong> (a blend of Python’s “Py” and the “sics” of physics) is a weekly physics‑exploration channel hosted by Nishant Garg, where complex concepts come to life through interactive simulations and bite‑sized animations.
+      </p>
+      <p>
+        From deriving the Q‑value of nuclear reactions to visualizing trigonometric functions with Pygame, each short video is designed to spark curiosity and deepen understanding—no textbooks required.
+      </p>
+      <div class="highlights">
+        <div class="highlight">
+          <h4>Interactive Simulations</h4>
+          <p>Pygame projects that animate physics in real time.</p>
+        </div>
+        <div class="highlight">
+          <h4>Concept Deep Dives</h4>
+          <p>Tutorials on nuclear‑physics derivations, raycasting, inverter circuits, and more.</p>
+        </div>
+        <div class="highlight">
+          <h4>Weekly Releases</h4>
+          <p>Fresh, engaging content every week.</p>
+        </div>
+        <div class="highlight">
+          <h4>Community‑Driven</h4>
+          <p>Join a growing community of coders and learners.</p>
+        </div>
+      </div>
+      <a href="https://www.youtube.com/@nishant.garg.pysics?sub_confirmation=1" target="_blank">
+        <button class="btn-primary">▶️ Subscribe Now</button>
+      </a>
+    </div>
+  </section>
+
+  <!-- Community Section (initially hidden) -->
+  <section id="community">
+    <div class="container">
+      <h2>Community</h2>
+      <div class="community-links">
+        <a href="https://www.youtube.com/@nishant.garg.pysics" target="_blank"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v6/icons/youtube.svg" alt="YouTube"></a>
+        <a href="https://github.com/Nishantrde" target="_blank"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v6/icons/github.svg" alt="GitHub"></a>
+        <a href="https://www.linkedin.com/in/nishant-garg-dev/" target="_blank"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v6/icons/linkedin.svg" alt="LinkedIn"></a>
+      </div>
+    </div>
+  </section>
+
   <main>
     <!-- Decorative blobs -->
     <div class="blob one"></div>
@@ -107,13 +171,25 @@
     </div>
   </main>
 
-  <!-- Top 4 Viewed Videos (Short Template) -->
+  <!-- Top 4 Viewed Videos -->
   <section class="top-videos">
     <h2>Top 4 Viewed Videos</h2>
     <div class="videos-grid" id="videosGrid"></div>
   </section>
 
   <script>
+    // Toggle sections: ensure only one is visible at a time
+    function toggleSection(showId) {
+      ['about','community'].forEach(id => {
+        const el = document.getElementById(id);
+        el.style.display = (id === showId) ? 'block' : 'none';
+        if (id === showId) el.scrollIntoView({ behavior: 'smooth' });
+      });
+    }
+    document.getElementById('aboutLink').addEventListener('click', () => toggleSection('about'));
+    document.getElementById('communityLink').addEventListener('click', () => toggleSection('community'));
+
+    // Fetch top 4 viewed Shorts
     const API_KEY = 'AIzaSyD_NIYUWbSvrIYYAtPJ_mdFk3tMgKQrUq8';
     const CHANNEL_ID = 'UCFoIYk0NwGIMb34cx23LizQ';
     (async () => {
@@ -123,10 +199,9 @@
       const { items } = await res.json();
       const grid = document.getElementById('videosGrid');
       items.forEach(item => {
-        const vid = item.id.videoId;
         grid.innerHTML += `
-          <a class="video-card" href="https://youtu.be/${vid}" target="_blank">
-            <img src="https://img.youtube.com/vi/${vid}/maxresdefault.jpg" alt="${item.snippet.title}">
+          <a class="video-card" href="https://youtu.be/${item.id.videoId}" target="_blank">
+            <img src="https://img.youtube.com/vi/${item.id.videoId}/maxresdefault.jpg" alt="${item.snippet.title}">
             <p>${item.snippet.title}</p>
           </a>
         `;
