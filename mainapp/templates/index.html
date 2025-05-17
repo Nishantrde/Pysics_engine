@@ -10,7 +10,8 @@
     body { font-family: 'Inter', sans-serif; background: #f9fafb; color: #111827; overflow-x: hidden; }
     a { text-decoration: none; color: inherit; }
     header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
-    .logo { font-size: 1.75rem; font-weight: 900; letter-spacing: -1px; }
+    .logo { display: flex; align-items: center; font-size: 1.75rem; font-weight: 900; letter-spacing: -1px; }
+    .logo img.logo-img { width: 40px; height: auto; margin-right: 12px; border-radius: 50%; }
     nav ul { display: flex; gap: 24px; list-style: none; }
     nav a { font-size: 0.95rem; font-weight: 500; padding: 8px 12px; transition: color 0.2s; }
     nav a:hover { color: #10b981; }
@@ -31,11 +32,7 @@
     .blob.one { width: 300px; height: 300px; background: #fcd34d; top: -60px; left: -100px; }
     .blob.two { width: 200px; height: 200px; background: #a5b4fc; top: 200px; right: -80px; animation-delay: 5s; }
     .blob.three { width: 250px; height: 250px; background: #f87171; top: 300px; left: -50px; animation-delay: 10s; }
-    @keyframes blobMove {
-      0%,100% { transform: translate(0,0) scale(1) rotate(0deg); }
-      33%    { transform: translate(20px, -30px) scale(1.1) rotate(10deg); }
-      66%    { transform: translate(-20px, 20px) scale(0.9) rotate(-10deg); }
-    }
+    @keyframes blobMove { 0%,100% { transform: translate(0,0) scale(1) rotate(0deg); } 33% { transform: translate(20px, -30px) scale(1.1) rotate(10deg); } 66% { transform: translate(-20px, 20px) scale(0.9) rotate(-10deg); } }
 
     /* Animated illustration */
     .hero-illustration { width: 45%; display: inline-block; vertical-align: top; opacity: 0; animation: fadeInRight 1s ease-out 1s forwards; }
@@ -52,6 +49,15 @@
     .stat h3 { font-size: 2rem; font-weight: 700; color: #10b981; }
     .stat p { font-size: 0.95rem; margin-top: 4px; color: #4b5563; }
 
+    /* Top Videos Section (YouTube Shorts style) */
+    .top-videos { margin: 80px auto; max-width: 1200px; text-align: center; }
+    .top-videos h2 { font-size: 2rem; font-weight: 800; margin-bottom: 24px; color: #111827; }
+    .videos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 24px; }
+    .video-card { position: relative; width: 100%; aspect-ratio: 9/16; border-radius: 1rem; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .video-card img { width: 100%; height: 100%; object-fit: cover; }
+    .video-card p { position: absolute; bottom: 0; width: 100%; margin: 0; padding: 6px; font-size: 0.8rem; font-weight: 600; color: #fff; background: rgba(0,0,0,0.6); box-sizing: border-box; }
+    .video-card::after { content: 'Shorts'; position: absolute; top: 8px; left: 8px; font-size: 0.7rem; padding: 2px 6px; background: rgba(0,0,0,0.6); color: #fff; border-radius: 12px; }
+
     /* Responsive */
     @media(max-width: 1024px) { .hero-content, .hero-illustration { display: block; width: 100%; } .hero-illustration { margin-top: 40px; } }
     @media(max-width: 640px) { header { flex-direction: column; gap: 16px; } nav ul { flex-wrap: wrap; justify-content: center; } }
@@ -59,13 +65,16 @@
 </head>
 <body>
   <header>
-    <div class="logo">Pysics</div>
+    <div class="logo">
+      <img src="https://yt3.googleusercontent.com/so_LhC39A37h8HZqVIoIwu4NXuJ4AUBUY_C-K_2mmOInhadB-lsQHeAKursNZ4Zy1swMt-ibXQ=s72-c-k-c0x00ffffff-no-rj" alt="Pysics Logo" class="logo-img">
+      Pysics
+    </div>
     <nav>
       <ul>
         <li><a href="#about">About</a></li>
-        <li><a href="#shorts_description">Shorts description</a></li>
-        <li><a href="#try_simulations">Try Simulations</a></li>
+        <li><a href="#community">Community</a></li>
         <li><a href="#blog">Blog</a></li>
+        <li><a href="#simulations">Simulations</a></li>
       </ul>
     </nav>
     <div>
@@ -90,21 +99,39 @@
 
       <div class="hero-actions">
         <div class="stats">
-          <div class="stat">
-            <h3>40+</h3>
-            <p>Shorts Uploaded</p>
-          </div>
-          <div class="stat">
-            <h3>10K+</h3>
-            <p>Total Views</p>
-          </div>
-          <div class="stat">
-            <h3>13K+</h3>
-            <p>Most pop short</p>
-          </div>
+          <div class="stat"><h3>40+</h3><p>Shorts Uploaded</p></div>
+          <div class="stat"><h3>10K+</h3><p>Total Views</p></div>
+          <div class="stat"><h3>13K+</h3><p>Most pop short</p></div>
         </div>
       </div>
     </div>
   </main>
+
+  <!-- Top 4 Viewed Videos (Short Template) -->
+  <section class="top-videos">
+    <h2>Top 4 Viewed Videos</h2>
+    <div class="videos-grid" id="videosGrid"></div>
+  </section>
+
+  <script>
+    const API_KEY = 'AIzaSyD_NIYUWbSvrIYYAtPJ_mdFk3tMgKQrUq8';
+    const CHANNEL_ID = 'UCFoIYk0NwGIMb34cx23LizQ';
+    (async () => {
+      const res = await fetch(
+        `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&order=viewCount&maxResults=4&key=${API_KEY}`
+      );
+      const { items } = await res.json();
+      const grid = document.getElementById('videosGrid');
+      items.forEach(item => {
+        const vid = item.id.videoId;
+        grid.innerHTML += `
+          <a class="video-card" href="https://youtu.be/${vid}" target="_blank">
+            <img src="https://img.youtube.com/vi/${vid}/maxresdefault.jpg" alt="${item.snippet.title}">
+            <p>${item.snippet.title}</p>
+          </a>
+        `;
+      });
+    })().catch(console.error);
+  </script>
 </body>
 </html>
