@@ -30,6 +30,7 @@
     .blob { position: absolute; border-radius: 50%; opacity: 0.4; animation: blobMove 20s infinite; }
     .blob.one { width: 300px; height: 300px; background: #fcd34d; top: -60px; left: -100px; }
     .blob.two { width: 200px; height: 200px; background: #a5b4fc; top: 200px; right: -80px; animation-delay: 5s; }
+    .blob.three { width: 250px; height: 250px; background: #f87171; top: 300px; left: -50px; animation-delay: 10s; }
     @keyframes blobMove {
       0%,100% { transform: translate(0,0) scale(1) rotate(0deg); }
       33%    { transform: translate(20px, -30px) scale(1.1) rotate(10deg); }
@@ -38,10 +39,7 @@
 
     /* Animated illustration */
     .hero-illustration { width: 45%; display: inline-block; vertical-align: top; opacity: 0; animation: fadeInRight 1s ease-out 1s forwards; }
-    .hero-illustration img {
-      width: 100%;
-      animation: float 6s ease-in-out 2s infinite, rotate360 20s linear 1s infinite;
-    }
+    .hero-illustration img { width: 100%; animation: float 6s ease-in-out 2s infinite, rotate360 20s linear 1s infinite; }
 
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes fadeInRight { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
@@ -49,14 +47,7 @@
     @keyframes rotate360 { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
     /* Stats section */
-    .stats {
-  display: flex;
-  justify-content: flex-start;  /* Align items left */
-  gap: 40px; /* space between items */
-  margin-top: 80px;
-  opacity: 0;
-  animation: fadeInUp 1s ease-out 1.2s forwards;
-}
+    .stats { display: flex; justify-content: flex-start; gap: 40px; margin-top: 80px; opacity: 0; animation: fadeInUp 1s ease-out 1.2s forwards; }
     .stat { text-align: center; }
     .stat h3 { font-size: 2rem; font-weight: 700; color: #10b981; }
     .stat p { font-size: 0.95rem; margin-top: 4px; color: #4b5563; }
@@ -71,9 +62,9 @@
     <div class="logo">Pysics</div>
     <nav>
       <ul>
-        <li><a href="#courses">Courses</a></li>
-        <li><a href="#topics">Topics</a></li>
-        <li><a href="#community">Community</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#shorts_description">Shorts description</a></li>
+        <li><a href="#try_simulations">Try Simulations</a></li>
         <li><a href="#blog">Blog</a></li>
       </ul>
     </nav>
@@ -83,8 +74,11 @@
     </div>
   </header>
   <main>
+    <!-- Decorative blobs -->
     <div class="blob one"></div>
     <div class="blob two"></div>
+    <div class="blob three"></div>
+
     <div class="hero-content">
       <h1 class="hero-title"><div>I’m Exploring—</div><div>Come Along!</div></h1>
       <p class="tagline">Interactive videos every week! 📺 </p>
@@ -95,25 +89,22 @@
       </div>
 
       <div class="hero-actions">
-  <div class="stats">
-  <div class="stat">
-    <h3>40+</h3>
-    <p>Shorts Uploaded</p>
-  </div>
-  <div class="stat">
-    <h3>10K+</h3>
-    <p>Total Views</p>
-  </div>
-  <div class="stat">
-    <h3>13K+</h3>
-    <p>Most pop short</p>
-  </div>
-</div>
-
-</div>
-
+        <div class="stats">
+          <div class="stat">
+            <h3>40+</h3>
+            <p>Shorts Uploaded</p>
+          </div>
+          <div class="stat">
+            <h3>10K+</h3>
+            <p>Total Views</p>
+          </div>
+          <div class="stat">
+            <h3>13K+</h3>
+            <p>Most pop short</p>
+          </div>
+        </div>
+      </div>
     </div>
-    
   </main>
 </body>
 </html>
