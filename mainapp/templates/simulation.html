@@ -8,93 +8,100 @@
     :root {
       --sidebar-width: 280px;
       --collapsed-width: 64px;
+      --transition: 0.4s ease;
       --bg-color: #ffffff;
       --sidebar-bg: #f8f9fa;
       --grid-color: 224,224,224;
       --major-grid-color: 180,180,180;
       --axis-color: 150,150,150;
+      --sidebar-mobile-width: 200px; /* narrower on mobile */
     }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-      font-family: sans-serif;
-      background: var(--bg-color);
-    }
+    * { box-sizing: border-box; margin:0; padding:0; }
+    body { overflow: hidden; font-family: sans-serif; background: var(--bg-color); }
+
+    /* Sidebar styling */
     #sidebar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100vh;
       width: var(--sidebar-width);
       background: var(--sidebar-bg);
       display: flex;
       flex-direction: column;
       padding: 16px;
       box-shadow: 2px 0 8px rgba(0,0,0,0.1);
-      transition: width 0.4s ease;
+      transition: width var(--transition), transform var(--transition);
       z-index: 10;
     }
     #sidebar.collapsed { width: var(--collapsed-width); }
+
+    /* Toggle button styling */
     #toggle-btn {
+      position: absolute;
+      top: 16px;
+      left: 16px;
       background: none;
       border: none;
       font-size: 1.6rem;
       cursor: pointer;
-      margin-bottom: 16px;
       transition: transform 0.3s ease;
+      z-index: 20;
     }
     #toggle-btn.open { transform: rotate(90deg); }
+
+    /* Title styling */
     #sidebar h2 {
+      margin-top: 56px;
       font-size: 1.8rem;
-      margin: 0;
-      transition: opacity 0.4s ease, transform 0.4s ease;
+      transition: opacity var(--transition), transform var(--transition);
     }
     #sidebar.collapsed h2 { opacity: 0; transform: translateX(-20px); }
-    #main {
-      position: absolute;
-      top: 0;
-      left: var(--sidebar-width);
-      right: 0;
-      bottom: 0;
-      overflow: hidden;
-      transition: left 0.4s ease;
+
+    /* Main full-screen canvas container */
+    #main { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; }
+    canvas { display: block; width:100%; height:100%; animation: fadeIn 0.8s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity:1; } }
+
+    /* Mobile off-canvas */
+    @media (max-width: 768px) {
+      #sidebar {
+        width: var(--sidebar-mobile-width);
+        transform: translateX(-100%);
+      }
+      #sidebar.open { transform: translateX(0); }
     }
-    #sidebar.collapsed ~ #main { left: var(--collapsed-width); }
-    canvas { display: block; animation: fadeIn 0.8s ease; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   </style>
 </head>
 <body>
+  <button id="toggle-btn">☰</button>
   <div id="sidebar">
-    <button id="toggle-btn">☰</button>
     <h2>Pysics Sim</h2>
+    <!-- add sidebar content here -->
   </div>
   <div id="main"></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
   <script>
-    let gridSize = 40;
-    let cols, rows;
+    let gridSize = 40, cols, rows;
     let offsetX = 0, offsetY = 0;
     let dragging = false, prevX, prevY;
 
     const css = getComputedStyle(document.documentElement);
-    const gridRGB = css.getPropertyValue('--grid-color').split(',').map(n => parseInt(n.trim()));
-    const majorRGB = css.getPropertyValue('--major-grid-color').split(',').map(n => parseInt(n.trim()));
-    const axisRGB = css.getPropertyValue('--axis-color').split(',').map(n => parseInt(n.trim()));
+    const [gr,gg,gb] = css.getPropertyValue('--grid-color').split(',').map(n=>+n);
+    const [mr,mg,mb] = css.getPropertyValue('--major-grid-color').split(',').map(n=>+n);
+    const [ar,ag,ab] = css.getPropertyValue('--axis-color').split(',').map(n=>+n);
 
     function setup() {
-      const sidebar = document.getElementById('sidebar');
-      let canvas = createCanvas(windowWidth - sidebar.clientWidth, windowHeight);
+      let canvas = createCanvas(windowWidth, windowHeight);
       canvas.parent('main');
       updateGrid();
-      const toggle = select('#toggle-btn');
-      toggle.mousePressed(() => {
-        const sb = document.getElementById('sidebar');
-        sb.classList.toggle('collapsed');
-        toggle.addClass('open');
-        if (!sb.classList.contains('collapsed')) toggle.removeClass('open');
-        resizeCanvas(windowWidth - sb.clientWidth, windowHeight);
-        updateGrid();
+
+      select('#toggle-btn').mousePressed(() => {
+        const sb = select('#sidebar');
+        const isMobile = window.matchMedia('(max-width:768px)').matches;
+        if (isMobile) sb.toggleClass('open');
+        else sb.toggleClass('collapsed');
       });
     }
 
@@ -105,59 +112,38 @@
 
     function drawGrid() {
       push();
-      translate(width / 2 + offsetX, height / 2 + offsetY);
-      const maxDistX = max(width, height) * 2;
-      const maxDistY = max(width, height) * 2;
-      const pulse = 100 + 50 * sin(frameCount * 0.02);
-      for (let i = -cols; i <= cols; i++) {
-        if (i === 0) {
-          stroke(axisRGB[0], axisRGB[1], axisRGB[2], 255);
-          strokeWeight(2);
-        } else if (i % 5 === 0) {
-          stroke(majorRGB[0], majorRGB[1], majorRGB[2], pulse);
-          strokeWeight(1);
-        } else {
-          stroke(gridRGB[0], gridRGB[1], gridRGB[2], pulse * 0.8);
-          strokeWeight(0.5);
-        }
-        line(i * gridSize, -maxDistY, i * gridSize, maxDistY);
+      translate(width/2 + offsetX, height/2 + offsetY);
+      const maxD = max(width, height)*2;
+      const pulse = 100 + 50*sin(frameCount*0.02);
+      for (let i=-cols; i<=cols; i++) {
+        if (i===0) stroke(ar,ag,ab,255), strokeWeight(2);
+        else if (i%5===0) stroke(mr,mg,mb,pulse), strokeWeight(1);
+        else stroke(gr,gg,gb,pulse*0.8), strokeWeight(0.5);
+        line(i*gridSize, -maxD, i*gridSize, maxD);
       }
-      for (let j = -rows; j <= rows; j++) {
-        if (j === 0) {
-          stroke(axisRGB[0], axisRGB[1], axisRGB[2], 255);
-          strokeWeight(2);
-        } else if (j % 5 === 0) {
-          stroke(majorRGB[0], majorRGB[1], majorRGB[2], pulse);
-          strokeWeight(1);
-        } else {
-          stroke(gridRGB[0], gridRGB[1], gridRGB[2], pulse * 0.8);
-          strokeWeight(0.5);
-        }
-        line(-maxDistX, j * gridSize, maxDistX, j * gridSize);
+      for (let j=-rows; j<=rows; j++) {
+        if (j===0) stroke(ar,ag,ab,255), strokeWeight(2);
+        else if (j%5===0) stroke(mr,mg,mb,pulse), strokeWeight(1);
+        else stroke(gr,gg,gb,pulse*0.8), strokeWeight(0.5);
+        line(-maxD, j*gridSize, maxD, j*gridSize);
       }
       pop();
     }
 
     function updateGrid() {
-      cols = ceil((width / 2) / gridSize);
-      rows = ceil((height / 2) / gridSize);
+      cols = ceil((width/2)/gridSize);
+      rows = ceil((height/2)/gridSize);
     }
 
     function windowResized() {
-      const sb = document.getElementById('sidebar');
-      resizeCanvas(windowWidth - sb.clientWidth, windowHeight);
+      resizeCanvas(windowWidth, windowHeight);
       updateGrid();
     }
 
-    function mousePressed() { dragging = true; prevX = mouseX; prevY = mouseY; }
-    function mouseDragged() {
-      if (dragging) { offsetX += mouseX - prevX; offsetY += mouseY - prevY; prevX = mouseX; prevY = mouseY; }
-    }
-    function mouseReleased() { dragging = false; }
-    function mouseWheel(event) {
-      gridSize = constrain(gridSize * (event.delta > 0 ? 0.9 : 1.1), 10, 200);
-      updateGrid(); return false;
-    }
+    function mousePressed() { dragging=true; prevX=mouseX; prevY=mouseY; }
+    function mouseDragged(){ if(dragging){ offsetX+=mouseX-prevX; offsetY+=mouseY-prevY; prevX=mouseX; prevY=mouseY;} }
+    function mouseReleased(){ dragging=false; }
+    function mouseWheel(event){ gridSize=constrain(gridSize*(event.delta>0?0.9:1.1),10,200); updateGrid(); return false; }
   </script>
 </body>
 </html>
