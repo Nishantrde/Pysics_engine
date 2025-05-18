@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Grid Dashboard</title>
   <style>
     :root {
@@ -14,9 +14,9 @@
       --grid-color: 224,224,224;
       --major-grid-color: 180,180,180;
       --axis-color: 150,150,150;
-      --sidebar-mobile-width: 200px; /* narrower on mobile */
+      --sidebar-mobile-width: 200px;
     }
-    * { box-sizing: border-box; margin:0; padding:0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body { overflow: hidden; font-family: sans-serif; background: var(--bg-color); }
 
     /* Sidebar styling */
@@ -40,45 +40,89 @@
     #toggle-btn {
       position: absolute;
       top: 16px;
-      left: 16px;
+      left: calc(var(--sidebar-width) + 16px);
       background: none;
       border: none;
       font-size: 1.6rem;
       cursor: pointer;
-      transition: transform 0.3s ease;
+      z-index: 20;  /* increased to stay above sidebar */
+      transition: left var(--transition);
+    }
+    #sidebar.collapsed + #toggle-btn {
+      left: calc(var(--collapsed-width) + 16px);
       z-index: 20;
     }
-    #toggle-btn.open { transform: rotate(90deg); }
 
-    /* Title styling */
-    #sidebar h2 {
-      margin-top: 56px;
-      font-size: 1.8rem;
+    /* Logo & Title */
+    .logo {
+      display: flex;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .logo img {
+      width: 40px;
+      height: auto;
+      border-radius: 50%;
+    }
+    .logo h2 {
+      font-size: 1.6em;
+      font-weight: bold;
+      color: #1f2937;
+      margin-left: 10px;
+      white-space: nowrap;
       transition: opacity var(--transition), transform var(--transition);
     }
-    #sidebar.collapsed h2 { opacity: 0; transform: translateX(-20px); }
+    #sidebar.collapsed .logo h2 {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
 
-    /* Main full-screen canvas container */
-    #main { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; }
-    canvas { display: block; width:100%; height:100%; animation: fadeIn 0.8s ease; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity:1; } }
+    /* Main full-screen canvas */
+    #main {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      animation: fadeIn 0.8s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
     /* Mobile off-canvas */
     @media (max-width: 768px) {
       #sidebar {
         width: var(--sidebar-mobile-width);
         transform: translateX(-100%);
+        padding-top: 56px;
       }
-      #sidebar.open { transform: translateX(0); }
+      #sidebar.open {
+        transform: translateX(0);
+      }
+      #toggle-btn {
+        top: 16px;
+        left: 16px !important;
+        z-index: 20;
+      }
     }
   </style>
 </head>
 <body>
-  <button id="toggle-btn">☰</button>
   <div id="sidebar">
-    <h2>Pysics Sim</h2>
+    <div class="logo">
+      <a href="/">
+        <img src="https://yt3.googleusercontent.com/so_LhC39A37h8HZqVIoIwu4NXuJ4AUBUY_C-K_2mmOInhadB-lsQHeAKursNZ4Zy1swMt-ibXQ=s72-c-k-c0x00ffffff-no-rj" alt="Pysics Logo">
+      </a>
+      <h2>Pysics Sim</h2>
+    </div>
     <!-- add sidebar content here -->
   </div>
+  <button id="toggle-btn">☰</button>
   <div id="main"></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
@@ -88,9 +132,9 @@
     let dragging = false, prevX, prevY;
 
     const css = getComputedStyle(document.documentElement);
-    const [gr,gg,gb] = css.getPropertyValue('--grid-color').split(',').map(n=>+n);
-    const [mr,mg,mb] = css.getPropertyValue('--major-grid-color').split(',').map(n=>+n);
-    const [ar,ag,ab] = css.getPropertyValue('--axis-color').split(',').map(n=>+n);
+    const [gr, gg, gb] = css.getPropertyValue('--grid-color').split(',').map(n => +n);
+    const [mr, mg, mb] = css.getPropertyValue('--major-grid-color').split(',').map(n => +n);
+    const [ar, ag, ab] = css.getPropertyValue('--axis-color').split(',').map(n => +n);
 
     function setup() {
       let canvas = createCanvas(windowWidth, windowHeight);
@@ -112,27 +156,27 @@
 
     function drawGrid() {
       push();
-      translate(width/2 + offsetX, height/2 + offsetY);
-      const maxD = max(width, height)*2;
-      const pulse = 100 + 50*sin(frameCount*0.02);
-      for (let i=-cols; i<=cols; i++) {
-        if (i===0) stroke(ar,ag,ab,255), strokeWeight(2);
-        else if (i%5===0) stroke(mr,mg,mb,pulse), strokeWeight(1);
-        else stroke(gr,gg,gb,pulse*0.8), strokeWeight(0.5);
-        line(i*gridSize, -maxD, i*gridSize, maxD);
+      translate(width / 2 + offsetX, height / 2 + offsetY);
+      const maxD = max(width, height) * 2;
+      const pulse = 100 + 50 * sin(frameCount * 0.02);
+      for (let i = -cols; i <= cols; i++) {
+        if (i === 0) stroke(ar, ag, ab, 255), strokeWeight(2);
+        else if (i % 5 === 0) stroke(mr, mg, mb, pulse), strokeWeight(1);
+        else stroke(gr, gg, gb, pulse * 0.8), strokeWeight(0.5);
+        line(i * gridSize, -maxD, i * gridSize, maxD);
       }
-      for (let j=-rows; j<=rows; j++) {
-        if (j===0) stroke(ar,ag,ab,255), strokeWeight(2);
-        else if (j%5===0) stroke(mr,mg,mb,pulse), strokeWeight(1);
-        else stroke(gr,gg,gb,pulse*0.8), strokeWeight(0.5);
-        line(-maxD, j*gridSize, maxD, j*gridSize);
+      for (let j = -rows; j <= rows; j++) {
+        if (j === 0) stroke(ar, ag, ab, 255), strokeWeight(2);
+        else if (j % 5 === 0) stroke(mr, mg, mb, pulse), strokeWeight(1);
+        else stroke(gr, gg, gb, pulse * 0.8), strokeWeight(0.5);
+        line(-maxD, j * gridSize, maxD, j * gridSize);
       }
       pop();
     }
 
     function updateGrid() {
-      cols = ceil((width/2)/gridSize);
-      rows = ceil((height/2)/gridSize);
+      cols = ceil((width / 2) / gridSize);
+      rows = ceil((height / 2) / gridSize);
     }
 
     function windowResized() {
@@ -140,10 +184,10 @@
       updateGrid();
     }
 
-    function mousePressed() { dragging=true; prevX=mouseX; prevY=mouseY; }
-    function mouseDragged(){ if(dragging){ offsetX+=mouseX-prevX; offsetY+=mouseY-prevY; prevX=mouseX; prevY=mouseY;} }
-    function mouseReleased(){ dragging=false; }
-    function mouseWheel(event){ gridSize=constrain(gridSize*(event.delta>0?0.9:1.1),10,200); updateGrid(); return false; }
+    function mousePressed() { dragging = true; prevX = mouseX; prevY = mouseY; }
+    function mouseDragged() { if (dragging) { offsetX += mouseX - prevX; offsetY += mouseY - prevY; prevX = mouseX; prevY = mouseY; } }
+    function mouseReleased() { dragging = false; }
+    function mouseWheel(event) { gridSize = constrain(gridSize * (event.delta > 0 ? 0.9 : 1.1), 10, 200); updateGrid(); return false; }
   </script>
 </body>
 </html>
