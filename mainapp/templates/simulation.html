@@ -31,17 +31,18 @@
     }
     #sidebar.collapsed { width: var(--collapsed-width); }
 
-    /* Toggle button styling */
-    #toggle-btn {
+    /* Toggle buttons styling */
+    #toggle-btn, #reset-btn {
       position: absolute; top: 16px;
-      left: calc(var(--sidebar-width) + 16px);
       background: none; border: none;
       font-size: 1.6rem; cursor: pointer;
       z-index: 20; transition: left var(--transition);
     }
+    #toggle-btn { left: calc(var(--sidebar-width) + 16px); }
     #sidebar.collapsed + #toggle-btn {
       left: calc(var(--collapsed-width) + 16px);
     }
+    #reset-btn { right: 16px; }
 
     /* Logo & Title */
     .logo {
@@ -91,15 +92,15 @@
         padding-top: 56px;
       }
       #sidebar.open { transform: translateX(0); }
-      #toggle-btn { top: 16px; left: 16px !important; }
+      #toggle-btn { left: 16px !important; }
+      #reset-btn { right: 16px !important; }
     }
   </style>
 </head>
 <body>
   <div id="sidebar">
     <div class="logo">
-      <a href="/"><img src="https://yt3.googleusercontent.com/so_LhC39A37h8HZqVIoIwu4NXuJ4AUBUY_C-K_2mmOInhadB-lsQHeAKursNZ4Zy1swMt-ibXQ=s72-c-k-c0x00ffffff-no-rj"
-        alt="Pysics Logo" /></a>
+      <a href="/"><img src="https://yt3.googleusercontent.com/so_LhC39A37h8HZqVIoIwu4NXuJ4AUBUY_C-K_2mmOInhadB-lsQHeAKursNZ4Zy1swMt-ibXQ=s72-c-k-c0x00ffffff-no-rj" alt="Pysics Logo" /></a>
       <h2>Pysics Sim</h2>
       <button class="yt-button" id="yt-btn" title="Show Circle">
         <img src="https://img.youtube.com/vi/HHiUvE57I7k/0.jpg" alt="Video Thumbnail" />
@@ -107,64 +108,65 @@
     </div>
   </div>
   <button id="toggle-btn">☰</button>
+  <button id="reset-btn">⟲</button>
   <div id="main"></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
   <script>
-    // Grid & panning variables
-    let gridSize = 40, cols, rows;
+    // Initial grid settings
+    const INITIAL_GRID_SIZE = 40;
+    let gridSize = INITIAL_GRID_SIZE, cols, rows;
     let offsetX = 0, offsetY = 0;
     let dragging = false, prevX, prevY;
     let showCircle = false;
+    let angle =  0;
 
     // Colors (initialized in setup)
     let gr, gg, gb, mr, mg, mb, ar, ag, ab;
 
     function setup() {
-      // Create and attach the canvas
       const canvas = createCanvas(windowWidth, windowHeight);
       canvas.parent('main');
-
-      // Compute grid extents
       updateGrid();
-
-      // Read CSS variables for colors
       const css = getComputedStyle(document.documentElement);
       [gr, gg, gb] = css.getPropertyValue('--grid-color').split(',').map(n => +n);
       [mr, mg, mb] = css.getPropertyValue('--major-grid-color').split(',').map(n => +n);
       [ar, ag, ab] = css.getPropertyValue('--axis-color').split(',').map(n => +n);
 
-      // Sidebar toggle
       select('#toggle-btn').mousePressed(toggleSidebar);
-
-      // Enable circle drawing on button click
       select('#yt-btn').mousePressed(() => showCircle = true);
+      select('#reset-btn').mousePressed(resetView);
     }
 
     function draw() {
       background(255);
       drawGrid();
-      if (showCircle) {
-        // Draw circle & dot with the same pan transform
-        push();
-        translate(offsetX, offsetY);
+      if (showCircle) drawCircleDot();
+    }
 
-        // 50% of the smaller canvas dimension
-        const diameter = min(width, height) * 0.5;
+    function drawCircleDot() {
+      push();
+      // Center relative to panning
+      translate(width/2 + offsetX, height/2 + offsetY);
+      const diameter = min(width, height) * 0.5;
+      const r = diameter / 2;
+      const cx = r * cos(angle);
+      const cy = r * sin(angle);
 
-        // Black circumference
-        noFill();
-        stroke(0);
-        strokeWeight(2);
-        ellipse(width/2, height/2, diameter, diameter);
+      // Draw circumference
+      noFill(); stroke(0); strokeWeight(2);
+      ellipse(0, 0, diameter, diameter);
 
-        // Red center dot
-        fill(255, 0, 0);
-        noStroke();
-        ellipse(width/2, height/2, 12, 12);
+      // Draw rotating line
+      stroke(0, 255, 0); strokeWeight(5);
+      line(0, 0, cx, cy);
 
-        pop();
-      }
+      // Draw center dot
+      fill(255, 0, 0); noStroke();
+      ellipse(0, 0, 15, 15);
+
+      pop();
+      
     }
 
     function drawGrid() {
@@ -172,36 +174,31 @@
       translate(width/2 + offsetX, height/2 + offsetY);
       const maxD = max(width, height) * 2;
       const pulse = 100 + 50 * sin(frameCount * 0.02);
-
       for (let i = -cols; i <= cols; i++) drawLine(i, true, pulse, maxD);
       for (let j = -rows; j <= rows; j++) drawLine(j, false, pulse, maxD);
       pop();
     }
 
     function drawLine(i, vertical, pulse, maxD) {
-      if (i === 0) {
-        stroke(ar, ag, ab, 255);
-        strokeWeight(2);
-      } else if (i % 5 === 0) {
-        stroke(mr, mg, mb, pulse);
-        strokeWeight(1);
-      } else {
-        stroke(gr, gg, gb, pulse * 0.8);
-        strokeWeight(0.5);
-      }
-
-      if (vertical) {
-        line(i * gridSize, -maxD, i * gridSize, maxD);
-      } else {
-        line(-maxD, i * gridSize, maxD, i * gridSize);
-      }
+      if (i === 0) { stroke(ar, ag, ab, 255); strokeWeight(2); }
+      else if (i % 5 === 0) { stroke(mr, mg, mb, pulse); strokeWeight(1); }
+      else { stroke(gr, gg, gb, pulse * 0.8); strokeWeight(0.5); }
+      vertical
+        ? line(i * gridSize, -maxD, i * gridSize, maxD)
+        : line(-maxD, i * gridSize, maxD, i * gridSize);
     }
 
     function toggleSidebar() {
       const sb = select('#sidebar');
       const isMobile = window.matchMedia('(max-width:768px)').matches;
-      if (isMobile) sb.toggleClass('open');
-      else sb.toggleClass('collapsed');
+      if (isMobile) sb.toggleClass('open'); else sb.toggleClass('collapsed');
+    }
+
+    function resetView() {
+      offsetX = 0;
+      offsetY = 0;
+      gridSize = INITIAL_GRID_SIZE;
+      updateGrid();
     }
 
     function updateGrid() {
@@ -215,24 +212,18 @@
     }
 
     function mousePressed() {
-      dragging = true;
-      prevX = mouseX;
-      prevY = mouseY;
+      dragging = true; prevX = mouseX; prevY = mouseY;
     }
-
     function mouseDragged() {
       if (dragging) {
         offsetX += mouseX - prevX;
         offsetY += mouseY - prevY;
-        prevX = mouseX;
-        prevY = mouseY;
+        prevX = mouseX; prevY = mouseY;
       }
     }
-
     function mouseReleased() {
       dragging = false;
     }
-
     function mouseWheel(event) {
       gridSize = constrain(gridSize * (event.delta > 0 ? 0.9 : 1.1), 10, 200);
       updateGrid();
