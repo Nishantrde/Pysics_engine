@@ -89,21 +89,24 @@
       border-top-left-radius: 12px; border-top-right-radius: 12px;
       cursor: move;
     }
-    #controller .header h3 { font-size: 1rem; color: #333; }
+    #controller .header h3 { font-size: 1.1rem; font-weight: 600; color: #333; margin: 0; }
     #controller .header button {
       background: transparent; border: none; font-size: 1.2rem;
       cursor: pointer; color: #666; transition: color 0.2s;
     }
     #controller .header button:hover { color: #000; }
     #controller .body { padding: 12px; }
-    #controller label {
-      display: flex; justify-content: space-between;
-      margin-bottom: 12px; font-size: 0.9rem; color: #444;
+    #controller .body label {
+      display: flex; flex-direction: column; margin-bottom: 12px;
+      font-size: 0.95rem; color: #444;
+    }
+    #controller .body label span {
+      margin-bottom: 4px; font-weight: 500;
     }
     #controller input {
-      width: 80px; padding: 6px 8px;
+      width: 100%; padding: 8px;
       border: 1px solid #ccc; border-radius: 6px;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
     }
 
     /* Mobile adjustments */
@@ -133,12 +136,18 @@
   <!-- Controller -->
   <div id="controller">
     <div class="header">
-      <h3>Control Panel</h3>
-      <button id="minimize-btn" title="Minimize">—</button>
+      <h3>Settings</h3>
+      <button id="minimize-btn" title="Minimize Panel">−</button>
     </div>
     <div class="body">
-      <label><span>Radius:</span><input type="number" id="radius-input" step="1"/></label>
-      <label><span>Angle:</span><input type="number" id="angle-input" step="1"/></label>
+      <label>
+        <span>Circle Radius (px)</span>
+        <input type="number" id="radius-input" step="1" />
+      </label>
+      <label>
+        <span>Angle (°)</span>
+        <input type="number" id="angle-input" step="1" />
+      </label>
     </div>
   </div>
 
@@ -193,21 +202,51 @@
       if (i === 0) stroke(ar, ag, ab, 255), strokeWeight(2);
       else if (i % 5 === 0) stroke(mr, mg, mb, pulse), strokeWeight(1);
       else stroke(gr, gg, gb, pulse * 0.8), strokeWeight(0.5);
-      vertical
-        ? line(i * gridSize, -maxD, i * gridSize, maxD)
-        : line(-maxD, i * gridSize, maxD, i * gridSize);
+      vertical ? line(i * gridSize, -maxD, i * gridSize, maxD) : line(-maxD, i * gridSize, maxD, i * gridSize);
     }
 
     function drawCircleDot() {
       push();
       translate(width/2 + offsetX, height/2 + offsetY);
+
+      // big circle
       noFill(); stroke(0); strokeWeight(2);
       ellipse(0, 0, circleRadius * 2, circleRadius * 2);
+
+      // angle arc (opposite direction)
+      const arcRadius = circleRadius * 0.2;
+      stroke(255, 0, 0); strokeWeight(4); noFill();
+      arc(0, 0, arcRadius * 2, arcRadius * 2, radians(-angle), 0);
+
+      // radius line
       stroke(0, 255, 0); strokeWeight(5);
       const cx = circleRadius * cos(radians(-angle));
       const cy = circleRadius * sin(radians(-angle));
       line(0, 0, cx, cy);
-      fill(255, 0, 0); noStroke(); ellipse(0, 0, 15, 15); ellipse(cx, cy, 15, 15);
+
+      // sin
+      stroke(0, 0, 255); strokeWeight(5);
+      line(cx, cy, cx, 0);
+      // cos
+      stroke(255, 215, 0); strokeWeight(5);
+      line(0, cy, cx, cy);
+      // tan
+      stroke(255, 20, 147); strokeWeight(5);
+      line(cx, cy, circleRadius * (1/cos(radians(-angle))), 0);
+      // cot
+      stroke(0, 255, 255); strokeWeight(5);
+      line(cx, cy, 0, circleRadius * (1/sin(radians(-angle))));
+      // cosec
+      stroke(255, 165, 0); strokeWeight(5);
+      line(0, circleRadius * (1/sin(radians(-angle))), 0, 0);
+      // sec
+      stroke(238, 130, 238); strokeWeight(5);
+      line(circleRadius * (1/cos(radians(-angle))), 0, 0, 0);
+
+      fill(255, 0, 0); noStroke();
+      ellipse(0, 0, 15, 15);
+      ellipse(cx, cy, 15, 15);
+
       pop();
     }
 
@@ -280,12 +319,13 @@
       const ctrl = document.getElementById('controller');
       const header = ctrl.querySelector('.header');
       const minBtn = document.getElementById('minimize-btn');
+      const bodyEl = document.querySelector('body');
 
       header.addEventListener('mousedown', e => {
         ctrlDragging = true;
         startX = e.clientX - ctrl.offsetLeft;
         startY = e.clientY - ctrl.offsetTop;
-        document.body.style.cursor = 'move';
+        bodyEl.style.cursor = 'move';
       });
 
       document.addEventListener('mousemove', e => {
@@ -296,11 +336,11 @@
 
       document.addEventListener('mouseup', () => {
         ctrlDragging = false;
-        document.body.style.cursor = '';
+        bodyEl.style.cursor = '';
       });
 
       minBtn.addEventListener('click', () => {
-        ctrl.classList.toggle('minimized');
+        document.getElementById('controller').classList.toggle('minimized');
       });
     }
 
