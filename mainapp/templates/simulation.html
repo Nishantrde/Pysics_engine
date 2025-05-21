@@ -17,7 +17,7 @@
       --sidebar-mobile-width: 200px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { overflow: hidden; font-family: sans-serif; background: var(--bg-color); }
+    body { overflow: hidden; font-family: 'Nunito', sans-serif; background: var(--bg-color); }
 
     /* Sidebar styling */
     #sidebar {
@@ -31,7 +31,7 @@
     }
     #sidebar.collapsed { width: var(--collapsed-width); }
 
-    /* Toggle buttons styling */
+    /* Toggle & reset buttons */
     #toggle-btn, #reset-btn {
       position: absolute; top: 16px;
       background: none; border: none;
@@ -39,32 +39,24 @@
       z-index: 20; transition: left var(--transition);
     }
     #toggle-btn { left: calc(var(--sidebar-width) + 16px); }
-    #sidebar.collapsed + #toggle-btn {
-      left: calc(var(--collapsed-width) + 16px);
-    }
+    #sidebar.collapsed + #toggle-btn { left: calc(var(--collapsed-width) + 16px); }
     #reset-btn { right: 16px; }
 
-    /* Logo & Title */
+    /* Logo & YouTube button */
     .logo {
-      display: flex; flex-direction: column;
-      align-items: flex-start; margin-bottom: 24px;
+      display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 24px;
     }
     .logo img { width: 40px; height: auto; border-radius: 50%; }
     .logo h2 {
       font-size: 1.5em; font-weight: bold; color: #1f2937;
-      margin: 12px 0 8px;
-      white-space: nowrap;
+      margin: 12px 0 8px; white-space: nowrap;
       transition: opacity var(--transition), transform var(--transition);
     }
-    #sidebar.collapsed .logo h2 {
-      opacity: 0; transform: translateX(-20px);
-    }
-
-    /* YouTube Button styling */
+    #sidebar.collapsed .logo h2 { opacity: 0; transform: translateX(-20px); }
     .yt-button {
       display: flex; align-items: center; padding: 0;
-      background: transparent; border: none;
-      cursor: pointer; transition: transform 0.2s;
+      background: transparent; border: none; cursor: pointer;
+      transition: transform 0.2s;
     }
     .yt-button img {
       width: 100%; max-width: 240px;
@@ -78,22 +70,49 @@
       position: absolute; top: 0; left: 0;
       width: 100vw; height: 100vh; overflow: hidden;
     }
-    canvas {
-      display: block; width: 100%; height: 100%;
-      animation: fadeIn 0.8s ease;
-    }
+    canvas { display: block; width: 100%; height: 100%; animation: fadeIn 0.8s ease; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-    /* Mobile off-canvas */
+    /* Controller styling */
+    #controller {
+      display: none;
+      position: absolute; top: 80px; right: 24px;
+      width: 260px; background: rgba(255,255,255,0.95);
+      border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      z-index: 30; user-select: none; transition: transform 0.3s ease;
+    }
+    #controller.minimized .body { display: none; }
+    #controller.minimized { width: auto; }
+    #controller .header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 12px; background: #f1f3f5;
+      border-top-left-radius: 12px; border-top-right-radius: 12px;
+      cursor: move;
+    }
+    #controller .header h3 { font-size: 1rem; color: #333; }
+    #controller .header button {
+      background: transparent; border: none; font-size: 1.2rem;
+      cursor: pointer; color: #666; transition: color 0.2s;
+    }
+    #controller .header button:hover { color: #000; }
+    #controller .body { padding: 12px; }
+    #controller label {
+      display: flex; justify-content: space-between;
+      margin-bottom: 12px; font-size: 0.9rem; color: #444;
+    }
+    #controller input {
+      width: 80px; padding: 6px 8px;
+      border: 1px solid #ccc; border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    /* Mobile adjustments */
     @media (max-width: 768px) {
-      #sidebar {
-        width: var(--sidebar-mobile-width);
-        transform: translateX(-100%);
-        padding-top: 56px;
-      }
+      #sidebar { width: var(--sidebar-mobile-width); transform: translateX(-100%); padding-top: 56px; }
       #sidebar.open { transform: translateX(0); }
       #toggle-btn { left: 16px !important; }
       #reset-btn { right: 16px !important; }
+      #controller { width: 200px; top: auto; bottom: 16px; right: 16px; }
     }
   </style>
 </head>
@@ -102,7 +121,7 @@
     <div class="logo">
       <a href="/"><img src="https://yt3.googleusercontent.com/so_LhC39A37h8HZqVIoIwu4NXuJ4AUBUY_C-K_2mmOInhadB-lsQHeAKursNZ4Zy1swMt-ibXQ=s72-c-k-c0x00ffffff-no-rj" alt="Pysics Logo" /></a>
       <h2>Pysics Sim</h2>
-      <button class="yt-button" id="yt-btn" title="Show Circle">
+      <button class="yt-button" id="yt-btn" title="Show Controls">
         <img src="https://img.youtube.com/vi/HHiUvE57I7k/0.jpg" alt="Video Thumbnail" />
       </button>
     </div>
@@ -111,65 +130,56 @@
   <button id="reset-btn">⟲</button>
   <div id="main"></div>
 
+  <!-- Controller -->
+  <div id="controller">
+    <div class="header">
+      <h3>Control Panel</h3>
+      <button id="minimize-btn" title="Minimize">—</button>
+    </div>
+    <div class="body">
+      <label><span>Radius:</span><input type="number" id="radius-input" step="1"/></label>
+      <label><span>Angle:</span><input type="number" id="angle-input" step="1"/></label>
+    </div>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
   <script>
-    // Initial grid settings
     const INITIAL_GRID_SIZE = 40;
     let gridSize = INITIAL_GRID_SIZE, cols, rows;
     let offsetX = 0, offsetY = 0;
-    let dragging = false, prevX, prevY;
-    let showCircle = false;
-    let angle = 0;
-
-    // Colors (initialized in setup)
-    let gr, gg, gb, mr, mg, mb, ar, ag, ab;
+    let gridDragging = false, prevX, prevY;
+    let showCircle = false, angle = 0, circleRadius;
+    let radiusInput, angleInput;
+    let ctrlDragging = false, startX, startY;
 
     function setup() {
       const canvas = createCanvas(windowWidth, windowHeight);
       canvas.parent('main');
       updateGrid();
       const css = getComputedStyle(document.documentElement);
-      [gr, gg, gb] = css.getPropertyValue('--grid-color').split(',').map(n => +n);
-      [mr, mg, mb] = css.getPropertyValue('--major-grid-color').split(',').map(n => +n);
-      [ar, ag, ab] = css.getPropertyValue('--axis-color').split(',').map(n => +n);
+      [gr, gg, gb] = css.getPropertyValue('--grid-color').split(',').map(Number);
+      [mr, mg, mb] = css.getPropertyValue('--major-grid-color').split(',').map(Number);
+      [ar, ag, ab] = css.getPropertyValue('--axis-color').split(',').map(Number);
 
       select('#toggle-btn').mousePressed(toggleSidebar);
-      select('#yt-btn').mousePressed(() => showCircle = true);
       select('#reset-btn').mousePressed(resetView);
+      initController();
+      select('#yt-btn').mousePressed(() => {
+        showCircle = true;
+        document.getElementById('controller').style.display = 'block';
+      });
+      resetView();
     }
 
     function draw() {
       background(255);
       drawGrid();
       if (showCircle) drawCircleDot();
-    }
-
-    function drawCircleDot() {
-      push();
-      // Center relative to panning
-      translate(width/2 + offsetX, height/2 + offsetY);
-      const diameter = min(width, height) * 0.5;
-      const r = diameter / 2;
-      const cx = r * cos(radians(angle));
-      const cy = r * sin(radians(angle));
-
-      // Draw circumference
-      noFill(); stroke(0); strokeWeight(2);
-      ellipse(0, 0, diameter, diameter);
-
-      // Draw rotating line
-      stroke(0, 255, 0); strokeWeight(5);
-      line(0, 0, cx, cy);
-
-      // Draw center dot
-      fill(255, 0, 0); noStroke();
-      ellipse(0, 0, 15, 15);
-
-      pop();
-      
+      updateControllerInputs();
     }
 
     function drawGrid() {
+      if (ctrlDragging) return;
       push();
       translate(width/2 + offsetX, height/2 + offsetY);
       const maxD = max(width, height) * 2;
@@ -180,18 +190,68 @@
     }
 
     function drawLine(i, vertical, pulse, maxD) {
-      if (i === 0) { stroke(ar, ag, ab, 255); strokeWeight(2); }
-      else if (i % 5 === 0) { stroke(mr, mg, mb, pulse); strokeWeight(1); }
-      else { stroke(gr, gg, gb, pulse * 0.8); strokeWeight(0.5); }
+      if (i === 0) stroke(ar, ag, ab, 255), strokeWeight(2);
+      else if (i % 5 === 0) stroke(mr, mg, mb, pulse), strokeWeight(1);
+      else stroke(gr, gg, gb, pulse * 0.8), strokeWeight(0.5);
       vertical
         ? line(i * gridSize, -maxD, i * gridSize, maxD)
         : line(-maxD, i * gridSize, maxD, i * gridSize);
     }
 
+    function drawCircleDot() {
+      push();
+      translate(width/2 + offsetX, height/2 + offsetY);
+      noFill(); stroke(0); strokeWeight(2);
+      ellipse(0, 0, circleRadius * 2, circleRadius * 2);
+      stroke(0, 255, 0); strokeWeight(5);
+      const cx = circleRadius * cos(radians(-angle));
+      const cy = circleRadius * sin(radians(-angle));
+      line(0, 0, cx, cy);
+      fill(255, 0, 0); noStroke(); ellipse(0, 0, 15, 15); ellipse(cx, cy, 15, 15);
+      pop();
+    }
+
+    function mousePressed() {
+      gridDragging = !ctrlDragging;
+      prevX = mouseX; prevY = mouseY;
+    }
+
+    function mouseDragged() {
+      if (gridDragging) {
+        offsetX += mouseX - prevX;
+        offsetY += mouseY - prevY;
+        prevX = mouseX;
+        prevY = mouseY;
+      }
+    }
+
+    function mouseReleased() {
+      gridDragging = false;
+    }
+
+    function mouseWheel(event) {
+      angle = (angle + event.deltaY * 0.1 + 360) % 360;
+      radiusInput.dataset.userChanged = false;
+      return false;
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+      updateGrid();
+      if (!radiusInput.dataset.userChanged) circleRadius = min(width, height) * 0.25;
+      updateControllerInputs();
+    }
+
     function toggleSidebar() {
       const sb = select('#sidebar');
-      const isMobile = window.matchMedia('(max-width:768px)').matches;
-      if (isMobile) sb.toggleClass('open'); else sb.toggleClass('collapsed');
+      window.matchMedia('(max-width:768px)').matches
+        ? sb.toggleClass('open')
+        : sb.toggleClass('collapsed');
+    }
+
+    function updateGrid() {
+      cols = ceil((width/2)/gridSize);
+      rows = ceil((height/2)/gridSize);
     }
 
     function resetView() {
@@ -199,35 +259,54 @@
       offsetY = 0;
       gridSize = INITIAL_GRID_SIZE;
       updateGrid();
+      circleRadius = min(width, height) * 0.25;
+      radiusInput.dataset.userChanged = false;
     }
 
-    function updateGrid() {
-      cols = ceil((width/2) / gridSize);
-      rows = ceil((height/2) / gridSize);
+    function initController() {
+      radiusInput = document.getElementById('radius-input');
+      angleInput = document.getElementById('angle-input');
+
+      radiusInput.addEventListener('input', () => {
+        const v = parseFloat(radiusInput.value);
+        if (!isNaN(v)) { circleRadius = v; radiusInput.dataset.userChanged = true; }
+      });
+
+      angleInput.addEventListener('input', () => {
+        const v = parseFloat(angleInput.value);
+        if (!isNaN(v)) angle = (v % 360 + 360) % 360;
+      });
+
+      const ctrl = document.getElementById('controller');
+      const header = ctrl.querySelector('.header');
+      const minBtn = document.getElementById('minimize-btn');
+
+      header.addEventListener('mousedown', e => {
+        ctrlDragging = true;
+        startX = e.clientX - ctrl.offsetLeft;
+        startY = e.clientY - ctrl.offsetTop;
+        document.body.style.cursor = 'move';
+      });
+
+      document.addEventListener('mousemove', e => {
+        if (!ctrlDragging) return;
+        ctrl.style.left = (e.clientX - startX) + 'px';
+        ctrl.style.top = (e.clientY - startY) + 'px';
+      });
+
+      document.addEventListener('mouseup', () => {
+        ctrlDragging = false;
+        document.body.style.cursor = '';
+      });
+
+      minBtn.addEventListener('click', () => {
+        ctrl.classList.toggle('minimized');
+      });
     }
 
-    function windowResized() {
-      resizeCanvas(windowWidth, windowHeight);
-      updateGrid();
-    }
-
-    function mousePressed() {
-      dragging = true; prevX = mouseX; prevY = mouseY;
-    }
-    function mouseDragged() {
-      if (dragging) {
-        offsetX += mouseX - prevX;
-        offsetY += mouseY - prevY;
-        prevX = mouseX; prevY = mouseY;
-      }
-    }
-    function mouseReleased() {
-      dragging = false;
-    }
-    function mouseWheel(event) {
-      gridSize = constrain(gridSize * (event.delta > 0 ? 0.9 : 1.1), 10, 200);
-      updateGrid();
-      return false;
+    function updateControllerInputs() {
+      if (document.activeElement !== radiusInput) radiusInput.value = circleRadius.toFixed(0);
+      if (document.activeElement !== angleInput) angleInput.value = angle.toFixed(0);
     }
   </script>
 </body>
