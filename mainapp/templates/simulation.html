@@ -141,7 +141,6 @@
         <img src="https://yt3.googleusercontent.com/so_LhC39A37h8HZqVIoIwu4NXuJ4AUBUY_C-K_2mmOInhadB-lsQHeAKursNZ4Zy1swMt-ibXQ=s72-c-k-c0x00ffffff-no-rj" alt="Pysics Logo">
       </a>
       <h2>Pysics Sim</h2>
-      <!-- YouTube Thumbnail Button moved below heading -->
       <button class="yt-button" id="yt-btn" title="Watch Video">
         <img src="https://img.youtube.com/vi/HHiUvE57I7k/0.jpg" alt="Video Thumbnail">
       </button>
@@ -152,53 +151,74 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
   <script>
+    // Grid & panning variables
     let gridSize = 40, cols, rows;
     let offsetX = 0, offsetY = 0;
     let dragging = false, prevX, prevY;
+    let showCircle = false;
 
-    const css = getComputedStyle(document.documentElement);
-    const [gr, gg, gb] = css.getPropertyValue('--grid-color').split(',').map(n => +n);
-    const [mr, mg, mb] = css.getPropertyValue('--major-grid-color').split(',').map(n => +n);
-    const [ar, ag, ab] = css.getPropertyValue('--axis-color').split(',').map(n => +n);
+    // Colors (will be initialized in setup)
+    let gr, gg, gb, mr, mg, mb, ar, ag, ab;
 
     function setup() {
+      // Create p5 canvas
       let canvas = createCanvas(windowWidth, windowHeight);
       canvas.parent('main');
+      // Initialize grid
       updateGrid();
+      // Read CSS variables for grid colors
+      const css = getComputedStyle(document.documentElement);
+      [gr, gg, gb] = css.getPropertyValue('--grid-color').split(',').map(n => +n);
+      [mr, mg, mb] = css.getPropertyValue('--major-grid-color').split(',').map(n => +n);
+      [ar, ag, ab] = css.getPropertyValue('--axis-color').split(',').map(n => +n);
 
-      select('#toggle-btn').mousePressed(() => {
-        const sb = select('#sidebar');
-        const isMobile = window.matchMedia('(max-width:768px)').matches;
-        if (isMobile) sb.toggleClass('open');
-        else sb.toggleClass('collapsed');
-      });
-
-      
+      // UI event handlers
+      select('#toggle-btn').mousePressed(toggleSidebar);
+      select('#yt-btn').mousePressed(() => showCircle = true);
     }
 
     function draw() {
       background(255);
       drawGrid();
+      if (showCircle) drawCenteredCircle();
+    }
+
+    // Draws a circle and a red dot at true canvas center
+    function drawCenteredCircle() {
+      push();
+      resetMatrix();
+      const diameter = min(width, height) * 0.5;
+      noFill(); stroke(0); strokeWeight(2);
+      ellipse(width/2, height/2, diameter, diameter);
+      fill(255, 0, 0); noStroke();
+      ellipse(width/2, height/2, 12, 12);
+      pop();
     }
 
     function drawGrid() {
       push();
-      translate(width / 2 + offsetX, height / 2 + offsetY);
+      translate(width/2 + offsetX, height/2 + offsetY);
       const maxD = max(width, height) * 2;
       const pulse = 100 + 50 * sin(frameCount * 0.02);
-      for (let i = -cols; i <= cols; i++) {
-        if (i === 0) stroke(ar, ag, ab, 255), strokeWeight(2);
-        else if (i % 5 === 0) stroke(mr, mg, mb, pulse), strokeWeight(1);
-        else stroke(gr, gg, gb, pulse * 0.8), strokeWeight(0.5);
-        line(i * gridSize, -maxD, i * gridSize, maxD);
-      }
-      for (let j = -rows; j <= rows; j++) {
-        if (j === 0) stroke(ar, ag, ab, 255), strokeWeight(2);
-        else if (j % 5 === 0) stroke(mr, mg, mb, pulse), strokeWeight(1);
-        else stroke(gr, gg, gb, pulse * 0.8), strokeWeight(0.5);
-        line(-maxD, j * gridSize, maxD, j * gridSize);
-      }
+      for (let i = -cols; i <= cols; i++) drawLine(i, true, pulse, maxD);
+      for (let j = -rows; j <= rows; j++) drawLine(j, false, pulse, maxD);
       pop();
+    }
+
+    function drawLine(i, vertical, pulse, maxD) {
+      if (i === 0) stroke(ar, ag, ab, 255), strokeWeight(2);
+      else if (i % 5 === 0) stroke(mr, mg, mb, pulse), strokeWeight(1);
+      else stroke(gr, gg, gb, pulse * 0.8), strokeWeight(0.5);
+      vertical
+        ? line(i * gridSize, -maxD, i * gridSize, maxD)
+        : line(-maxD, i * gridSize, maxD, i * gridSize);
+    }
+
+    function toggleSidebar() {
+      const sb = select('#sidebar');
+      const isMobile = window.matchMedia('(max-width:768px)').matches;
+      if (isMobile) sb.toggleClass('open');
+      else sb.toggleClass('collapsed');
     }
 
     function updateGrid() {
@@ -211,10 +231,27 @@
       updateGrid();
     }
 
-    function mousePressed() { dragging = true; prevX = mouseX; prevY = mouseY; }
-    function mouseDragged() { if (dragging) { offsetX += mouseX - prevX; offsetY += mouseY - prevY; prevX = mouseX; prevY = mouseY; } }
-    function mouseReleased() { dragging = false; }
-    function mouseWheel(event) { gridSize = constrain(gridSize * (event.delta > 0 ? 0.9 : 1.1), 10, 200); updateGrid(); return false; }
+    function mousePressed() {
+      dragging = true;
+      prevX = mouseX;
+      prevY = mouseY;
+    }
+    function mouseDragged() {
+      if (dragging) {
+        offsetX += mouseX - prevX;
+        offsetY += mouseY - prevY;
+        prevX = mouseX;
+        prevY = mouseY;
+      }
+    }
+    function mouseReleased() {
+      dragging = false;
+    }
+    function mouseWheel(event) {
+      gridSize = constrain(gridSize * (event.delta > 0 ? 0.9 : 1.1), 10, 200);
+      updateGrid();
+      return false;
+    }
   </script>
 </body>
 </html>
