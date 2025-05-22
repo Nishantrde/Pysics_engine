@@ -36,9 +36,17 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    "django_google_sso",
     'django.contrib.staticfiles',
     'mainapp',
 ]
+
+GOOGLE_SSO_PROJECT_ID = "pysicsengine"
+
+GOOGLE_SSO_ALLOWABLE_DOMAINS = ["gmail.com"]
+
+GOOGLE_SSO_NEXT_URL = 'mainapp:here'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -49,6 +57,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+ROOT_URLCONF = 'pysics_web.urls'
 
 ROOT_URLCONF = 'pysics_web.urls'
 
