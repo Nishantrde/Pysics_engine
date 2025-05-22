@@ -15,6 +15,11 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+from dotenv import load_dotenv
+import os 
+
+load_dotenv()
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -41,7 +46,12 @@ INSTALLED_APPS = [
     'mainapp',
 ]
 
-GOOGLE_SSO_PROJECT_ID = "pysicsengine"
+GOOGLE_SSO_CLIENT_ID = os.environ.get('GOOGLE_SSO_CLIENT_ID')
+GOOGLE_SSO_PROJECT_ID = os.environ.get('GOOGLE_SSO_PROJECT_ID')
+GOOGLE_SSO_CLIENT_SECRET = os.environ.get('GOOGLE_SSO_CLIENT_SECRET')
+
+
+# GOOGLE_SSO_PROJECT_ID = "pysicsengine"
 
 GOOGLE_SSO_ALLOWABLE_DOMAINS = ["gmail.com"]
 
