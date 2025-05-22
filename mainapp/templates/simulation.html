@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -19,33 +19,29 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { overflow: hidden; font-family: 'Nunito', sans-serif; background: var(--bg-color); }
 
-    /* Sidebar styling */
+    /* Sidebar */
     #sidebar {
-      position: absolute; top: 0; left: 0;
-      height: 100vh; width: var(--sidebar-width);
-      background: var(--sidebar-bg);
-      display: flex; flex-direction: column;
-      padding: 16px; box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+      position: absolute; top: 0; left: 0; height: 100vh;
+      width: var(--sidebar-width); background: var(--sidebar-bg);
+      display: flex; flex-direction: column; padding: 16px;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.1);
       transition: width var(--transition), transform var(--transition);
       z-index: 10;
     }
     #sidebar.collapsed { width: var(--collapsed-width); }
 
-    /* Toggle & reset buttons */
+    /* Toggle & reset */
     #toggle-btn, #reset-btn {
       position: absolute; top: 16px;
-      background: none; border: none;
-      font-size: 1.6rem; cursor: pointer;
-      z-index: 20; transition: left var(--transition);
+      background: none; border: none; font-size: 1.6rem;
+      cursor: pointer; z-index: 20; transition: left var(--transition);
     }
     #toggle-btn { left: calc(var(--sidebar-width) + 16px); }
     #sidebar.collapsed + #toggle-btn { left: calc(var(--collapsed-width) + 16px); }
     #reset-btn { right: 16px; }
 
-    /* Logo & YouTube button */
-    .logo {
-      display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 24px;
-    }
+    /* Logo & YouTube */
+    .logo { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 24px; }
     .logo img { width: 40px; height: auto; border-radius: 50%; }
     .logo h2 {
       font-size: 1.5em; font-weight: bold; color: #1f2937;
@@ -65,21 +61,17 @@
     .yt-button:hover { transform: scale(1.05); }
     #sidebar.collapsed .yt-button img { display: none; }
 
-    /* Main full-screen canvas */
-    #main {
-      position: absolute; top: 0; left: 0;
-      width: 100vw; height: 100vh; overflow: hidden;
-    }
-    canvas { display: block; width: 100%; height: 100%; animation: fadeIn 0.8s ease; }
+    /* Main canvas */
+    #main { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; overflow: hidden; }
+    canvas { display: block; width: 100%; height: 100%; animation: fadeIn .8s ease; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-    /* Controller styling */
+    /* Controller */
     #controller {
-      display: none;
-      position: absolute; top: 80px; right: 24px;
+      display: none; position: absolute; top: 80px; right: 24px;
       width: 260px; background: rgba(255,255,255,0.95);
       border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-      z-index: 30; user-select: none; transition: transform 0.3s ease;
+      z-index: 30; user-select: none; transition: transform .3s ease;
     }
     #controller.minimized .body { display: none; }
     #controller.minimized { width: auto; }
@@ -89,33 +81,46 @@
       border-top-left-radius: 12px; border-top-right-radius: 12px;
       cursor: move;
     }
-    #controller .header h3 { font-size: 1.1rem; font-weight: 600; color: #333; margin: 0; }
+    #controller .header h3 { font-size: 1.1rem; font-weight: 600; color: #333; }
     #controller .header button {
-      background: transparent; border: none; font-size: 1.2rem;
-      cursor: pointer; color: #666; transition: color 0.2s;
+      background: transparent; border: none;
+      font-size: 1.2rem; cursor: pointer; color: #666;
+      transition: color .2s;
     }
     #controller .header button:hover { color: #000; }
     #controller .body { padding: 12px; }
+    #controller .body .trig-buttons {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;
+    }
+    #controller .body .trig-buttons button {
+      flex: 1 1 30%; padding: 6px 0; border: 1px solid #ccc;
+      border-radius: 6px; background: #fff; cursor: pointer;
+      font-size: .9rem; transition: background .2s;
+    }
+    #controller .body .trig-buttons button.active { background: #e0f7fa; }
     #controller .body label {
-      display: flex; flex-direction: column; margin-bottom: 12px;
-      font-size: 0.95rem; color: #444;
+      display: flex; flex-direction: column;
+      margin-bottom: 12px; font-size: .95rem; color: #444;
     }
-    #controller .body label span {
-      margin-bottom: 4px; font-weight: 500;
-    }
+    #controller .body label span { margin-bottom: 4px; font-weight: 500; }
     #controller input {
       width: 100%; padding: 8px;
       border: 1px solid #ccc; border-radius: 6px;
-      font-size: 0.95rem;
+      font-size: .95rem;
     }
 
-    /* Mobile adjustments */
     @media (max-width: 768px) {
-      #sidebar { width: var(--sidebar-mobile-width); transform: translateX(-100%); padding-top: 56px; }
+      #sidebar {
+        width: var(--sidebar-mobile-width);
+        transform: translateX(-100%);
+        padding-top: 56px;
+      }
       #sidebar.open { transform: translateX(0); }
       #toggle-btn { left: 16px !important; }
       #reset-btn { right: 16px !important; }
-      #controller { width: 200px; top: auto; bottom: 16px; right: 16px; }
+      #controller {
+        width: 200px; bottom: 16px; top: auto; right: 16px;
+      }
     }
   </style>
 </head>
@@ -133,13 +138,21 @@
   <button id="reset-btn">⟲</button>
   <div id="main"></div>
 
-  <!-- Controller -->
   <div id="controller">
     <div class="header">
       <h3>Settings</h3>
       <button id="minimize-btn" title="Minimize Panel">−</button>
     </div>
     <div class="body">
+      <div class="trig-buttons">
+        <button type="button" id="btn-sin">sin θ</button>
+        <button type="button" id="btn-cos">cos θ</button>
+        <button type="button" id="btn-tan">tan θ</button>
+        <button type="button" id="btn-cot">cot θ</button>
+        <button type="button" id="btn-sec">sec θ</button>
+        <button type="button" id="btn-csc">csc θ</button>
+        <button type="button" id="btn-radius">Radius</button>
+      </div>
       <label>
         <span>Circle Radius (px)</span>
         <input type="number" id="radius-input" step="1" />
@@ -155,11 +168,19 @@
   <script>
     const INITIAL_GRID_SIZE = 40;
     let gridSize = INITIAL_GRID_SIZE, cols, rows;
-    let offsetX = 0, offsetY = 0;
-    let gridDragging = false, prevX, prevY;
+    let offsetX = 0, offsetY = 0, gridDragging = false, prevX, prevY;
     let showCircle = false, angle = 0, circleRadius;
     let radiusInput, angleInput;
     let ctrlDragging = false, startX, startY;
+    const trigStates = {
+      radius: false,
+      sin: false,
+      cos: false,
+      tan: false,
+      cot: false,
+      sec: false,
+      csc: false
+    };
 
     function setup() {
       const canvas = createCanvas(windowWidth, windowHeight);
@@ -184,7 +205,7 @@
       background(255);
       drawGrid();
       if (showCircle) drawCircleDot();
-      updateControllerInputs();
+      updateInputs();
     }
 
     function drawGrid() {
@@ -199,10 +220,21 @@
     }
 
     function drawLine(i, vertical, pulse, maxD) {
-      if (i === 0) stroke(ar, ag, ab, 255), strokeWeight(2);
-      else if (i % 5 === 0) stroke(mr, mg, mb, pulse), strokeWeight(1);
-      else stroke(gr, gg, gb, pulse * 0.8), strokeWeight(0.5);
-      vertical ? line(i * gridSize, -maxD, i * gridSize, maxD) : line(-maxD, i * gridSize, maxD, i * gridSize);
+      if (i === 0) {
+        stroke(ar, ag, ab, 255);
+        strokeWeight(2);
+      } else if (i % 5 === 0) {
+        stroke(mr, mg, mb, pulse);
+        strokeWeight(1);
+      } else {
+        stroke(gr, gg, gb, pulse * 0.8);
+        strokeWeight(0.5);
+      }
+      if (vertical) {
+        line(i * gridSize, -maxD, i * gridSize, maxD);
+      } else {
+        line(-maxD, i * gridSize, maxD, i * gridSize);
+      }
     }
 
     function drawCircleDot() {
@@ -210,40 +242,54 @@
       translate(width/2 + offsetX, height/2 + offsetY);
 
       // big circle
-      noFill(); stroke(0); strokeWeight(2);
+      noFill();
+      stroke(0);
+      strokeWeight(2);
       ellipse(0, 0, circleRadius * 2, circleRadius * 2);
 
-      // angle arc (opposite direction)
-      const arcRadius = circleRadius * 0.2;
-      stroke(255, 0, 0); strokeWeight(4); noFill();
-      arc(0, 0, arcRadius * 2, arcRadius * 2, radians(-angle), 0);
+      // angle arc
+      const arcR = circleRadius * 0.2;
+      stroke(255, 0, 0);
+      strokeWeight(4);
+      noFill();
+      arc(0, 0, arcR * 2, arcR * 2, radians(-angle), 0);
 
-      // radius line
-      stroke(0, 255, 0); strokeWeight(5);
+      // common coords
       const cx = circleRadius * cos(radians(-angle));
       const cy = circleRadius * sin(radians(-angle));
-      line(0, 0, cx, cy);
+      strokeWeight(5);
 
-      // sin
-      stroke(0, 0, 255); strokeWeight(5);
-      line(cx, cy, cx, 0);
-      // cos
-      stroke(255, 215, 0); strokeWeight(5);
-      line(0, cy, cx, cy);
-      // tan
-      stroke(255, 20, 147); strokeWeight(5);
-      line(cx, cy, circleRadius * (1/cos(radians(-angle))), 0);
-      // cot
-      stroke(0, 255, 255); strokeWeight(5);
-      line(cx, cy, 0, circleRadius * (1/sin(radians(-angle))));
-      // cosec
-      stroke(255, 165, 0); strokeWeight(5);
-      line(0, circleRadius * (1/sin(radians(-angle))), 0, 0);
-      // sec
-      stroke(238, 130, 238); strokeWeight(5);
-      line(circleRadius * (1/cos(radians(-angle))), 0, 0, 0);
+      if (trigStates.radius) {
+        stroke(0, 255, 0);
+        line(0, 0, cx, cy);
+      }
+      if (trigStates.sin) {
+        stroke(0, 0, 255);
+        line(cx, cy, cx, 0);
+      }
+      if (trigStates.cos) {
+        stroke(255, 215, 0);
+        line(0, cy, cx, cy);
+      }
+      if (trigStates.tan) {
+        stroke(255, 20, 147);
+        line(cx, cy, circleRadius * (1/cos(radians(-angle))), 0);
+      }
+      if (trigStates.cot) {
+        stroke(0, 255, 255);
+        line(cx, cy, 0, circleRadius * (1/sin(radians(-angle))));
+      }
+      if (trigStates.sec) {
+        stroke(238, 130, 238);
+        line(circleRadius * (1/cos(radians(-angle))), 0, 0, 0);
+      }
+      if (trigStates.csc) {
+        stroke(255, 165, 0);
+        line(0, circleRadius * (1/sin(radians(-angle))), 0, 0);
+      }
 
-      fill(255, 0, 0); noStroke();
+      fill(255, 0, 0);
+      noStroke();
       ellipse(0, 0, 15, 15);
       ellipse(cx, cy, 15, 15);
 
@@ -254,99 +300,90 @@
       gridDragging = !ctrlDragging;
       prevX = mouseX; prevY = mouseY;
     }
-
     function mouseDragged() {
       if (gridDragging) {
         offsetX += mouseX - prevX;
         offsetY += mouseY - prevY;
-        prevX = mouseX;
-        prevY = mouseY;
+        prevX = mouseX; prevY = mouseY;
       }
     }
-
     function mouseReleased() {
       gridDragging = false;
     }
-
-    function mouseWheel(event) {
-      angle = (angle + event.deltaY * 0.1 + 360) % 360;
+    function mouseWheel(e) {
+      angle = (angle + e.deltaY * 0.1 + 360) % 360;
       radiusInput.dataset.userChanged = false;
       return false;
     }
-
     function windowResized() {
       resizeCanvas(windowWidth, windowHeight);
       updateGrid();
       if (!radiusInput.dataset.userChanged) circleRadius = min(width, height) * 0.25;
-      updateControllerInputs();
+      updateInputs();
     }
-
     function toggleSidebar() {
       const sb = select('#sidebar');
       window.matchMedia('(max-width:768px)').matches
         ? sb.toggleClass('open')
         : sb.toggleClass('collapsed');
     }
-
     function updateGrid() {
       cols = ceil((width/2)/gridSize);
       rows = ceil((height/2)/gridSize);
     }
-
     function resetView() {
-      offsetX = 0;
-      offsetY = 0;
-      gridSize = INITIAL_GRID_SIZE;
-      updateGrid();
-      circleRadius = min(width, height) * 0.25;
+      offsetX = 0; offsetY = 0; gridSize = INITIAL_GRID_SIZE;
+      updateGrid(); circleRadius = min(width, height) * 0.25;
       radiusInput.dataset.userChanged = false;
     }
-
     function initController() {
       radiusInput = document.getElementById('radius-input');
-      angleInput = document.getElementById('angle-input');
-
+      angleInput  = document.getElementById('angle-input');
       radiusInput.addEventListener('input', () => {
         const v = parseFloat(radiusInput.value);
         if (!isNaN(v)) { circleRadius = v; radiusInput.dataset.userChanged = true; }
       });
-
       angleInput.addEventListener('input', () => {
         const v = parseFloat(angleInput.value);
         if (!isNaN(v)) angle = (v % 360 + 360) % 360;
       });
 
-      const ctrl = document.getElementById('controller');
-      const header = ctrl.querySelector('.header');
-      const minBtn = document.getElementById('minimize-btn');
-      const bodyEl = document.querySelector('body');
+      Object.keys(trigStates).forEach(fn => {
+        select('#btn-' + fn).mousePressed(() => {
+          trigStates[fn] = !trigStates[fn];
+          document.getElementById('btn-' + fn).classList.toggle('active', trigStates[fn]);
+        });
+      });
 
-      header.addEventListener('mousedown', e => {
+      const ctrl = document.getElementById('controller'),
+            hdr  = ctrl.querySelector('.header'),
+            mb   = document.getElementById('minimize-btn'),
+            bodyEl = document.body;
+
+      hdr.addEventListener('mousedown', e => {
         ctrlDragging = true;
         startX = e.clientX - ctrl.offsetLeft;
         startY = e.clientY - ctrl.offsetTop;
         bodyEl.style.cursor = 'move';
       });
-
       document.addEventListener('mousemove', e => {
         if (!ctrlDragging) return;
         ctrl.style.left = (e.clientX - startX) + 'px';
-        ctrl.style.top = (e.clientY - startY) + 'px';
+        ctrl.style.top  = (e.clientY - startY) + 'px';
       });
-
       document.addEventListener('mouseup', () => {
         ctrlDragging = false;
         bodyEl.style.cursor = '';
       });
-
-      minBtn.addEventListener('click', () => {
-        document.getElementById('controller').classList.toggle('minimized');
+      mb.addEventListener('click', () => {
+        ctrl.classList.toggle('minimized');
       });
     }
-
-    function updateControllerInputs() {
-      if (document.activeElement !== radiusInput) radiusInput.value = circleRadius.toFixed(0);
-      if (document.activeElement !== angleInput) angleInput.value = angle.toFixed(0);
+    function updateInputs() {
+      if (document.activeElement !== radiusInput)
+        radiusInput.value = circleRadius.toFixed(0);
+      if (document.activeElement !== angleInput)
+        angleInput.value  = angle.toFixed(0);
     }
   </script>
 </body>
