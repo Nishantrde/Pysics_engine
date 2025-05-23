@@ -144,7 +144,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # === Added: where collectstatic will gather everything ===
-STATIC_ROOT = BASE_DIR / "staticfiles_build"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # If you have additional static dirs (e.g. for global assets), you can list them:
 # STATICFILES_DIRS = [
