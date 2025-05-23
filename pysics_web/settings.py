@@ -61,7 +61,6 @@ GOOGLE_SSO_NEXT_URL = 'mainapp:here'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -145,7 +144,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # === Added: where collectstatic will gather everything ===
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = BASE_DIR / "staticfiles_build"
 
 # If you have additional static dirs (e.g. for global assets), you can list them:
 # STATICFILES_DIRS = [
@@ -158,6 +157,3 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
