@@ -11,7 +11,14 @@
     a { text-decoration: none; color: inherit; cursor: pointer; }
 
     /* Header & Buttons */
-    header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      position: relative;
+      z-index: 10;  /* bring above blobs */
+    }
     .logo { display: flex; align-items: center; font-size: 1.75rem; font-weight: 900; letter-spacing: -1px; }
     .logo img.logo-img { width: 40px; height: auto; margin-right: 12px; border-radius: 50%; }
     nav ul { display: flex; gap: 24px; list-style: none; }
@@ -36,7 +43,7 @@
     .highlight h4 { font-size: 1.25rem; font-weight: 700; color: #10b981; margin-bottom: 8px; }
     .highlight p { font-size: 0.9rem; color: #6b7280; }
 
-    /* Community Section (hidden by default) */
+    /* Community Section */
     #community { display: none; background: #ffffff; }
     .community-links { display: flex; justify-content: center; gap: 40px; margin-top: 20px; }
     .community-links img { width: 48px; height: 48px; transition: transform 0.2s; }
@@ -52,10 +59,12 @@
     .hero-illustration { width: 45%; display: inline-block; vertical-align: top; opacity: 0; animation: fadeInRight 1s ease-out 1s forwards; }
 
     /* Decorative & Animations */
-    .blob { position: absolute; border-radius: 50%; opacity: 0.4; animation: blobMove 20s infinite; }
+    .blob { position: absolute; border-radius: 50%; opacity: 0.4; animation: blobMove 20s infinite; z-index: -1; }
     .blob.one { width: 300px; height: 300px; background: #fcd34d; top: -60px; left: -100px; }
     .blob.two { width: 200px; height: 200px; background: #a5b4fc; top: 200px; right: -80px; animation-delay: 5s; }
     .blob.three { width: 250px; height: 250px; background: #f87171; top: 300px; left: -50px; animation-delay: 10s; }
+    .blob.four { width: 150px; height: 150px; background: #6ee7b7; bottom: 40px; left: 10%; }
+    .blob.five { width: 180px; height: 180px; background: #fbbf24; bottom: 80px; right: 15%; }
     @keyframes blobMove { 0%,100% { transform: translate(0,0) scale(1) rotate(0deg); } 33% { transform: translate(20px, -30px) scale(1.1) rotate(10deg); } 66% { transform: translate(-20px, 20px) scale(0.9) rotate(-10deg); } }
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes fadeInRight { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
@@ -67,7 +76,7 @@
     .stat { text-align: center; }
     .stat h3 { font-size: 2rem; font-weight: 700; color: #10b981; }
     .stat p { font-size: 0.95rem; margin-top: 4px; color: #4b5563; }
-    .top-videos { margin: 80px auto; max-width: 1200px; text-align: center; }
+    .top-videos { margin: 80px auto; max-width: 1200px; text-align: center; position: relative; z-index: 5; }
     .top-videos h2 { font-size: 2rem; font-weight: 800; margin-bottom: 24px; }
     .videos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 24px; }
     .video-card { position: relative; width: 100%; aspect-ratio: 9/16; border-radius: 1rem; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
@@ -76,7 +85,7 @@
     .video-card::after { content: 'Shorts'; position: absolute; top: 8px; left: 8px; font-size: 0.7rem; padding: 2px 6px; background: rgba(0,0,0,0.6); color: #fff; border-radius: 12px; }
 
     /* Footer */
-    footer { text-align: center; padding: 40px 0; margin-top: 60px; border-top: 1px solid #e5e7eb; color: #777; font-size: 0.9rem; }
+    footer { text-align: center; padding: 40px 0; margin-top: 60px; border-top: 1px solid #e5e7eb; color: #777; font-size: 0.9rem; position: relative; z-index: 5; }
       
     /* Responsive */
     @media(max-width: 1024px) { .hero-content, .hero-illustration { display: block; width: 100%; } }
@@ -98,9 +107,7 @@
       </ul>
     </nav>
     <div>
-      <a href="/google_sso/login/">
-    <button class="btn-outline">Log in</button>
-  </a>
+      <a href="/google_sso/login/"><button class="btn-outline">Log in</button></a>
       <button class="btn-primary">Sign up</button>
     </div>
   </header>
@@ -156,25 +163,22 @@
     <div class="blob one"></div>
     <div class="blob two"></div>
     <div class="blob three"></div>
-    <!-- Two new circles below the videos -->
-    <div class="blob four" style="width:150px; height:150px; background:#6ee7b7; bottom:40px; left:10%;"></div>
-    <div class="blob five" style="width:180px; height:180px; background:#fbbf24; bottom:80px; right:15%;"></div>
-    
+    <div class="blob four"></div>
+    <div class="blob five"></div>
 
     <div class="hero-content">
       <h1 class="hero-title"><div>I’m Exploring—</div><div>Come Along!</div></h1>
-      <p class="tagline">Interactive videos every week! 📺 </p>
+      <p class="tagline">Interactive videos every week! 📺</p>
       <div class="hero-actions">
         <a href="https://www.youtube.com/@nishant.garg.pysics?sub_confirmation=1" target="_blank">
           <button class="btn-primary">▶️ Sub Me here</button>
         </a>
       </div>
-
       <div class="hero-actions">
         <div class="stats">
           <div class="stat"><h3>40+</h3><p>Shorts Uploaded</p></div>
           <div class="stat"><h3>10K+</h3><p>Total Views</p></div>
-          <div class="stat"><h3>13K+</h3><p>Most pop short</p></div>
+          <div class="stat"><h3>13K+</h3><p>Most Pop Short</p></div>
         </div>
       </div>
     </div>
@@ -184,8 +188,9 @@
   <section class="top-videos">
     <h2>Top 4 Viewed Videos</h2>
     <div class="videos-grid" id="videosGrid"></div>
-    
-    <footer id="contact">
+  </section>
+
+  <footer id="contact">
     <p>&copy; 2025 Pysics Blog. Built with ❤️ by Nishant Garg.</p>
     <p>
       <a href="https://www.linkedin.com/in/nishant-garg-dev/" target="_blank">LinkedIn</a> |
@@ -193,10 +198,8 @@
     </p>
   </footer>
 
-  </section>
-
   <script>
-    // Toggle sections: ensure only one is visible at a time
+    // Toggle sections
     function toggleSection(showId) {
       ['about','community'].forEach(id => {
         const el = document.getElementById(id);
@@ -211,22 +214,24 @@
     const API_KEY = 'AIzaSyC7bZy8WWuSOOuVw903zJ0FpNvhl5I3U60';
     const CHANNEL_ID = 'UCFoIYk0NwGIMb34cx23LizQ';
     (async () => {
-      const res = await fetch(
-        `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&order=viewCount&maxResults=4&key=${API_KEY}`
-      );
-      const { items } = await res.json();
-      const grid = document.getElementById('videosGrid');
-      items.forEach(item => {
-        grid.innerHTML += `
-          <a class="video-card" href="https://youtu.be/${item.id.videoId}" target="_blank">
-            <img src="https://img.youtube.com/vi/${item.id.videoId}/maxresdefault.jpg" alt="${item.snippet.title}">
-            <p>${item.snippet.title}</p>
-          </a>
-        `;
-      });
-    })().catch(console.error);
+      try {
+        const res = await fetch(
+          `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&order=viewCount&maxResults=4&key=${API_KEY}`
+        );
+        const { items } = await res.json();
+        const grid = document.getElementById('videosGrid');
+        items.forEach(item => {
+          grid.innerHTML += `
+            <a class="video-card" href="https://youtu.be/${item.id.videoId}" target="_blank">
+              <img src="https://img.youtube.com/vi/${item.id.videoId}/maxresdefault.jpg" alt="${item.snippet.title}">
+              <p>${item.snippet.title}</p>
+            </a>
+          `;
+        });
+      } catch(e) {
+        console.error(e);
+      }
+    })();
   </script>
-   <!-- FOOTER -->
-  
 </body>
 </html>
