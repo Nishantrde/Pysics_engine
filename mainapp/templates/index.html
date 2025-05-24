@@ -77,10 +77,10 @@
     .top-videos { margin: 80px auto; max-width: 1200px; text-align: center; position: relative; z-index: 5; }
     .top-videos h2 { font-size: 2rem; font-weight: 800; margin-bottom: 24px; }
     .videos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 24px; }
-    .video-card { position: relative; width: 100%; aspect-ratio: 9/16;	border-radius: 1rem; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .video-card { position: relative; width: 100%; aspect-ratio: 9/16; border-radius: 1rem; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .video-card img { width: 100%; height: 100%; object-fit: cover; }
     .video-card p { position: absolute; bottom: 0; width: 100%; padding: 6px; font-size: 0.8rem; font-weight: 600; color: #fff; background: rgba(0,0,0,0.6); }
-    .video-card::after { content: 'Shorts'; position: absolute; top: 8px;	left: 8px; font-size: 0.7rem; padding: 2px 6px; background: rgba(0,0,0,0.6); color: #fff; border-radius: 12px; }
+    .video-card::after { content: 'Shorts'; position: absolute; top: 8px; left: 8px; font-size: 0.7rem; padding: 2px 6px; background: rgba(0,0,0,0.6); color: #fff; border-radius: 12px; }
 
     /* Footer */
     footer { text-align: center; padding: 40px 0; margin-top: 60px; border-top: 1px solid #e5e7eb; color: #777; font-size: 0.9rem; position: relative; z-index: 5; }
@@ -101,7 +101,7 @@
         <li><a id="aboutLink">About</a></li>
         <li><a id="communityLink">Community</a></li>
         <li><a href="/blog">Blog</a></li>
-        <li><a href="/simulations">Simulations</a></li>
+        <li><a id="simulationsLink" href="/simulations">Simulations</a></li>
       </ul>
     </nav>
     <div>
@@ -110,7 +110,7 @@
         <button class="btn-outline">{{ email }}</button>
       {% else %}
         <a href="/google_sso/login/"><button class="btn-outline">Log in</button></a>
-        <button class="btn-primary">Sign up</button>
+        <a href="/google_sso/login/"><button class="btn-primary">Sign up</button></a>
       {% endif %}
     </div>
   </header>
@@ -191,7 +191,21 @@
     <p><a href="https://www.linkedin.com/in/nishant-garg-dev/" target="_blank">LinkedIn</a> | <a href="https://github.com/Nishantrde" target="_blank">GitHub</a></p>
   </footer>
 
+  <!-- Scripts -->
   <script>
+    
+    // Login check for simulations link
+    const isLoggedIn = {% if log_in %}true{% else %}false{% endif %};
+    document.addEventListener('DOMContentLoaded', () => {
+      const simLink = document.getElementById('simulationsLink');
+      simLink.addEventListener('click', (e) => {
+        if (!isLoggedIn) {
+          e.preventDefault();
+          alert('Please log in to access simulations.');
+        }
+      });
+    });
+
     // Toggle sections
     function toggleSection(showId) {
       ['about','community'].forEach(id => {
