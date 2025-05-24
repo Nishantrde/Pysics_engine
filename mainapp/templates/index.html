@@ -17,7 +17,7 @@
       align-items: center;
       padding: 20px 40px;
       position: relative;
-      z-index: 10;  /* bring above blobs */
+      z-index: 10;
     }
     .logo { display: flex; align-items: center; font-size: 1.75rem; font-weight: 900; letter-spacing: -1px; }
     .logo img.logo-img { width: 40px; height: auto; margin-right: 12px; border-radius: 50%; }
@@ -86,7 +86,7 @@
 
     /* Footer */
     footer { text-align: center; padding: 40px 0; margin-top: 60px; border-top: 1px solid #e5e7eb; color: #777; font-size: 0.9rem; position: relative; z-index: 5; }
-      
+
     /* Responsive */
     @media(max-width: 1024px) { .hero-content, .hero-illustration { display: block; width: 100%; } }
     @media(max-width: 640px) { header { flex-direction: column; } nav ul { flex-wrap: wrap; justify-content: center; } }
@@ -95,7 +95,8 @@
 <body>
   <header>
     <div class="logo">
-      <img src="https://yt3.googleusercontent.com/so_LhC39A37h8HZqVIoIwu4NXuJ4AUBUY_C-K_2mmOInhadB-lsQHeAKursNZ4Zy1swMt-ibXQ=s72-c-k-c0x00ffffff-no-rj" alt="Pysics Logo" class="logo-img">
+      <img src="https://yt3.googleusercontent.com/so_LhC39A37h8HZqVIoIwu4NXuJ4AUBUY_C-K_2mmOInhadB-lsQHeAKursNZ4Zy1swMt-ibXQ=s72-c-k-c0x00ffffff-no-rj"
+           alt="Pysics Logo" class="logo-img">
       Pysics
     </div>
     <nav>
@@ -107,8 +108,12 @@
       </ul>
     </nav>
     <div>
-      <a href="/google_sso/login/"><button class="btn-outline">Log in</button></a>
-      <button class="btn-primary">Sign up</button>
+      {% if log_in %}
+        <button class="btn-primary">Welcome, {{ email }}</button>
+      {% else %}
+        <a href="/google_sso/login/"><button class="btn-outline">Log in</button></a>
+        <button class="btn-primary">Sign up</button>
+      {% endif %}
     </div>
   </header>
 
@@ -116,12 +121,8 @@
   <section id="about">
     <div class="container">
       <h2>About Pysics</h2>
-      <p>
-        <strong>Pysics</strong> (a blend of Python’s “Py” and the “sics” of physics) is a weekly physics‑exploration channel hosted by Nishant Garg, where complex concepts come to life through interactive simulations and bite‑sized animations.
-      </p>
-      <p>
-        From deriving the Q‑value of nuclear reactions to visualizing trigonometric functions with Pygame, each short video is designed to spark curiosity and deepen understanding—no textbooks required.
-      </p>
+      <p><strong>Pysics</strong> (a blend of Python’s “Py” and the “sics” of physics) is a weekly physics‐exploration channel hosted by Nishant Garg, where complex concepts come to life through interactive simulations and bite‐sized animations.</p>
+      <p>From deriving the Q‐value of nuclear reactions to visualizing trigonometric functions with Pygame, each short video is designed to spark curiosity and deepen understanding—no textbooks required.</p>
       <div class="highlights">
         <div class="highlight">
           <h4>Interactive Simulations</h4>
@@ -129,14 +130,14 @@
         </div>
         <div class="highlight">
           <h4>Concept Deep Dives</h4>
-          <p>Tutorials on nuclear‑physics derivations, raycasting, inverter circuits, and more.</p>
+          <p>Tutorials on nuclear‐physics derivations, raycasting, inverter circuits, and more.</p>
         </div>
         <div class="highlight">
           <h4>Weekly Releases</h4>
           <p>Fresh, engaging content every week.</p>
         </div>
         <div class="highlight">
-          <h4>Community‑Driven</h4>
+          <h4>Community‐Driven</h4>
           <p>Join a growing community of coders and learners.</p>
         </div>
       </div>
@@ -151,15 +152,20 @@
     <div class="container">
       <h2>Community</h2>
       <div class="community-links">
-        <a href="https://www.youtube.com/@nishant.garg.pysics" target="_blank"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v6/icons/youtube.svg" alt="YouTube"></a>
-        <a href="https://github.com/Nishantrde" target="_blank"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v6/icons/github.svg" alt="GitHub"></a>
-        <a href="https://www.linkedin.com/in/nishant-garg-dev/" target="_blank"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v6/icons/linkedin.svg" alt="LinkedIn"></a>
+        <a href="https://www.youtube.com/@nishant.garg.pysics" target="_blank">
+          <img src="https://cdn.jsdelivr.net/npm/simple-icons@v6/icons/youtube.svg" alt="YouTube">
+        </a>
+        <a href="https://github.com/Nishantrde" target="_blank">
+          <img src="https://cdn.jsdelivr.net/npm/simple-icons@v6/icons/github.svg" alt="GitHub">
+        </a>
+        <a href="https://www.linkedin.com/in/nishant-garg-dev/" target="_blank">
+          <img src="https://cdn.jsdelivr.net/npm/simple-icons@v6/icons/linkedin.svg" alt="LinkedIn">
+        </a>
       </div>
     </div>
   </section>
 
   <main>
-    <!-- Decorative blobs -->
     <div class="blob one"></div>
     <div class="blob two"></div>
     <div class="blob three"></div>
@@ -174,12 +180,10 @@
           <button class="btn-primary">▶️ Sub Me here</button>
         </a>
       </div>
-      <div class="hero-actions">
-        <div class="stats">
-          <div class="stat"><h3>40+</h3><p>Shorts Uploaded</p></div>
-          <div class="stat"><h3>10K+</h3><p>Total Views</p></div>
-          <div class="stat"><h3>13K+</h3><p>Most Pop Short</p></div>
-        </div>
+      <div class="stats">
+        <div class="stat"><h3>40+</h3><p>Shorts Uploaded</p></div>
+        <div class="stat"><h3>10K+</h3><p>Total Views</p></div>
+        <div class="stat"><h3>13K+</h3><p>Most Pop Short</p></div>
       </div>
     </div>
   </main>
