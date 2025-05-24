@@ -6,7 +6,7 @@ app_name = 'mainapp'
 urlpatterns = [
     path("", index, name='here'),
     path("blog", blog),
-    path("simulations", simulation)
+    path("simulations<str:email>", simulation)
 ]
 
 

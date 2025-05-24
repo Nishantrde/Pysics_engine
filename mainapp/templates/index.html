@@ -101,13 +101,13 @@
         <li><a id="aboutLink">About</a></li>
         <li><a id="communityLink">Community</a></li>
         <li><a href="/blog">Blog</a></li>
-        <li><a id="simulationsLink" href="/simulations">Simulations</a></li>
+        <li><a id="simulationsLink" href="/simulations/{email}">Simulations</a></li>
       </ul>
     </nav>
     <div>
       {% if log_in %}
         <button class="btn-primary">Welcome</button>
-        <button class="btn-outline">{{ email }}</button>
+        <button class="btn-outline">{{ email_name }}</button>
       {% else %}
         <a href="/google_sso/login/"><button class="btn-outline">Log in</button></a>
         <a href="/google_sso/login/"><button class="btn-primary">Sign up</button></a>
