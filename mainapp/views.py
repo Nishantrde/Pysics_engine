@@ -2,13 +2,11 @@ from django.shortcuts import render
 
 def index(request):
     if request.user.is_authenticated:
-        email = request.user.email
+        email = request.user.first_name
         log_in = True
-        print(log_in, email)
     else:
         email = None
         log_in = False
-        print(log_in, email)
     
     # User = get_user_model()
     # # filter for users who have an unusable password (set by django-google-sso)

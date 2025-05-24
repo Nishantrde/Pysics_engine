@@ -68,8 +68,6 @@
     @keyframes blobMove { 0%,100% { transform: translate(0,0) scale(1) rotate(0deg); } 33% { transform: translate(20px, -30px) scale(1.1) rotate(10deg); } 66% { transform: translate(-20px, 20px) scale(0.9) rotate(-10deg); } }
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes fadeInRight { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
-    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-    @keyframes rotate360 { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
     /* Stats and Videos */
     .stats { display: flex; gap: 40px; margin-top: 80px; opacity: 0; animation: fadeInUp 1s ease-out 1.2s forwards; }
@@ -79,10 +77,10 @@
     .top-videos { margin: 80px auto; max-width: 1200px; text-align: center; position: relative; z-index: 5; }
     .top-videos h2 { font-size: 2rem; font-weight: 800; margin-bottom: 24px; }
     .videos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 24px; }
-    .video-card { position: relative; width: 100%; aspect-ratio: 9/16; border-radius: 1rem; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .video-card { position: relative; width: 100%; aspect-ratio: 9/16;	border-radius: 1rem; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .video-card img { width: 100%; height: 100%; object-fit: cover; }
     .video-card p { position: absolute; bottom: 0; width: 100%; padding: 6px; font-size: 0.8rem; font-weight: 600; color: #fff; background: rgba(0,0,0,0.6); }
-    .video-card::after { content: 'Shorts'; position: absolute; top: 8px; left: 8px; font-size: 0.7rem; padding: 2px 6px; background: rgba(0,0,0,0.6); color: #fff; border-radius: 12px; }
+    .video-card::after { content: 'Shorts'; position: absolute; top: 8px;	left: 8px; font-size: 0.7rem; padding: 2px 6px; background: rgba(0,0,0,0.6); color: #fff; border-radius: 12px; }
 
     /* Footer */
     footer { text-align: center; padding: 40px 0; margin-top: 60px; border-top: 1px solid #e5e7eb; color: #777; font-size: 0.9rem; position: relative; z-index: 5; }
@@ -95,8 +93,7 @@
 <body>
   <header>
     <div class="logo">
-      <img src="https://yt3.googleusercontent.com/so_LhC39A37h8HZqVIoIwu4NXuJ4AUBUY_C-K_2mmOInhadB-lsQHeAKursNZ4Zy1swMt-ibXQ=s72-c-k-c0x00ffffff-no-rj"
-           alt="Pysics Logo" class="logo-img">
+      <img src="https://yt3.googleusercontent.com/so_LhC39A37h8HZqVIoIwu4NXuJ4AUBUY_C-K_2mmOInhadB-lsQHeAKursNZ4Zy1swMt-ibXQ=s72-c-k-c0x00ffffff-no-rj" alt="Pysics Logo" class="logo-img">
       Pysics
     </div>
     <nav>
@@ -109,7 +106,8 @@
     </nav>
     <div>
       {% if log_in %}
-        <button class="btn-primary">Welcome, {{ email }}</button>
+        <button class="btn-primary">Welcome</button>
+        <button class="btn-outline">{{ email }}</button>
       {% else %}
         <a href="/google_sso/login/"><button class="btn-outline">Log in</button></a>
         <button class="btn-primary">Sign up</button>
@@ -117,12 +115,12 @@
     </div>
   </header>
 
-  <!-- About Section (initially hidden) -->
+  <!-- About Section -->
   <section id="about">
     <div class="container">
       <h2>About Pysics</h2>
-      <p><strong>Pysics</strong> (a blend of Python’s “Py” and the “sics” of physics) is a weekly physics‐exploration channel hosted by Nishant Garg, where complex concepts come to life through interactive simulations and bite‐sized animations.</p>
-      <p>From deriving the Q‐value of nuclear reactions to visualizing trigonometric functions with Pygame, each short video is designed to spark curiosity and deepen understanding—no textbooks required.</p>
+      <p><strong>Pysics</strong> (a blend of Python’s “Py” and the “sics” of physics) is a weekly physics-exploration channel hosted by Nishant Garg, where complex concepts come to life through interactive simulations and bite-sized animations.</p>
+      <p>From deriving the Q-value of nuclear reactions to visualizing trigonometric functions with Pygame, each short video is designed to spark curiosity and deepen understanding—no textbooks required.</p>
       <div class="highlights">
         <div class="highlight">
           <h4>Interactive Simulations</h4>
@@ -130,14 +128,14 @@
         </div>
         <div class="highlight">
           <h4>Concept Deep Dives</h4>
-          <p>Tutorials on nuclear‐physics derivations, raycasting, inverter circuits, and more.</p>
+          <p>Tutorials on nuclear-physics derivations, raycasting, inverter circuits, and more.</p>
         </div>
         <div class="highlight">
           <h4>Weekly Releases</h4>
           <p>Fresh, engaging content every week.</p>
         </div>
         <div class="highlight">
-          <h4>Community‐Driven</h4>
+          <h4>Community-Driven</h4>
           <p>Join a growing community of coders and learners.</p>
         </div>
       </div>
@@ -147,20 +145,14 @@
     </div>
   </section>
 
-  <!-- Community Section (initially hidden) -->
+  <!-- Community Section -->
   <section id="community">
     <div class="container">
       <h2>Community</h2>
       <div class="community-links">
-        <a href="https://www.youtube.com/@nishant.garg.pysics" target="_blank">
-          <img src="https://cdn.jsdelivr.net/npm/simple-icons@v6/icons/youtube.svg" alt="YouTube">
-        </a>
-        <a href="https://github.com/Nishantrde" target="_blank">
-          <img src="https://cdn.jsdelivr.net/npm/simple-icons@v6/icons/github.svg" alt="GitHub">
-        </a>
-        <a href="https://www.linkedin.com/in/nishant-garg-dev/" target="_blank">
-          <img src="https://cdn.jsdelivr.net/npm/simple-icons@v6/icons/linkedin.svg" alt="LinkedIn">
-        </a>
+        <a href="https://www.youtube.com/@nishant.garg.pysics" target="_blank"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v6/icons/youtube.svg" alt="YouTube"></a>
+        <a href="https://github.com/Nishantrde" target="_blank"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v6/icons/github.svg" alt="GitHub"></a>
+        <a href="https://www.linkedin.com/in/nishant-garg-dev/" target="_blank"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v6/icons/linkedin.svg" alt="LinkedIn"></a>
       </div>
     </div>
   </section>
@@ -196,10 +188,7 @@
 
   <footer id="contact">
     <p>&copy; 2025 Pysics Blog. Built with ❤️ by Nishant Garg.</p>
-    <p>
-      <a href="https://www.linkedin.com/in/nishant-garg-dev/" target="_blank">LinkedIn</a> |
-      <a href="https://github.com/Nishantrde" target="_blank">GitHub</a>
-    </p>
+    <p><a href="https://www.linkedin.com/in/nishant-garg-dev/" target="_blank">LinkedIn</a> | <a href="https://github.com/Nishantrde" target="_blank">GitHub</a></p>
   </footer>
 
   <script>
