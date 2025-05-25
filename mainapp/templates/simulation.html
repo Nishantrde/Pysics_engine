@@ -50,9 +50,13 @@
     }
     #sidebar.collapsed .logo h2 { opacity: 0; transform: translateX(-20px); }
     .yt-button {
-      display: flex; align-items: center; padding: 0;
-      background: transparent; border: none; cursor: pointer;
-      transition: transform 0.2s;
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 8px 12px; background: var(--yt-btn-bg); color: var(--yt-btn-text);
+      border: none; border-radius: 6px; cursor: pointer;
+      font-size: 0.95rem; font-weight: 600;
+      transition: background 0.2s, transform 0.2s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      text-decoration: none;
     }
     .yt-button img {
       width: 100%; max-width: 240px;
