@@ -156,6 +156,8 @@
         <button type="button" id="btn-sec">sec θ</button>
         <button type="button" id="btn-csc">csc θ</button>
         <button type="button" id="btn-radius">Radius</button>
+        <button type="button" id="btn-graph">Graph On/Off</button>
+
       </div>
       <label>
         <span>Circle Radius (px)</span>
@@ -185,6 +187,8 @@
       sec: false,
       csc: false
     };
+    let graphEnabled = true;
+
 
     function setup() {
       const canvas = createCanvas(windowWidth, windowHeight);
@@ -209,8 +213,11 @@
       background(255);
       drawGrid();
       if (showCircle) drawCircleDot();
+      // drawCircleDot();
+      // if (graphEnabled) drawGraphLines();
       updateInputs();
     }
+
 
     function drawGrid() {
       if (ctrlDragging) return;
@@ -263,34 +270,116 @@
       const cy = circleRadius * sin(radians(-angle));
       strokeWeight(5);
 
+      let radius_color = [0, 255, 0]
+      let sin_color = [0, 0, 255]
+      let cos_color = [255, 215, 0]
+      let tan_color = [255, 20, 147]
+      let cot_color = [0, 255, 255]
+      let sec_color = [238, 130, 238]
+      let csc_color = [255, 165, 0]
+
       if (trigStates.radius) {
-        stroke(0, 255, 0);
+        stroke(radius_color);
         line(0, 0, cx, cy);
       }
       if (trigStates.sin) {
-        stroke(0, 0, 255);
+        stroke(sin_color);
         line(cx, cy, cx, 0);
       }
       if (trigStates.cos) {
-        stroke(255, 215, 0);
+        stroke(cos_color);
         line(0, cy, cx, cy);
       }
       if (trigStates.tan) {
-        stroke(255, 20, 147);
+        stroke(tan_color);
         line(cx, cy, circleRadius * (1/cos(radians(-angle))), 0);
       }
       if (trigStates.cot) {
-        stroke(0, 255, 255);
+        stroke(cot_color);
         line(cx, cy, 0, circleRadius * (1/sin(radians(-angle))));
       }
       if (trigStates.sec) {
-        stroke(238, 130, 238);
+        stroke(sec_color);
         line(circleRadius * (1/cos(radians(-angle))), 0, 0, 0);
       }
       if (trigStates.csc) {
-        stroke(255, 165, 0);
+        stroke(csc_color);
         line(0, circleRadius * (1/sin(radians(-angle))), 0, 0);
       }
+
+       if (!graphEnabled){
+   // Only draw sine‐wave when sin θ is active
+if (trigStates.sin) {
+  let amplitude = 100, freq = 0.01;
+  stroke(sin_color);
+  beginShape();
+  for (let x = 0; x <= width/2; x++) {
+    let y = height/3 + amplitude * sin(TWO_PI * freq * x + radians(angle));
+    vertex(x, y);
+  }
+  endShape();
+}
+
+// Only draw cosine‐wave when cos θ is active
+if (trigStates.cos) {
+  let amplitude = 100, freq = 0.01;
+  stroke(cos_color);
+  beginShape();
+  for (let x = 0; x <= width/2; x++) {
+    let y = height/3 + amplitude * cos(TWO_PI * freq * x + radians(angle));
+    vertex(-x, y);
+  }
+  endShape();
+}
+
+// Only draw tangent‐wave when tan θ is active
+if (trigStates.tan) {
+  let amplitude = 50, freq = 0.005;
+  stroke(tan_color);
+  beginShape();
+  for (let x = 0; x <= width/2; x++) {
+    let y = height/3 + amplitude * tan(TWO_PI * freq * x + radians(angle));
+    vertex(x, y);
+  }
+  endShape();
+}
+
+// Only draw cotangent‐wave when cot θ is active
+if (trigStates.cot) {
+  let amplitude = 50, freq = 0.005;
+  stroke(cot_color);
+  beginShape();
+  for (let x = 0; x <= width/2; x++) {
+    let y = height/3 + amplitude * (1/tan(TWO_PI * freq * x + radians(angle)));
+    vertex(-x, y);
+  }
+  endShape();
+}
+
+// Only draw secant‐wave when sec θ is active
+if (trigStates.sec) {
+  let amplitude = 75, freq = 0.005;
+  stroke(sec_color);
+  beginShape();
+  for (let x = 0; x <= width/2; x++) {
+    let y = height/3 + amplitude * (1/cos(TWO_PI * freq * x + radians(angle)));
+    vertex(x, y);
+  }
+  endShape();
+}
+
+// Only draw cosecant‐wave when csc θ is active
+if (trigStates.csc) {
+  let amplitude = 75, freq = 0.005;
+  stroke(csc_color);
+  beginShape();
+  for (let x = 0; x <= width/2; x++) {
+    let y = height/3 + amplitude * (1/sin(TWO_PI * freq * x + radians(angle)));
+    vertex(-x, y);
+  }
+  endShape();
+}
+}
 
       fill(255, 0, 0);
       noStroke();
@@ -298,6 +387,89 @@
       ellipse(cx, cy, 15, 15);
 
       pop();
+    }
+
+    function drawGraphLines() {
+      let radius_color = [0, 255, 0]
+      let sin_color = [0, 0, 255]
+      let cos_color = [255, 215, 0]
+      let tan_color = [255, 20, 147]
+      let cot_color = [0, 255, 255]
+      let sec_color = [238, 130, 238]
+      let csc_color = [255, 165, 0]
+         // Only draw sine‐wave when sin θ is active
+if (trigStates.sin) {
+  let amplitude = 100, freq = 0.01;
+  stroke(sin_color);
+  beginShape();
+  for (let x = 0; x <= width/2; x++) {
+    let y = height/3 + amplitude * sin(TWO_PI * freq * x + radians(angle));
+    vertex(x, y);
+  }
+  endShape();
+}
+
+// Only draw cosine‐wave when cos θ is active
+if (trigStates.cos) {
+  let amplitude = 100, freq = 0.01;
+  stroke(cos_color);
+  beginShape();
+  for (let x = 0; x <= width/2; x++) {
+    let y = height/3 + amplitude * cos(TWO_PI * freq * x + radians(angle));
+    vertex(-x, y);
+  }
+  endShape();
+}
+
+// Only draw tangent‐wave when tan θ is active
+if (trigStates.tan) {
+  let amplitude = 50, freq = 0.005;
+  stroke(tan_color);
+  beginShape();
+  for (let x = 0; x <= width/2; x++) {
+    let y = height/3 + amplitude * tan(TWO_PI * freq * x + radians(angle));
+    vertex(x, y);
+  }
+  endShape();
+}
+
+// Only draw cotangent‐wave when cot θ is active
+if (trigStates.cot) {
+  let amplitude = 50, freq = 0.005;
+  stroke(cot_color);
+  beginShape();
+  for (let x = 0; x <= width/2; x++) {
+    let y = height/3 + amplitude * (1/tan(TWO_PI * freq * x + radians(angle)));
+    vertex(-x, y);
+  }
+  endShape();
+}
+
+// Only draw secant‐wave when sec θ is active
+if (trigStates.sec) {
+  let amplitude = 75, freq = 0.005;
+  stroke(sec_color);
+  beginShape();
+  for (let x = 0; x <= width/2; x++) {
+    let y = height/3 + amplitude * (1/cos(TWO_PI * freq * x + radians(angle)));
+    vertex(x, y);
+  }
+  endShape();
+}
+
+// Only draw cosecant‐wave when csc θ is active
+if (trigStates.csc) {
+  let amplitude = 75, freq = 0.005;
+  stroke(csc_color);
+  beginShape();
+  for (let x = 0; x <= width/2; x++) {
+    let y = height/3 + amplitude * (1/sin(TWO_PI * freq * x + radians(angle)));
+    vertex(-x, y);
+  }
+  endShape();
+}
+
+      
     }
 
     function mousePressed() {
@@ -337,7 +509,7 @@
     }
     function resetView() {
       offsetX = 0; offsetY = 0; gridSize = INITIAL_GRID_SIZE;
-      updateGrid(); circleRadius = min(width, height) * 0.25;
+      updateGrid(); circleRadius = min(width, height) * 0.22;
       radiusInput.dataset.userChanged = false;
     }
     function initController() {
@@ -357,6 +529,11 @@
           trigStates[fn] = !trigStates[fn];
           document.getElementById('btn-' + fn).classList.toggle('active', trigStates[fn]);
         });
+      });
+      // now _after_ the loop:
+      select('#btn-graph').mousePressed(() => {
+        graphEnabled = !graphEnabled;
+        document.getElementById('btn-graph').classList.toggle('active', graphEnabled);
       });
 
       const ctrl = document.getElementById('controller'),
