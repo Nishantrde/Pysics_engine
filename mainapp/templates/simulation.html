@@ -78,7 +78,7 @@
       z-index: 30; user-select: none; transition: transform .3s ease;
     }
     #controller.minimized .body { display: none; }
-    #controller.minimized { width: auto; }
+    #controller.minimized { width: fit-content; }
     #controller .header {
       display: flex; align-items: center; justify-content: space-between;
       padding: 8px 12px; background: #f1f3f5;
@@ -558,7 +558,16 @@ if (trigStates.csc) {
       });
       mb.addEventListener('click', () => {
         ctrl.classList.toggle('minimized');
+
+        if (ctrl.classList.contains('minimized')) {
+          // Lock in whatever width it's at right now:
+          ctrl.style.width = ctrl.getBoundingClientRect().width + 'px';
+        } else {
+          // Remove the inline width so it can go back to its normal 260px
+          ctrl.style.width = '';
+        }
       });
+
     }
     function updateInputs() {
       if (document.activeElement !== radiusInput)
