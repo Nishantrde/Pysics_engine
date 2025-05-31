@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pysics Blog</title>
   <style>
     /* ==========================
-       1. COLOR VARIABLES 
+       1. COLOR VARIABLES
        ========================== */
     :root {
       /* Day (Light) Mode */
@@ -451,11 +451,11 @@
     </section>
 
     <!-- VIDEO DESCRIPTION SECTIONS -->
-    <section class="video-desc" id="videovL_FwC51sDI">
+    <section class="video-desc" id="videoHHiUvE57I7k">
       <h2>About This Short: Unit Circle Demo</h2>
       <div class="video-embed">
         <iframe
-          src="https://www.youtube.com/shorts/vL_FwC51sDI"
+          src="https://www.youtube.com/embed/HHiUvE57I7k"
           allowfullscreen
           loading="lazy"
         ></iframe>
@@ -568,14 +568,15 @@
     });
 
     // =============================
-    // 2) FETCH & RENDER TOP 4 VIEWED SHORTS
+    // 2) FETCH & RENDER LATEST 4 SHORTS
     // =============================
     (async () => {
       try {
         const API_KEY = 'AIzaSyC7bZy8WWuSOOuVw903zJ0FpNvhl5I3U60';
         const CHANNEL_ID = 'UCFoIYk0NwGIMb34cx23LizQ';
+        // Changed order to "date" to fetch the most recent uploads instead of oldest or highest view count
         const res = await fetch(
-          `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&order=viewCount&maxResults=4&type=video&videoDuration=short&key=${API_KEY}`
+          `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&order=date&maxResults=4&type=video&videoDuration=short&key=${API_KEY}`
         );
         const { items } = await res.json();
         const grid = document.getElementById('shortsGrid');
