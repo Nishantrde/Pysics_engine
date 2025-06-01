@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Grid Dashboard</title>
   <style>
     :root {
@@ -11,132 +12,332 @@
       --transition: 0.4s ease;
       --bg-color: #ffffff;
       --sidebar-bg: #f8f9fa;
-      --grid-color: 224,224,224;
-      --major-grid-color: 180,180,180;
-      --axis-color: 150,150,150;
+      --grid-color: 224, 224, 224;
+      --major-grid-color: 180, 180, 180;
+      --axis-color: 150, 150, 150;
       --sidebar-mobile-width: 200px;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { overflow: hidden; font-family: 'Nunito', sans-serif; background: var(--bg-color); }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      overflow: hidden;
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg-color);
+    }
 
     /* Sidebar */
     #sidebar {
-      position: absolute; top: 0; left: 0; height: 100vh;
-      width: var(--sidebar-width); background: var(--sidebar-bg);
-      display: flex; flex-direction: column; padding: 16px;
-      box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: var(--sidebar-width);
+      background: var(--sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
       transition: width var(--transition), transform var(--transition);
       z-index: 10;
     }
-    #sidebar.collapsed { width: var(--collapsed-width); }
+
+    #sidebar.collapsed {
+      width: var(--collapsed-width);
+    }
 
     /* Toggle & reset */
-    #toggle-btn, #reset-btn {
-      position: absolute; top: 16px;
-      background: none; border: none; font-size: 1.6rem;
-      cursor: pointer; z-index: 20; transition: left var(--transition);
+    #toggle-btn,
+    #reset-btn {
+      position: absolute;
+      top: 16px;
+      background: none;
+      border: none;
+      font-size: 1.6rem;
+      cursor: pointer;
+      z-index: 20;
+      transition: left var(--transition);
     }
-    #toggle-btn { left: calc(var(--sidebar-width) + 16px); }
-    #sidebar.collapsed + #toggle-btn { left: calc(var(--collapsed-width) + 16px); }
-    #reset-btn { right: 16px; }
+
+    #toggle-btn {
+      left: calc(var(--sidebar-width) + 16px);
+    }
+
+    #sidebar.collapsed+#toggle-btn {
+      left: calc(var(--collapsed-width) + 16px);
+    }
+
+    #reset-btn {
+      right: 16px;
+    }
 
     /* Logo & YouTube */
-    .logo { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 24px; }
-    .logo img { width: 40px; height: auto; border-radius: 50%; }
+    .logo {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 24px;
+      padding-right: 8px; /* so text doesn’t butt up against the edge */
+
+    }
+
+    .logo img {
+      width: 40px;
+      height: auto;
+      border-radius: 50%;
+    }
+
     .logo h2 {
-      font-size: 1.5em; font-weight: bold; color: #1f2937;
-      margin: 12px 0 8px; white-space: nowrap;
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #1f2937;
+      margin: 12px 0 8px;
+      white-space: nowrap;
       transition: opacity var(--transition), transform var(--transition);
     }
-    #sidebar.collapsed .logo h2 { opacity: 0; transform: translateX(-20px); }
+
+    #sidebar.collapsed .logo h2 {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+
     .yt-button {
-      display: inline-flex; align-items: center; justify-content: center;
-      padding: 8px 12px; background: var(--yt-btn-bg); color: var(--yt-btn-text);
-      border: none; border-radius: 6px; cursor: pointer;
-      font-size: 0.95rem; font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 12px;
+      background: var(--yt-btn-bg);
+      color: var(--yt-btn-text);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
       transition: background 0.2s, transform 0.2s;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
       text-decoration: none;
     }
+
     .yt-button img {
-      width: 100%; max-width: 240px;
-      border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 240px;
+      border-radius: 4px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     }
-    .yt-button:hover { transform: scale(1.05); }
-    #sidebar.collapsed .yt-button img { display: none; }
+
+    .yt-button:hover {
+      transform: scale(1.05);
+    }
+
+    .yt-title {
+      font-size: 1.2em;
+    font-weight: 700;
+    color: #080808;
+    margin-bottom: 8px;
+    /* REMOVE or OVERRIDE the nowrap */
+    white-space: normal;
+    /* Ensure long words break if needed */
+    overflow-wrap: break-word;
+    word-break: break-word;
+    }
+
+    #sidebar.collapsed .yt-title {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+
+    #sidebar.collapsed .yt-button img {
+      display: none;
+    }
 
     /* Main canvas */
-    #main { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; overflow: hidden; }
-    canvas { display: block; width: 100%; height: 100%; animation: fadeIn .8s ease; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    #main {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      animation: fadeIn .8s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
 
     /* Controller */
     #controller {
-      display: none; position: absolute; top: 80px; right: 24px;
-      width: 260px; background: rgba(255,255,255,0.95);
-      border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-      z-index: 30; user-select: none; transition: transform .3s ease;
+      display: none;
+      position: absolute;
+      top: 80px;
+      right: 24px;
+      width: 260px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      z-index: 30;
+      user-select: none;
+      transition: transform .3s ease;
     }
-    #controller.minimized .body { display: none; }
-    #controller.minimized { width: fit-content; }
+
+    #controller.minimized .body {
+      display: none;
+    }
+
+    #controller.minimized {
+      width: fit-content;
+    }
+
     #controller .header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 8px 12px; background: #f1f3f5;
-      border-top-left-radius: 12px; border-top-right-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: #f1f3f5;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
       cursor: move;
     }
-    #controller .header h3 { font-size: 1.1rem; font-weight: 600; color: #333; }
+
+    #controller .header h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #333;
+    }
+
     #controller .header button {
-      background: transparent; border: none;
-      font-size: 1.2rem; cursor: pointer; color: #666;
+      background: transparent;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: #666;
       transition: color .2s;
     }
-    #controller .header button:hover { color: #000; }
-    #controller .body { padding: 12px; }
+
+    #controller .header button:hover {
+      color: #000;
+    }
+
+    #controller .body {
+      padding: 12px;
+    }
+
     #controller .body .trig-buttons {
-      display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
     }
+
     #controller .body .trig-buttons button {
-      flex: 1 1 30%; padding: 6px 0; border: 1px solid #ccc;
-      border-radius: 6px; background: #fff; cursor: pointer;
-      font-size: .9rem; transition: background .2s;
+      flex: 1 1 30%;
+      padding: 6px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #fff;
+      cursor: pointer;
+      font-size: .9rem;
+      transition: background .2s;
     }
-    #controller .body .trig-buttons button.active { background: #e0f7fa; }
+
+    #controller .body .trig-buttons button.active {
+      background: #e0f7fa;
+    }
+
     #controller .body label {
-      display: flex; flex-direction: column;
-      margin-bottom: 12px; font-size: .95rem; color: #444;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 12px;
+      font-size: .95rem;
+      color: #444;
     }
-    #controller .body label span { margin-bottom: 4px; font-weight: 500; }
+
+    #controller .body label span {
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
     #controller input {
-      width: 100%; padding: 8px;
-      border: 1px solid #ccc; border-radius: 6px;
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
       font-size: .95rem;
     }
 
+
     @media (max-width: 768px) {
+      .yt-title {
+        /* force wrapping on really narrow screens */
+        white-space: normal;
+        overflow-wrap: break-word;
+        word-break: break-word;
+      }
       #sidebar {
         width: var(--sidebar-mobile-width);
         transform: translateX(-100%);
         padding-top: 56px;
       }
-      #sidebar.open { transform: translateX(0); }
-      #toggle-btn { left: 16px !important; }
-      #reset-btn { right: 16px !important; }
+
+      #sidebar.open {
+        transform: translateX(0);
+      }
+
+      #toggle-btn {
+        left: 16px !important;
+      }
+
+      #reset-btn {
+        right: 16px !important;
+      }
+
       #controller {
-        width: 200px; bottom: 16px; top: auto; right: 16px;
+        width: 200px;
+        bottom: 16px;
+        top: auto;
+        right: 16px;
       }
     }
   </style>
 </head>
+
 <body>
   <div id="sidebar">
     <div class="logo">
-      <a href="/"><img src="https://yt3.googleusercontent.com/so_LhC39A37h8HZqVIoIwu4NXuJ4AUBUY_C-K_2mmOInhadB-lsQHeAKursNZ4Zy1swMt-ibXQ=s72-c-k-c0x00ffffff-no-rj" alt="Pysics Logo" /></a>
+      <a href="/"><img
+          src="https://yt3.googleusercontent.com/so_LhC39A37h8HZqVIoIwu4NXuJ4AUBUY_C-K_2mmOInhadB-lsQHeAKursNZ4Zy1swMt-ibXQ=s72-c-k-c0x00ffffff-no-rj"
+          alt="Pysics Logo" /></a>
       <h2>Pysics Sim</h2>
+      <br>
       <button class="yt-button" id="yt-btn" title="Show Controls">
         <img src="https://img.youtube.com/vi/HHiUvE57I7k/0.jpg" alt="Video Thumbnail" />
-      </button>
+      </button><br>
+      <h3 class="yt-title">Trignometry Simulation</h3>
+
+      <br>
+      <button class="yt-button" id="yt-btn-grip" title="Show Controls">
+        <img src="https://img.youtube.com/vi/5CrnFWKwPuU/0.jpg" alt="Video Thumbnail" />
+      </button><br>
+      <h3 class="yt-title">Sine inverter Simulator</h3>
+
     </div>
+
   </div>
   <button id="toggle-btn">☰</button>
   <button id="reset-btn">⟲</button>
@@ -155,6 +356,7 @@
         <button type="button" id="btn-cot">cot θ</button>
         <button type="button" id="btn-sec">sec θ</button>
         <button type="button" id="btn-csc">csc θ</button>
+        <button type="button" id="btn-auto">Auto</button>
         <button type="button" id="btn-radius">Radius</button>
         <button type="button" id="btn-graph">Graph On/Off</button>
 
@@ -170,14 +372,18 @@
     </div>
   </div>
 
+  
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
   <script>
     const INITIAL_GRID_SIZE = 40;
     let gridSize = INITIAL_GRID_SIZE, cols, rows;
     let offsetX = 0, offsetY = 0, gridDragging = false, prevX, prevY;
     let showCircle = false, angle = 0, circleRadius;
+    let GripSimulation = false
     let radiusInput, angleInput;
     let ctrlDragging = false, startX, startY;
+
     const trigStates = {
       radius: false,
       sin: false,
@@ -188,6 +394,8 @@
       csc: false
     };
     let graphEnabled = true;
+
+    let autoRotate = false;
 
 
     function setup() {
@@ -204,15 +412,48 @@
       initController();
       select('#yt-btn').mousePressed(() => {
         showCircle = true;
+        GripSimulation = false;
+        angle = 0;
         document.getElementById('controller').style.display = 'block';
+        document.getElementById('btn-cot').style.display = 'block';
+        document.getElementById('btn-sec').style.display = 'block';
+        document.getElementById('btn-csc').style.display = 'block';
+        document.getElementById('btn-sin').style.display = 'block';
+        document.getElementById('btn-cos').style.display = 'block';
+        document.getElementById('btn-tan').style.display = 'block';
+        document.getElementById('btn-graph').style.display = 'block';
+        document.getElementById('btn-radius').style.display = 'block';
       });
       resetView();
+      // inside setup(), after your select('#yt-btn').mousePressed(...)
+      select('#yt-btn-grip').mousePressed(() => {
+        // stop drawing the circle/dot
+        showCircle = false;
+        GripSimulation = true;
+        angle = 0;
+        // hide the settings panel if you like
+        // document.getElementById('controller').style.display = 'none';
+        document.getElementById('controller').style.display = 'block';
+        document.getElementById('btn-cot').style.display = 'none';
+        document.getElementById('btn-sec').style.display = 'none';
+        document.getElementById('btn-csc').style.display = 'none';
+        document.getElementById('btn-sin').style.display = 'none';
+        document.getElementById('btn-cos').style.display = 'none';
+        document.getElementById('btn-tan').style.display = 'none';
+        document.getElementById('btn-graph').style.display = 'none';
+        document.getElementById('btn-radius').style.display = 'none';
+        document.getElementById('radius-input').style.display = 'block';
+      });
     }
 
     function draw() {
       background(255);
+      if (autoRotate) {
+        angle = (angle + 1) % 360;
+      }
       drawGrid();
       if (showCircle) drawCircleDot();
+      if (GripSimulation) GripSimulator();
       // drawCircleDot();
       // if (graphEnabled) drawGraphLines();
       updateInputs();
@@ -222,7 +463,7 @@
     function drawGrid() {
       if (ctrlDragging) return;
       push();
-      translate(width/2 + offsetX, height/2 + offsetY);
+      translate(width / 2 + offsetX, height / 2 + offsetY);
       const maxD = max(width, height) * 2;
       const pulse = 100 + 50 * sin(frameCount * 0.02);
       for (let i = -cols; i <= cols; i++) drawLine(i, true, pulse, maxD);
@@ -250,8 +491,7 @@
 
     function drawCircleDot() {
       push();
-      translate(width/2 + offsetX, height/2 + offsetY);
-
+      translate(width / 2 + offsetX, height / 2 + offsetY);
       // big circle
       noFill();
       stroke(0);
@@ -292,94 +532,94 @@
       }
       if (trigStates.tan) {
         stroke(tan_color);
-        line(cx, cy, circleRadius * (1/cos(radians(-angle))), 0);
+        line(cx, cy, circleRadius * (1 / cos(radians(-angle))), 0);
       }
       if (trigStates.cot) {
         stroke(cot_color);
-        line(cx, cy, 0, circleRadius * (1/sin(radians(-angle))));
+        line(cx, cy, 0, circleRadius * (1 / sin(radians(-angle))));
       }
       if (trigStates.sec) {
         stroke(sec_color);
-        line(circleRadius * (1/cos(radians(-angle))), 0, 0, 0);
+        line(circleRadius * (1 / cos(radians(-angle))), 0, 0, 0);
       }
       if (trigStates.csc) {
         stroke(csc_color);
-        line(0, circleRadius * (1/sin(radians(-angle))), 0, 0);
+        line(0, circleRadius * (1 / sin(radians(-angle))), 0, 0);
       }
 
-       if (!graphEnabled){
-   // Only draw sine‐wave when sin θ is active
-if (trigStates.sin) {
-  let amplitude = 100, freq = 0.01;
-  stroke(sin_color);
-  beginShape();
-  for (let x = 0; x <= width/2; x++) {
-    let y = height/3 + amplitude * sin(TWO_PI * freq * x + radians(angle));
-    vertex(x, y);
-  }
-  endShape();
-}
+      if (!graphEnabled) {
+        // Only draw sine‐wave when sin θ is active
+        if (trigStates.sin) {
+          let amplitude = 100, freq = 0.01;
+          stroke(sin_color);
+          beginShape();
+          for (let x = 0; x <= width / 2; x++) {
+            let y = height / 3 + amplitude * sin(TWO_PI * freq * x + radians(angle));
+            vertex(x, y);
+          }
+          endShape();
+        }
 
-// Only draw cosine‐wave when cos θ is active
-if (trigStates.cos) {
-  let amplitude = 100, freq = 0.01;
-  stroke(cos_color);
-  beginShape();
-  for (let x = 0; x <= width/2; x++) {
-    let y = height/3 + amplitude * cos(TWO_PI * freq * x + radians(angle));
-    vertex(-x, y);
-  }
-  endShape();
-}
+        // Only draw cosine‐wave when cos θ is active
+        if (trigStates.cos) {
+          let amplitude = 100, freq = 0.01;
+          stroke(cos_color);
+          beginShape();
+          for (let x = 0; x <= width / 2; x++) {
+            let y = height / 3 + amplitude * cos(TWO_PI * freq * x + radians(angle));
+            vertex(-x, y);
+          }
+          endShape();
+        }
 
-// Only draw tangent‐wave when tan θ is active
-if (trigStates.tan) {
-  let amplitude = 50, freq = 0.005;
-  stroke(tan_color);
-  beginShape();
-  for (let x = 0; x <= width/2; x++) {
-    let y = height/3 + amplitude * tan(TWO_PI * freq * x + radians(angle));
-    vertex(x, y);
-  }
-  endShape();
-}
+        // Only draw tangent‐wave when tan θ is active
+        if (trigStates.tan) {
+          let amplitude = 50, freq = 0.005;
+          stroke(tan_color);
+          beginShape();
+          for (let x = 0; x <= width / 2; x++) {
+            let y = height / 3 + amplitude * tan(TWO_PI * freq * x + radians(angle));
+            vertex(x, y);
+          }
+          endShape();
+        }
 
-// Only draw cotangent‐wave when cot θ is active
-if (trigStates.cot) {
-  let amplitude = 50, freq = 0.005;
-  stroke(cot_color);
-  beginShape();
-  for (let x = 0; x <= width/2; x++) {
-    let y = height/3 + amplitude * (1/tan(TWO_PI * freq * x + radians(angle)));
-    vertex(-x, y);
-  }
-  endShape();
-}
+        // Only draw cotangent‐wave when cot θ is active
+        if (trigStates.cot) {
+          let amplitude = 50, freq = 0.005;
+          stroke(cot_color);
+          beginShape();
+          for (let x = 0; x <= width / 2; x++) {
+            let y = height / 3 + amplitude * (1 / tan(TWO_PI * freq * x + radians(angle)));
+            vertex(-x, y);
+          }
+          endShape();
+        }
 
-// Only draw secant‐wave when sec θ is active
-if (trigStates.sec) {
-  let amplitude = 75, freq = 0.005;
-  stroke(sec_color);
-  beginShape();
-  for (let x = 0; x <= width/2; x++) {
-    let y = height/3 + amplitude * (1/cos(TWO_PI * freq * x + radians(angle)));
-    vertex(x, y);
-  }
-  endShape();
-}
+        // Only draw secant‐wave when sec θ is active
+        if (trigStates.sec) {
+          let amplitude = 75, freq = 0.005;
+          stroke(sec_color);
+          beginShape();
+          for (let x = 0; x <= width / 2; x++) {
+            let y = height / 3 + amplitude * (1 / cos(TWO_PI * freq * x + radians(angle)));
+            vertex(x, y);
+          }
+          endShape();
+        }
 
-// Only draw cosecant‐wave when csc θ is active
-if (trigStates.csc) {
-  let amplitude = 75, freq = 0.005;
-  stroke(csc_color);
-  beginShape();
-  for (let x = 0; x <= width/2; x++) {
-    let y = height/3 + amplitude * (1/sin(TWO_PI * freq * x + radians(angle)));
-    vertex(-x, y);
-  }
-  endShape();
-}
-}
+        // Only draw cosecant‐wave when csc θ is active
+        if (trigStates.csc) {
+          let amplitude = 75, freq = 0.005;
+          stroke(csc_color);
+          beginShape();
+          for (let x = 0; x <= width / 2; x++) {
+            let y = height / 3 + amplitude * (1 / sin(TWO_PI * freq * x + radians(angle)));
+            vertex(-x, y);
+          }
+          endShape();
+        }
+      }
 
       fill(255, 0, 0);
       noStroke();
@@ -389,88 +629,114 @@ if (trigStates.csc) {
       pop();
     }
 
-    function drawGraphLines() {
-      let radius_color = [0, 255, 0]
-      let sin_color = [0, 0, 255]
-      let cos_color = [255, 215, 0]
-      let tan_color = [255, 20, 147]
-      let cot_color = [0, 255, 255]
-      let sec_color = [238, 130, 238]
-      let csc_color = [255, 165, 0]
-         // Only draw sine‐wave when sin θ is active
-if (trigStates.sin) {
-  let amplitude = 100, freq = 0.01;
-  stroke(sin_color);
-  beginShape();
-  for (let x = 0; x <= width/2; x++) {
-    let y = height/3 + amplitude * sin(TWO_PI * freq * x + radians(angle));
-    vertex(x, y);
-  }
-  endShape();
-}
+function GripSimulator() {
+  push();
+  translate(width / 2 + offsetX, height / 2 + offsetY);
 
-// Only draw cosine‐wave when cos θ is active
-if (trigStates.cos) {
-  let amplitude = 100, freq = 0.01;
-  stroke(cos_color);
-  beginShape();
-  for (let x = 0; x <= width/2; x++) {
-    let y = height/3 + amplitude * cos(TWO_PI * freq * x + radians(angle));
-    vertex(-x, y);
-  }
-  endShape();
-}
+  // angle arc
+  // const arcR = circleRadius * 0.2;
+  // stroke(255, 0, 0);
+  // strokeWeight(4);
+  // noFill();
+  // arc(0, 0, arcR * 2, arcR * 2, radians(-angle), 0);
 
-// Only draw tangent‐wave when tan θ is active
-if (trigStates.tan) {
-  let amplitude = 50, freq = 0.005;
-  stroke(tan_color);
-  beginShape();
-  for (let x = 0; x <= width/2; x++) {
-    let y = height/3 + amplitude * tan(TWO_PI * freq * x + radians(angle));
-    vertex(x, y);
-  }
-  endShape();
-}
+  // lever‐arm end
+  let cx = (circleRadius*0.7) * cos(radians(-angle));
+  let cy = (circleRadius*0.7) * sin(radians(-angle));
+  strokeWeight(5);
 
-// Only draw cotangent‐wave when cot θ is active
-if (trigStates.cot) {
-  let amplitude = 50, freq = 0.005;
-  stroke(cot_color);
-  beginShape();
-  for (let x = 0; x <= width/2; x++) {
-    let y = height/3 + amplitude * (1/tan(TWO_PI * freq * x + radians(angle)));
-    vertex(-x, y);
-  }
-  endShape();
-}
-
-// Only draw secant‐wave when sec θ is active
-if (trigStates.sec) {
-  let amplitude = 75, freq = 0.005;
-  stroke(sec_color);
-  beginShape();
-  for (let x = 0; x <= width/2; x++) {
-    let y = height/3 + amplitude * (1/cos(TWO_PI * freq * x + radians(angle)));
-    vertex(x, y);
-  }
-  endShape();
-}
-
-// Only draw cosecant‐wave when csc θ is active
-if (trigStates.csc) {
-  let amplitude = 75, freq = 0.005;
-  stroke(csc_color);
-  beginShape();
-  for (let x = 0; x <= width/2; x++) {
-    let y = height/3 + amplitude * (1/sin(TWO_PI * freq * x + radians(angle)));
-    vertex(-x, y);
-  }
-  endShape();
-}
-
+  // colors
+  let red = [255, 0, 0],
+      green = [0, 255, 0],
+      blue = [0, 0, 255],
+      yelow = [255, 165, 0];
       
+
+  noFill();
+  stroke(0);
+  strokeWeight(2);
+  ellipse(0, -(circleRadius*2), circleRadius*2, circleRadius*2);
+  let c_x, c_y, sign;
+  // drawing coil 
+  let s = 25, c_a = 2;
+  for (let i = 0; i <= 360; i += c_a*2) {
+    // Compute the two points at angles -i and -(i+5), each offset by +5 or -5
+    let ang1 = radians(-i);
+    let ang2 = radians(-(i + c_a));
+    let ang3 = radians(-(i + c_a*2));
+
+    // Alternate “sign” so the coil zig-zags
+    // (you could also do something like: sign = (i / 5) % 2 === 0 ? +5 : -5)
+    
+    let sign1 = +s;
+    let sign2 = -s;
+
+    let x1 = (circleRadius + sign1) * cos(ang1);
+    let y1 = (circleRadius + sign1) * sin(ang1);
+    let x2 = (circleRadius + sign2) * cos(ang2);
+    let y2 = (circleRadius + sign2) * sin(ang2);
+    let x3 = (circleRadius + sign1) * cos(ang3);
+    let y3 = (circleRadius + sign1) * sin(ang3);
+
+    if(i>=0 && i<=60 || i>=180 && i<=240){
+      stroke(yelow);
     }
+    else if(i>=60 && i<=120 || i>=240 && i<=300){
+      stroke(green);
+    }
+    else if(i>=120 && i<=180 || i>=300 && i<=360){
+      stroke(red);
+    }
+    
+    line(x1, (circleRadius*-2) + y1, x2, (circleRadius*-2) + y2);
+    line(x2, (circleRadius*-2) + y2, x3, (circleRadius*-2) + y3);
+  }
+
+  strokeWeight(5);
+  // 1st phase
+  let amplitude = 100, freq = 0.01;
+  stroke(yelow);
+  beginShape();
+  for (let x = 0; x <= width / 2; x++) {
+    let y =  amplitude * sin(TWO_PI * freq * x + radians(angle+60));
+    vertex(x, y);
+  }
+  endShape();
+
+  // 2nd phase
+  amplitude = 100, freq = 0.01;
+  stroke(green);
+  beginShape();
+  for (let x = 0; x <= width / 2; x++) {
+    let y =  amplitude * sin(TWO_PI * freq * x + radians(angle));
+    vertex(x, y);
+  }
+  endShape();
+
+  // 3rd phase
+  amplitude = 100, freq = 0.01;
+  stroke(red);
+  beginShape();
+  for (let x = 0; x <= width / 2; x++) {
+    let y =  amplitude * sin(TWO_PI * freq * x + radians(angle+120));
+    vertex(x, y);
+  }
+  endShape();
+
+  stroke(red)
+  strokeWeight(25);
+  line(0, (circleRadius*-2), cx, (circleRadius  *-2)+cy);
+  stroke(blue)
+  line(0, (circleRadius*-2), -cx, -1*((circleRadius  *2)+cy));
+  stroke(0)
+  line(0, (circleRadius*-2), 0, (circleRadius*-2));
+
+  pop();
+  prevAngle = angle;
+
+
+}
+
 
     function mousePressed() {
       gridDragging = !ctrlDragging;
@@ -504,8 +770,8 @@ if (trigStates.csc) {
         : sb.toggleClass('collapsed');
     }
     function updateGrid() {
-      cols = ceil((width/2)/gridSize);
-      rows = ceil((height/2)/gridSize);
+      cols = ceil((width / 2) / gridSize);
+      rows = ceil((height / 2) / gridSize);
     }
     function resetView() {
       offsetX = 0; offsetY = 0; gridSize = INITIAL_GRID_SIZE;
@@ -514,7 +780,9 @@ if (trigStates.csc) {
     }
     function initController() {
       radiusInput = document.getElementById('radius-input');
-      angleInput  = document.getElementById('angle-input');
+      angleInput = document.getElementById('angle-input');
+
+
       radiusInput.addEventListener('input', () => {
         const v = parseFloat(radiusInput.value);
         if (!isNaN(v)) { circleRadius = v; radiusInput.dataset.userChanged = true; }
@@ -524,12 +792,20 @@ if (trigStates.csc) {
         if (!isNaN(v)) angle = (v % 360 + 360) % 360;
       });
 
+
       Object.keys(trigStates).forEach(fn => {
         select('#btn-' + fn).mousePressed(() => {
           trigStates[fn] = !trigStates[fn];
           document.getElementById('btn-' + fn).classList.toggle('active', trigStates[fn]);
         });
       });
+
+      select('#btn-auto').mousePressed(() => {
+        autoRotate = !autoRotate;
+        document.getElementById('btn-auto').classList.toggle('active', autoRotate);
+      });
+
+
       // now _after_ the loop:
       select('#btn-graph').mousePressed(() => {
         graphEnabled = !graphEnabled;
@@ -537,9 +813,9 @@ if (trigStates.csc) {
       });
 
       const ctrl = document.getElementById('controller'),
-            hdr  = ctrl.querySelector('.header'),
-            mb   = document.getElementById('minimize-btn'),
-            bodyEl = document.body;
+        hdr = ctrl.querySelector('.header'),
+        mb = document.getElementById('minimize-btn'),
+        bodyEl = document.body;
 
       hdr.addEventListener('mousedown', e => {
         ctrlDragging = true;
@@ -550,7 +826,7 @@ if (trigStates.csc) {
       document.addEventListener('mousemove', e => {
         if (!ctrlDragging) return;
         ctrl.style.left = (e.clientX - startX) + 'px';
-        ctrl.style.top  = (e.clientY - startY) + 'px';
+        ctrl.style.top = (e.clientY - startY) + 'px';
       });
       document.addEventListener('mouseup', () => {
         ctrlDragging = false;
@@ -573,8 +849,9 @@ if (trigStates.csc) {
       if (document.activeElement !== radiusInput)
         radiusInput.value = circleRadius.toFixed(0);
       if (document.activeElement !== angleInput)
-        angleInput.value  = angle.toFixed(0);
+        angleInput.value = angle.toFixed(0);
     }
   </script>
 </body>
+
 </html>

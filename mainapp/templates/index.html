@@ -1,16 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pysics</title>
   <style>
-    /* Reset & Base */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background: #f9fafb; color: #111827; overflow-x: hidden; }
-    a { text-decoration: none; color: inherit; cursor: pointer; }
+    /* =====================
+       1. COLOR VARIABLES
+       ===================== */
+    :root {
+      /* Light (Day) mode colors */
+      --bg-page: #f9fafb;
+      --text-main: #111827;
+      --text-secondary: #4b5563;
+      --text-muted: #6b7280;
+      --accent-strong: #10b981;
+      --accent-hover: #059669;
+      --button-outline-border: #4b5563;
+      --section-bg-alt: #ffffff;
+      --info-bg: #f3f4f6;
+      --card-bg: #ffffff;
+      --card-shadow: rgba(0, 0, 0, 0.05);
+      --footer-text: #777;
+      --border-light: #e5e7eb;
+    }
 
-    /* Header & Buttons */
+    .dark-theme {
+      /* Dark (Night) mode overrides */
+      --bg-page: #111827;
+      --text-main: #f9fafb;
+      --text-secondary: #d1d5db;
+      --text-muted: #9ca3af;
+      --accent-strong: #34d399;       /* slightly brighter for dark bg */
+      --accent-hover: #059669;        /* reuse same hover */
+      --button-outline-border: #9ca3af;
+      --section-bg-alt: #1f2937;      /* very dark background for sections */
+      --info-bg: #374151;             /* dark gray for info panels */
+      --card-bg: #1f2937;
+      --card-shadow: rgba(0, 0, 0, 0.2);
+      --footer-text: #9ca3af;
+      --border-light: #374151;
+    }
+
+    /* =====================
+       2. RESET & BASE
+       ===================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-page);
+      color: var(--text-main);
+      overflow-x: hidden;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    /* =====================
+       3. HEADER & BUTTONS
+       ===================== */
     header {
       display: flex;
       justify-content: space-between;
@@ -19,81 +74,421 @@
       position: relative;
       z-index: 10;
     }
-    .logo { display: flex; align-items: center; font-size: 1.75rem; font-weight: 900; letter-spacing: -1px; }
-    .logo img.logo-img { width: 40px; height: auto; margin-right: 12px; border-radius: 50%; }
-    nav ul { display: flex; gap: 24px; list-style: none; }
-    nav a { font-size: 0.95rem; font-weight: 500; padding: 8px 12px; transition: color 0.2s; }
-    nav a:hover { color: #10b981; }
-    .btn-outline { padding: 8px 20px; border: 2px solid #4b5563; border-radius: 9999px; background: transparent; font-size: 0.95rem; cursor: pointer; transition: background 0.3s, color 0.3s; }
-    .btn-outline:hover { background: #4b5563; color: #fff; }
-    .btn-primary { padding: 10px 24px; background: #10b981; color: #fff; border-radius: 9999px; font-size: 0.95rem; font-weight: 600; border: none; cursor: pointer; transition: background 0.3s, transform 0.2s; }
-    .btn-primary:hover { background: #059669; transform: translateY(-2px); }
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 1.75rem;
+      font-weight: 900;
+      letter-spacing: -1px;
+      color: var(--text-main);
+    }
+    .logo img.logo-img {
+      width: 40px;
+      height: auto;
+      margin-right: 12px;
+      border-radius: 50%;
+    }
+    nav ul {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+    nav a {
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 8px 12px;
+      transition: color 0.2s;
+      color: var(--text-main);
+    }
+    nav a:hover {
+      color: var(--accent-strong);
+    }
+    .btn-outline {
+      padding: 8px 20px;
+      border: 2px solid var(--button-outline-border);
+      border-radius: 9999px;
+      background: transparent;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+      color: var(--text-main);
+    }
+    .btn-outline:hover {
+      background: var(--button-outline-border);
+      color: #fff;
+    }
+    .btn-primary {
+      padding: 10px 24px;
+      background: var(--accent-strong);
+      color: #fff;
+      border-radius: 9999px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+    }
 
-    /* Sections */
-    section { padding: 80px 20px; scroll-margin-top: 80px; }
-    .container { max-width: 1000px; margin: 0 auto; text-align: center; }
-    section h2 { font-size: 2.5rem; font-weight: 800; color: #111827; margin-bottom: 16px; }
+    /* Theme Toggle Button */
+    #themeToggle {
+      margin-left: 20px;
+      background: transparent;
+      border: none;
+      font-size: 1.25rem;
+      cursor: pointer;
+      color: var(--text-main);
+      transition: color 0.3s;
+    }
+    #themeToggle:hover {
+      color: var(--accent-strong);
+    }
 
-    /* About Section */
-    #about { display: none; background: #ffffff; }
-    #about .container { background: #f3f4f6; padding: 40px; border-radius: 12px; }
-    #about p { font-size: 1.125rem; color: #374151; line-height: 1.8; margin-bottom: 32px; }
-    .highlights { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
-    .highlight { background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); text-align: left; }
-    .highlight h4 { font-size: 1.25rem; font-weight: 700; color: #10b981; margin-bottom: 8px; }
-    .highlight p { font-size: 0.9rem; color: #6b7280; }
+    /* =====================
+       4. SECTIONS
+       ===================== */
+    section {
+      padding: 80px 20px;
+      scroll-margin-top: 80px;
+      background: var(--section-bg-alt);
+      transition: background 0.3s;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    section h2 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 16px;
+    }
 
-    /* Community Section */
-    #community { display: none; background: #ffffff; }
-    .community-links { display: flex; justify-content: center; gap: 40px; margin-top: 20px; }
-    .community-links img { width: 48px; height: 48px; transition: transform 0.2s; }
-    .community-links img:hover { transform: scale(1.1); }
+    /* =====================
+       5. ABOUT SECTION
+       ===================== */
+    #about {
+      display: none;
+      background: var(--section-bg-alt);
+    }
+    #about .container {
+      background: var(--info-bg);
+      padding: 40px;
+      border-radius: 12px;
+    }
+    #about p {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 32px;
+    }
+    .highlights {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+    }
+    .highlight {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px var(--card-shadow);
+      text-align: left;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    .highlight h4 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent-strong);
+      margin-bottom: 8px;
+    }
+    .highlight p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
 
-    /* Main Hero */
-    main { position: relative; padding: 100px 20px 150px; text-align: left; max-width: 1200px; margin: 0 auto; }
-    .hero-content { width: 50%; display: inline-block; vertical-align: top; }
-    .hero-title { font-size: 5rem; font-weight: 900; line-height: 1; opacity: 0; animation: fadeInUp 1s ease-out forwards; }
-    .hero-title div { position: relative; }
-    .tagline { font-size: 1.25rem; margin-top: 24px; opacity: 0; animation: fadeInUp 1s ease-out 0.6s forwards; max-width: 400px; }
-    .hero-actions { margin-top: 32px; opacity: 0; animation: fadeInUp 1s ease-out 0.9s forwards; }
-    .hero-illustration { width: 45%; display: inline-block; vertical-align: top; opacity: 0; animation: fadeInRight 1s ease-out 1s forwards; }
+    /* =====================
+       6. COMMUNITY SECTION
+       ===================== */
+    #community {
+      display: none;
+      background: var(--section-bg-alt);
+    }
+    .community-links {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-top: 20px;
+    }
+    .community-links img {
+      width: 48px;
+      height: 48px;
+      transition: transform 0.2s, filter 0.3s;
+      filter: var(--icon-filter, none);
+    }
+    .community-links img:hover {
+      transform: scale(1.1);
+    }
 
-    /* Decorative & Animations */
-    .blob { position: absolute; border-radius: 50%; opacity: 0.4; animation: blobMove 20s infinite; z-index: -1; }
-    .blob.one { width: 300px; height: 300px; background: #fcd34d; top: -60px; left: -100px; }
-    .blob.two { width: 200px; height: 200px; background: #a5b4fc; top: 200px; right: -80px; animation-delay: 5s; }
-    .blob.three { width: 250px; height: 250px; background: #f87171; top: 300px; left: -50px; animation-delay: 10s; }
-    .blob.four { width: 150px; height: 150px; background: #6ee7b7; bottom: 40px; left: 10%; }
-    .blob.five { width: 180px; height: 180px; background: #fbbf24; bottom: 80px; right: 15%; }
-    @keyframes blobMove { 0%,100% { transform: translate(0,0) scale(1) rotate(0deg); } 33% { transform: translate(20px, -30px) scale(1.1) rotate(10deg); } 66% { transform: translate(-20px, 20px) scale(0.9) rotate(-10deg); } }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes fadeInRight { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+    /* =====================
+       7. MAIN HERO
+       ===================== */
+    main {
+      position: relative;
+      padding: 100px 20px 150px;
+      text-align: left;
+      max-width: 1200px;
+      margin: 0 auto;
+      background: transparent; /* let body bg show through */
+    }
+    .hero-content {
+      width: 50%;
+      display: inline-block;
+      vertical-align: top;
+    }
+    .hero-title {
+      font-size: 5rem;
+      font-weight: 900;
+      line-height: 1;
+      opacity: 0;
+      animation: fadeInUp 1s ease-out forwards;
+      color: var(--text-main);
+    }
+    .hero-title div {
+      position: relative;
+    }
+    .tagline {
+      font-size: 1.25rem;
+      margin-top: 24px;
+      opacity: 0;
+      animation: fadeInUp 1s ease-out 0.6s forwards;
+      max-width: 400px;
+      color: var(--text-secondary);
+    }
+    .hero-actions {
+      margin-top: 32px;
+      opacity: 0;
+      animation: fadeInUp 1s ease-out 0.9s forwards;
+    }
+    .hero-illustration {
+      width: 45%;
+      display: inline-block;
+      vertical-align: top;
+      opacity: 0;
+      animation: fadeInRight 1s ease-out 1s forwards;
+    }
 
-    /* Stats and Videos */
-    .stats { display: flex; gap: 40px; margin-top: 80px; opacity: 0; animation: fadeInUp 1s ease-out 1.2s forwards; }
-    .stat { text-align: center; }
-    .stat h3 { font-size: 2rem; font-weight: 700; color: #10b981; }
-    .stat p { font-size: 0.95rem; margin-top: 4px; color: #4b5563; }
-    .top-videos { margin: 80px auto; max-width: 1200px; text-align: center; position: relative; z-index: 5; }
-    .top-videos h2 { font-size: 2rem; font-weight: 800; margin-bottom: 24px; }
-    .videos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 24px; }
-    .video-card { position: relative; width: 100%; aspect-ratio: 9/16; border-radius: 1rem; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-    .video-card img { width: 100%; height: 100%; object-fit: cover; }
-    .video-card p { position: absolute; bottom: 0; width: 100%; padding: 6px; font-size: 0.8rem; font-weight: 600; color: #fff; background: rgba(0,0,0,0.6); }
-    .video-card::after { content: 'Shorts'; position: absolute; top: 8px; left: 8px; font-size: 0.7rem; padding: 2px 6px; background: rgba(0,0,0,0.6); color: #fff; border-radius: 12px; }
+    /* =====================
+       8. DECORATIVE BLOB ANIMATIONS
+       ===================== */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.4;
+      animation: blobMove 20s infinite;
+      z-index: -1;
+    }
+    .blob.one {
+      width: 300px;
+      height: 300px;
+      background: #fcd34d; /* stays same */
+      top: -60px;
+      left: -100px;
+    }
+    .blob.two {
+      width: 200px;
+      height: 200px;
+      background: #a5b4fc; /* stays same */
+      top: 200px;
+      right: -80px;
+      animation-delay: 5s;
+    }
+    .blob.three {
+      width: 250px;
+      height: 250px;
+      background: #f87171; /* stays same */
+      top: 300px;
+      left: -50px;
+      animation-delay: 10s;
+    }
+    .blob.four {
+      width: 150px;
+      height: 150px;
+      background: #6ee7b7; /* stays same */
+      bottom: 40px;
+      left: 10%;
+    }
+    .blob.five {
+      width: 180px;
+      height: 180px;
+      background: #fbbf24; /* stays same */
+      bottom: 80px;
+      right: 15%;
+    }
+    @keyframes blobMove {
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1) rotate(0deg);
+      }
+      33% {
+        transform: translate(20px, -30px) scale(1.1) rotate(10deg);
+      }
+      66% {
+        transform: translate(-20px, 20px) scale(0.9) rotate(-10deg);
+      }
+    }
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes fadeInRight {
+      from {
+        opacity: 0;
+        transform: translateX(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
 
-    /* Footer */
-    footer { text-align: center; padding: 40px 0; margin-top: 60px; border-top: 1px solid #e5e7eb; color: #777; font-size: 0.9rem; position: relative; z-index: 5; }
+    /* =====================
+       9. STATS & VIDEOS
+       ===================== */
+    .stats {
+      display: flex;
+      gap: 40px;
+      margin-top: 80px;
+      opacity: 0;
+      animation: fadeInUp 1s ease-out 1.2s forwards;
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat h3 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent-strong);
+    }
+    .stat p {
+      font-size: 0.95rem;
+      margin-top: 4px;
+      color: var(--text-secondary);
+    }
 
-    /* Responsive */
-    @media(max-width: 1024px) { .hero-content, .hero-illustration { display: block; width: 100%; } }
-    @media(max-width: 640px) { header { flex-direction: column; } nav ul { flex-wrap: wrap; justify-content: center; } }
+    .top-videos {
+      margin: 80px auto;
+      max-width: 1200px;
+      text-align: center;
+      position: relative;
+      z-index: 5;
+      background: var(--section-bg-alt);
+      transition: background 0.3s;
+    }
+    .top-videos h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 24px;
+      color: var(--text-main);
+    }
+    .videos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 24px;
+    }
+    .video-card {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 9/16;
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 4px 12px var(--card-shadow);
+      transition: box-shadow 0.3s;
+    }
+    .video-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .video-card p {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      padding: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.6);
+    }
+    .video-card::after {
+      content: 'Shorts';
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      border-radius: 12px;
+    }
+
+    /* =====================
+       10. FOOTER
+       ===================== */
+    footer {
+      text-align: center;
+      padding: 40px 0;
+      margin-top: 60px;
+      border-top: 1px solid var(--border-light);
+      color: var(--footer-text);
+      font-size: 0.9rem;
+      position: relative;
+      z-index: 5;
+      background: var(--section-bg-alt);
+      transition: background 0.3s;
+    }
+
+    /* =====================
+       11. RESPONSIVE
+       ===================== */
+    @media (max-width: 1024px) {
+      .hero-content,
+      .hero-illustration {
+        display: block;
+        width: 100%;
+      }
+    }
+    @media (max-width: 640px) {
+      header {
+        flex-direction: column;
+      }
+      nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
   </style>
 </head>
 <body>
+  <!-- =====================
+       12. HEADER (with Theme Toggle)
+       ===================== -->
   <header>
     <div class="logo">
-      <img src="https://yt3.googleusercontent.com/so_LhC39A37h8HZqVIoIwu4NXuJ4AUBUY_C-K_2mmOInhadB-lsQHeAKursNZ4Zy1swMt-ibXQ=s72-c-k-c0x00ffffff-no-rj" alt="Pysics Logo" class="logo-img">
+      <img
+        src="https://yt3.googleusercontent.com/so_LhC39A37h8HZqVIoIwu4NXuJ4AUBUY_C-K_2mmOInhadB-lsQHeAKursNZ4Zy1swMt-ibXQ=s72-c-k-c0x00ffffff-no-rj"
+        alt="Pysics Logo"
+        class="logo-img"
+      />
       Pysics
     </div>
     <nav>
@@ -104,23 +499,36 @@
         <li><a id="simulationsLink" href="/simulations/{{email}}">Simulations</a></li>
       </ul>
     </nav>
-    <div>
+    <div style="display: flex; align-items: center;">
+      <!-- Theme Toggle Icon: 🌞 for light, 🌙 for dark -->
+      <button id="themeToggle" title="Toggle light/dark mode">🌙</button>
+
       {% if log_in %}
-        <button class="btn-primary">Welcome</button>
-        <button class="btn-outline">{{ email_name }}</button>
+        <button class="btn-primary" style="margin-left: 16px;">Welcome</button>
+        <button class="btn-outline" style="margin-left: 8px;">{{ email_name }}</button>
       {% else %}
-        <a href="/google_sso/login/"><button class="btn-outline">Log in</button></a>
-        <a href="/google_sso/login/"><button class="btn-primary">Sign up</button></a>
+        <a href="/google_sso/login/"><button class="btn-outline" style="margin-left: 16px;">Log in</button></a>
+        <a href="/google_sso/login/"><button class="btn-primary" style="margin-left: 8px;">Sign up</button></a>
       {% endif %}
     </div>
   </header>
 
-  <!-- About Section -->
+  <!-- ---------------------
+       ABOUT SECTION
+       --------------------- -->
   <section id="about">
     <div class="container">
       <h2>About Pysics</h2>
-      <p><strong>Pysics</strong> (a blend of Python’s “Py” and the “sics” of physics) is a weekly physics-exploration channel hosted by Nishant Garg, where complex concepts come to life through interactive simulations and bite-sized animations.</p>
-      <p>From deriving the Q-value of nuclear reactions to visualizing trigonometric functions with Pygame, each short video is designed to spark curiosity and deepen understanding—no textbooks required.</p>
+      <p>
+        <strong>Pysics</strong> (a blend of Python’s “Py” and the “sics” of physics) is a weekly
+        physics-exploration channel hosted by Nishant Garg, where complex concepts come to life
+        through interactive simulations and bite-sized animations.
+      </p>
+      <p>
+        From deriving the Q-value of nuclear reactions to visualizing trigonometric functions with
+        Pygame, each short video is designed to spark curiosity and deepen understanding—no textbooks
+        required.
+      </p>
       <div class="highlights">
         <div class="highlight">
           <h4>Interactive Simulations</h4>
@@ -139,24 +547,47 @@
           <p>Join a growing community of coders and learners.</p>
         </div>
       </div>
-      <a href="https://www.youtube.com/@nishant.garg.pysics?sub_confirmation=1" target="_blank">
+      <a
+        href="https://www.youtube.com/@nishant.garg.pysics?sub_confirmation=1"
+        target="_blank"
+      >
         <button class="btn-primary">▶️ Subscribe Now</button>
       </a>
     </div>
   </section>
 
-  <!-- Community Section -->
+  <!-- ---------------------
+       COMMUNITY SECTION
+       --------------------- -->
   <section id="community">
     <div class="container">
       <h2>Community</h2>
       <div class="community-links">
-        <a href="https://www.youtube.com/@nishant.garg.pysics" target="_blank"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v6/icons/youtube.svg" alt="YouTube"></a>
-        <a href="https://github.com/Nishantrde" target="_blank"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v6/icons/github.svg" alt="GitHub"></a>
-        <a href="https://www.linkedin.com/in/nishant-garg-dev/" target="_blank"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v6/icons/linkedin.svg" alt="LinkedIn"></a>
+        <a href="https://www.youtube.com/@nishant.garg.pysics" target="_blank">
+          <img
+            src="https://cdn.jsdelivr.net/npm/simple-icons@v6/icons/youtube.svg"
+            alt="YouTube"
+          />
+        </a>
+        <a href="https://github.com/Nishantrde" target="_blank">
+          <img
+            src="https://cdn.jsdelivr.net/npm/simple-icons@v6/icons/github.svg"
+            alt="GitHub"
+          />
+        </a>
+        <a href="https://www.linkedin.com/in/nishant-garg-dev/" target="_blank">
+          <img
+            src="https://cdn.jsdelivr.net/npm/simple-icons@v6/icons/linkedin.svg"
+            alt="LinkedIn"
+          />
+        </a>
       </div>
     </div>
   </section>
 
+  <!-- =====================
+       MAIN HERO
+       ===================== -->
   <main>
     <div class="blob one"></div>
     <div class="blob two"></div>
@@ -165,36 +596,86 @@
     <div class="blob five"></div>
 
     <div class="hero-content">
-      <h1 class="hero-title"><div>I’m Exploring—</div><div>Come Along!</div></h1>
+      <h1 class="hero-title">
+        <div>I’m Exploring—</div>
+        <div>Come Along!</div>
+      </h1>
       <p class="tagline">Interactive videos every week! 📺</p>
       <div class="hero-actions">
-        <a href="https://www.youtube.com/@nishant.garg.pysics?sub_confirmation=1" target="_blank">
+        <a
+          href="https://www.youtube.com/@nishant.garg.pysics?sub_confirmation=1"
+          target="_blank"
+        >
           <button class="btn-primary">▶️ Sub Me here</button>
         </a>
       </div>
       <div class="stats">
-        <div class="stat"><h3>40+</h3><p>Shorts Uploaded</p></div>
-        <div class="stat"><h3>10K+</h3><p>Total Views</p></div>
-        <div class="stat"><h3>13K+</h3><p>Most Pop Short</p></div>
+        <div class="stat">
+          <h3>40+</h3>
+          <p>Shorts Uploaded</p>
+        </div>
+        <div class="stat">
+          <h3>10K+</h3>
+          <p>Total Views</p>
+        </div>
+        <div class="stat">
+          <h3>13K+</h3>
+          <p>Most Pop Short</p>
+        </div>
       </div>
     </div>
   </main>
 
-  <!-- Top 4 Viewed Videos -->
+  <!-- =====================
+       Top 4 Viewed Videos
+       ===================== -->
   <section class="top-videos">
     <h2>Top 4 Viewed Videos</h2>
     <div class="videos-grid" id="videosGrid"></div>
   </section>
 
+  <!-- =====================
+       FOOTER
+       ===================== -->
   <footer id="contact">
-    <p>&copy; 2025 Pysics Blog. Built with ❤️ by Nishant Garg.</p>
-    <p><a href="https://www.linkedin.com/in/nishant-garg-dev/" target="_blank">LinkedIn</a> | <a href="https://github.com/Nishantrde" target="_blank">GitHub</a></p>
+    <p>&copy; 2025 Pysics. Built with ❤️ by Nishant Garg.</p>
+    <p>
+      <a href="https://www.linkedin.com/in/nishant-garg-dev/" target="_blank"
+        >LinkedIn</a
+      >
+      |
+      <a href="https://github.com/Nishantrde" target="_blank">GitHub</a>
+    </p>
   </footer>
 
-  <!-- Scripts -->
+  <!-- =====================
+       SCRIPTS (Toggle & YouTube Fetch)
+       ===================== -->
   <script>
-    
-    // Login check for simulations link
+    // ---- 1) THEME TOGGLE LOGIC ----
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const bodyEl = document.body;
+
+    // Check for saved user preference in localStorage
+    const savedTheme = localStorage.getItem('pysics-theme');
+    if (savedTheme === 'dark') {
+      bodyEl.classList.add('dark-theme');
+      themeToggleBtn.textContent = '🌞'; // show sun icon when in dark mode
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+      bodyEl.classList.toggle('dark-theme');
+
+      if (bodyEl.classList.contains('dark-theme')) {
+        themeToggleBtn.textContent = '🌞'; // clicking will switch to light
+        localStorage.setItem('pysics-theme', 'dark');
+      } else {
+        themeToggleBtn.textContent = '🌙';
+        localStorage.setItem('pysics-theme', 'light');
+      }
+    });
+
+    // ---- 2) LOGIN CHECK FOR SIMULATIONS LINK ----
     const isLoggedIn = {% if log_in %}true{% else %}false{% endif %};
     document.addEventListener('DOMContentLoaded', () => {
       const simLink = document.getElementById('simulationsLink');
@@ -206,18 +687,22 @@
       });
     });
 
-    // Toggle sections
+    // ---- 3) TOGGLE “About” / “Community” SECTIONS ----
     function toggleSection(showId) {
-      ['about','community'].forEach(id => {
+      ['about', 'community'].forEach((id) => {
         const el = document.getElementById(id);
-        el.style.display = (id === showId) ? 'block' : 'none';
+        el.style.display = id === showId ? 'block' : 'none';
         if (id === showId) el.scrollIntoView({ behavior: 'smooth' });
       });
     }
-    document.getElementById('aboutLink').addEventListener('click', () => toggleSection('about'));
-    document.getElementById('communityLink').addEventListener('click', () => toggleSection('community'));
+    document.getElementById('aboutLink').addEventListener('click', () =>
+      toggleSection('about')
+    );
+    document.getElementById('communityLink').addEventListener('click', () =>
+      toggleSection('community')
+    );
 
-    // Fetch top 4 viewed Shorts
+    // ---- 4) FETCH TOP 4 VIEWED SHORTS ----
     const API_KEY = 'AIzaSyC7bZy8WWuSOOuVw903zJ0FpNvhl5I3U60';
     const CHANNEL_ID = 'UCFoIYk0NwGIMb34cx23LizQ';
     (async () => {
@@ -227,7 +712,7 @@
         );
         const { items } = await res.json();
         const grid = document.getElementById('videosGrid');
-        items.forEach(item => {
+        items.forEach((item) => {
           grid.innerHTML += `
             <a class="video-card" href="https://youtu.be/${item.id.videoId}" target="_blank">
               <img src="https://img.youtube.com/vi/${item.id.videoId}/maxresdefault.jpg" alt="${item.snippet.title}">
@@ -235,7 +720,7 @@
             </a>
           `;
         });
-      } catch(e) {
+      } catch (e) {
         console.error(e);
       }
     })();

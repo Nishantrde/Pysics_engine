@@ -5,80 +5,394 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pysics Blog</title>
   <style>
-    /* Reset & Base */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #f9fafb; color: #333; line-height: 1.6; overflow-x: hidden; position: relative; }
-    a { text-decoration: none; color: inherit; }
-    img { max-width: 100%; display: block; }
+    /* ==========================
+       1. COLOR VARIABLES
+       ========================== */
+    :root {
+      /* Day (Light) Mode */
+      --bg-page: #f9fafb;
+      --text-main: #333333;
+      --text-secondary: #555555;
+      --text-muted: #666666;
+      --accent-strong: #10b981;
+      --accent-hover: #059669;
+      --border-light: #e5e7eb;
+      --card-bg: #ffffff;
+      --card-shadow: rgba(0, 0, 0, 0.1);
+      --footer-text: #777777;
+    }
 
-    /* Logo Image */
-    .logo-img { width: 40px; height: auto; margin-right: 10px; border-radius: 50%; vertical-align: middle; }
+    .dark-theme {
+      /* Night (Dark) Mode Overrides */
+      --bg-page: #111827;
+      --text-main: #f9fafb;
+      --text-secondary: #d1d5db;
+      --text-muted: #9ca3af;
+      --accent-strong: #34d399;
+      --accent-hover: #059669;
+      --border-light: #374151;
+      --card-bg: #1f2937;
+      --card-shadow: rgba(0, 0, 0, 0.2);
+      --footer-text: #9ca3af;
+    }
 
-    /* Decorative blobs */
-    .blob { position: absolute; border-radius: 50%; opacity: 0.4; }
-    .blob.one { width: 300px; height: 300px; background: #fcd34d; top: -120px; left: -120px; animation: blobMove 25s infinite ease-in-out; }
-    .blob.two { width: 250px; height: 250px; background: #a5b4fc; bottom: -100px; left: 1650px; animation: blobRotate 30s infinite linear; }
-    .blob.three { width: 200px; height: 200px; background: #f87171; top: 220px; left: 1600px; animation: blobPulse 20s infinite ease-in-out; animation-delay: 10s; }
-    .blob.four { width: 180px; height: 180px; background: #6ee7b7; bottom: 100px; left: 50px; animation: blobMove 22s infinite ease-in-out; animation-delay: 5s; }
-    .blob.five { width: 220px; height: 220px; background: #fbbf24; top: 400px; left: -80px; animation: blobRotate 35s infinite linear; animation-delay: 15s; }
+    /* ==========================
+       2. RESET & BASE
+       ========================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+      position: relative;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+      display: block;
+    }
 
-    @keyframes blobMove { 0%,100% { transform: translate(0,0) scale(1) rotate(0deg); } 33% { transform: translate(30px, -40px) scale(1.1) rotate(15deg); } 66% { transform: translate(-30px, 30px) scale(0.9) rotate(-15deg); } }
-    @keyframes blobRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    @keyframes blobPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+    /* ==========================
+       3. LOGO IMAGE
+       ========================== */
+    .logo-img {
+      width: 40px;
+      height: auto;
+      margin-right: 10px;
+      border-radius: 50%;
+      vertical-align: middle;
+    }
 
-    /* Container */
-    .container { max-width: 1000px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
+    /* ==========================
+       4. DECORATIVE BLOBS
+       ========================== */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.4;
+      transition: background 0.3s ease;
+    }
+    .blob.one {
+      width: 300px;
+      height: 300px;
+      background: #fcd34d;
+      top: -120px;
+      left: -120px;
+      animation: blobMove 25s infinite ease-in-out;
+    }
+    .blob.two {
+      width: 250px;
+      height: 250px;
+      background: #a5b4fc;
+      bottom: -100px;
+      left: 1650px;
+      animation: blobRotate 30s infinite linear;
+    }
+    .blob.three {
+      width: 200px;
+      height: 200px;
+      background: #f87171;
+      top: 220px;
+      left: 1600px;
+      animation: blobPulse 20s infinite ease-in-out;
+      animation-delay: 10s;
+    }
+    .blob.four {
+      width: 180px;
+      height: 180px;
+      background: #6ee7b7;
+      bottom: 100px;
+      left: 50px;
+      animation: blobMove 22s infinite ease-in-out;
+      animation-delay: 5s;
+    }
+    .blob.five {
+      width: 220px;
+      height: 220px;
+      background: #fbbf24;
+      top: 400px;
+      left: -80px;
+      animation: blobRotate 35s infinite linear;
+      animation-delay: 15s;
+    }
+    @keyframes blobMove {
+      0%, 100% {
+        transform: translate(0, 0) scale(1) rotate(0deg);
+      }
+      33% {
+        transform: translate(30px, -40px) scale(1.1) rotate(15deg);
+      }
+      66% {
+        transform: translate(-30px, 30px) scale(0.9) rotate(-15deg);
+      }
+    }
+    @keyframes blobRotate {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    @keyframes blobPulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.2);
+      }
+    }
 
-    /* Header */
-    header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; }
-    .logo { font-size: 2rem; font-weight: bold; color: #1f2937; display: flex; align-items: center; }
-    nav ul { display: flex; gap: 20px; list-style: none; }
-    nav a:hover { color: #10b981; }
+    /* ==========================
+       5. CONTAINER
+       ========================== */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
 
-    /* Hero */
-    .hero { text-align: center; padding: 60px 0; }
-    .hero h1 { font-size: 3rem; margin-bottom: 10px; }
-    .hero p { font-size: 1.125rem; color: #555; }
-    .hero .btn { display: inline-block; margin-top: 20px; padding: 12px 24px; background: #10b981; color: #fff; border-radius: 4px; transition: background 0.3s; }
-    .hero .btn:hover { background: #059669; }
+    /* ==========================
+       6. HEADER
+       ========================== */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+    }
+    .logo {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+    }
+    nav ul {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+    }
+    nav a {
+      font-size: 1rem;
+      color: var(--text-main);
+      transition: color 0.2s;
+    }
+    nav a:hover {
+      color: var(--accent-strong);
+    }
+    /* Theme Toggle Button */
+    #themeToggle {
+      background: transparent;
+      border: none;
+      font-size: 1.25rem;
+      cursor: pointer;
+      color: var(--text-main);
+      margin-left: 20px;
+      transition: color 0.3s;
+    }
+    #themeToggle:hover {
+      color: var(--accent-strong);
+    }
 
-    /* Blog Grid */
-    .posts { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; margin-top: 40px; }
-    .post-card { border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; transition: box-shadow 0.3s; background: #fff; }
-    .post-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    .post-card img { width: 100%; height: 180px; object-fit: cover; }
-    .post-content { padding: 20px; }
-    .post-content h3 { font-size: 1.5rem; margin-bottom: 8px; color: #1f2937; }
-    .post-content p { font-size: 0.95rem; color: #555; margin-bottom: 12px; }
-    .post-content a { font-weight: bold; color: #10b981; }
+    /* ==========================
+       7. HERO
+       ========================== */
+    .hero {
+      text-align: center;
+      padding: 60px 0;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 10px;
+      color: var(--text-main);
+    }
+    .hero p {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+    }
+    .hero .btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: var(--accent-strong);
+      color: #ffffff;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+    .hero .btn:hover {
+      background: var(--accent-hover);
+    }
 
-    /* Shorts Section */
-    .shorts { margin-top: 60px; }
-    .shorts h2 { font-size: 2rem; font-weight: 700; color: #1f2937; margin-bottom: 20px; }
-    .shorts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
-    .short-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; transition: box-shadow 0.3s; }
-    .short-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    .short-card img { width: 100%; height: 180px; object-fit: cover; }
-    .short-content { padding: 16px; }
-    .short-content h4 { font-size: 1.25rem; margin-bottom: 8px; color: #111827; }
-    .short-content p { font-size: 0.9rem; color: #4b5563; max-height: 60px; overflow: hidden; }
-    .short-content a { display: inline-block; margin-top: 10px; color: #10b981; font-weight: 600; }
+    /* ==========================
+       8. BLOG GRID (if present)
+       ========================== */
+    .posts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 40px;
+      margin-top: 40px;
+    }
+    .post-card {
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: box-shadow 0.3s;
+      background: var(--card-bg);
+      box-shadow: 0 4px 12px var(--card-shadow);
+    }
+    .post-card:hover {
+      box-shadow: 0 6px 18px var(--card-shadow);
+    }
+    .post-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+    .post-content {
+      padding: 20px;
+    }
+    .post-content h3 {
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+      color: var(--text-main);
+    }
+    .post-content p {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+    .post-content a {
+      font-weight: bold;
+      color: var(--accent-strong);
+    }
 
-    /* Video Description Sections */
-    .video-desc { margin-top: 40px; padding: 20px; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; }
-    .video-desc h2 { font-size: 1.75rem; color: #1f2937; margin-bottom: 10px; }
-    .video-desc p { font-size: 1rem; color: #4b5563; line-height: 1.5; }
-    .video-embed { margin-top: 20px; text-align: center; }
-    .video-embed iframe { width: 100%; max-width: 560px; height: 315px; border: none; border-radius: 8px; }
+    /* ==========================
+       9. SHORTS SECTION
+       ========================== */
+    .shorts {
+      margin-top: 60px;
+    }
+    .shorts h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 20px;
+    }
+    .shorts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+    }
+    .short-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: box-shadow 0.3s;
+      box-shadow: 0 4px 12px var(--card-shadow);
+    }
+    .short-card:hover {
+      box-shadow: 0 6px 18px var(--card-shadow);
+    }
+    .short-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+    .short-content {
+      padding: 16px;
+    }
+    .short-content h4 {
+      font-size: 1.25rem;
+      margin-bottom: 8px;
+      color: var(--text-main);
+    }
+    .short-content p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      max-height: 60px;
+      overflow: hidden;
+    }
+    .short-content a {
+      display: inline-block;
+      margin-top: 10px;
+      color: var(--accent-strong);
+      font-weight: 600;
+    }
 
-    /* Footer */
-    footer { text-align: center; padding: 40px 0; margin-top: 60px; border-top: 1px solid #e5e7eb; color: #777; font-size: 0.9rem; }
+    /* ==========================
+       10. VIDEO DESCRIPTION SECTIONS
+       ========================== */
+    .video-desc {
+      margin-top: 40px;
+      padding: 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .video-desc h2 {
+      font-size: 1.75rem;
+      color: var(--text-main);
+      margin-bottom: 10px;
+    }
+    .video-desc p {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .video-embed {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .video-embed iframe {
+      width: 100%;
+      max-width: 560px;
+      height: 315px;
+      border: none;
+      border-radius: 8px;
+    }
 
-    /* Responsive */
+    /* ==========================
+       11. FOOTER
+       ========================== */
+    footer {
+      text-align: center;
+      padding: 40px 0;
+      margin-top: 60px;
+      border-top: 1px solid var(--border-light);
+      color: var(--footer-text);
+      font-size: 0.9rem;
+      transition: background 0.3s, color 0.3s, border-color 0.3s;
+    }
+
+    /* ==========================
+       12. RESPONSIVE
+       ========================== */
     @media (max-width: 640px) {
-      .hero h1 { font-size: 2rem; }
-      .posts, .shorts-grid { gap: 20px; }
-      .video-embed iframe { height: 200px; }
+      .hero h1 {
+        font-size: 2rem;
+      }
+      .posts,
+      .shorts-grid {
+        gap: 20px;
+      }
+      .video-embed iframe {
+        height: 200px;
+      }
     }
   </style>
 </head>
@@ -92,7 +406,16 @@
 
   <div class="container">
     <header>
-      <div class="logo"><a href="/"><img src="https://yt3.googleusercontent.com/so_LhC39A37h8HZqVIoIwu4NXuJ4AUBUY_C-K_2mmOInhadB-lsQHeAKursNZ4Zy1swMt-ibXQ=s72-c-k-c0x00ffffff-no-rj" alt="Pysics Logo" class="logo-img" />Pysics Blog</a></div>
+      <div class="logo">
+        <a href="/">
+          <img
+            src="https://yt3.googleusercontent.com/so_LhC39A37h8HZqVIoIwu4NXuJ4AUBUY_C-K_2mmOInhadB-lsQHeAKursNZ4Zy1swMt-ibXQ=s72-c-k-c0x00ffffff-no-rj"
+            alt="Pysics Logo"
+            class="logo-img"
+          />
+          Pysics Blog
+        </a>
+      </div>
       <nav>
         <ul>
           <li><a href="#">Home</a></li>
@@ -101,87 +424,181 @@
           <li><a href="#contact">Contact</a></li>
         </ul>
       </nav>
+      <!-- Theme Toggle Button -->
+      <button id="themeToggle" title="Toggle light/dark mode">🌙</button>
     </header>
 
+    <!-- HERO / ABOUT SECTION -->
     <section class="hero" id="about">
       <h1>Welcome to Pysics Blog</h1>
-      <p>Deep dives into physics concepts narrated by Nishant Garg. Explore interactive tutorials, simulations, and insights.</p>
-      <a href="https://www.youtube.com/@nishant.garg.pysics?sub_confirmation=1" target="_blank" class="btn">Subscribe on YouTube</a>
+      <p>
+        Deep dives into physics concepts narrated by Nishant Garg. Explore interactive tutorials,
+        simulations, and insights.
+      </p>
+      <a
+        href="https://www.youtube.com/@nishant.garg.pysics?sub_confirmation=1"
+        target="_blank"
+        class="btn"
+      >
+        Subscribe on YouTube
+      </a>
     </section>
 
-    <!-- Short: Unit Circle Demo -->
+    <!-- SHORTS GRID (Fetched Dynamically) -->
+    <section class="shorts" id="shorts">
+      <h2>Latest Shorts</h2>
+      <div class="shorts-grid" id="shortsGrid"></div>
+    </section>
+
+    <!-- VIDEO DESCRIPTION SECTIONS -->
     <section class="video-desc" id="videoHHiUvE57I7k">
       <h2>About This Short: Unit Circle Demo</h2>
       <div class="video-embed">
-        <iframe src="https://www.youtube.com/embed/HHiUvE57I7k" allowfullscreen loading="lazy"></iframe>
+        <iframe
+          src="https://www.youtube.com/embed/HHiUvE57I7k"
+          allowfullscreen
+          loading="lazy"
+        ></iframe>
       </div>
-      <p>In this Pygame demo, we plot a point moving along the circumference of a unit circle. The x-coordinate is calculated as <code>cos(&theta;)</code> and the y-coordinate as <code>sin(&theta;)</code>, where <em>&theta;</em> increments over time to animate the motion. This illustrates the fundamental parametric equations of a circle in real time using Python.</p>
+      <p>
+        In this Pygame demo, we plot a point moving along the circumference of a unit circle. The
+        x-coordinate is calculated as <code>cos(θ)</code> and the y-coordinate as
+        <code>sin(θ)</code>, where <em>θ</em> increments over time to animate the motion. This
+        illustrates the fundamental parametric equations of a circle in real time using Python.
+      </p>
     </section>
 
-    <!-- Short: Trigonometric Graphs -->
     <section class="video-desc" id="videoK4IZqGletCw">
       <h2>About This Short: Trigonometric Graphs</h2>
       <div class="video-embed">
-        <iframe src="https://www.youtube.com/embed/K4IZqGletCw" allowfullscreen loading="lazy"></iframe>
+        <iframe
+          src="https://www.youtube.com/embed/K4IZqGletCw"
+          allowfullscreen
+          loading="lazy"
+        ></iframe>
       </div>
-      <p>This short demonstrates how to graph every trigonometric function in Pygame, using their mathematical definitions to dynamically render sine, cosine, tangent, and more across the screen.</p>
+      <p>
+        This short demonstrates how to graph every trigonometric function in Pygame, using their
+        mathematical definitions to dynamically render sine, cosine, tangent, and more across the
+        screen.
+      </p>
     </section>
 
-    <!-- Short: Three-Phase Inverter Simulation -->
     <section class="video-desc" id="video5CrnFWKwPuU">
       <h2>About This Short: Three-Phase Sin Wave Inverter</h2>
       <div class="video-embed">
-        <iframe src="https://www.youtube.com/embed/5CrnFWKwPuU" allowfullscreen loading="lazy"></iframe>
+        <iframe
+          src="https://www.youtube.com/embed/5CrnFWKwPuU"
+          allowfullscreen
+          loading="lazy"
+        ></iframe>
       </div>
-      <p>This Pygame simulation visualizes a three-phase sinusoidal wave inverter. It generates and displays three 120° phase-shifted sine waves in real time, illustrating how inverters convert DC into balanced AC outputs across three phases.</p>
+      <p>
+        This Pygame simulation visualizes a three-phase sinusoidal wave inverter. It generates and
+        displays three 120° phase-shifted sine waves in real time, illustrating how inverters
+        convert DC into balanced AC outputs across three phases.
+      </p>
     </section>
 
-    <section class="video-desc" id="video5CrnFWKwPuU">
+    <section class="video-desc" id="video4EoZCoy5Cz8">
       <h2>About This Short: 2D Raycasting Visualizer in Python</h2>
       <div class="video-embed">
-        <iframe src="https://www.youtube.com/embed/4EoZCoy5Cz8" allowfullscreen loading="lazy"></iframe>
+        <iframe
+          src="https://www.youtube.com/embed/4EoZCoy5Cz8"
+          allowfullscreen
+          loading="lazy"
+        ></iframe>
       </div>
-      <p>This short visualizes 2D raycasting in a grid-based maze. A green player projects a yellow ray to detect obstacles ahead. The radar below shows the ray’s angle, direction, and movement key.</p>
+      <p>
+        This short visualizes 2D raycasting in a grid-based maze. A green player projects a yellow
+        ray to detect obstacles ahead. The radar below shows the ray’s angle, direction, and
+        movement key.
+      </p>
     </section>
 
-    <section class="video-desc" id="video5CrnFWKwPuU">
+    <section class="video-desc" id="video-fnvUO-qpyg">
       <h2>About This Short: 2D Raycasting Demo</h2>
-      <div class="video-embed"> 
-        <iframe src="https://www.youtube.com/embed/-fnvUO-qpyg" allowfullscreen loading="lazy"></iframe>
+      <div class="video-embed">
+        <iframe
+          src="https://www.youtube.com/embed/-fnvUO-qpyg"
+          allowfullscreen
+          loading="lazy"
+        ></iframe>
       </div>
-      <p>A real-time 2D raycasting visualizer built with Python and Pygame.A green player emits a yellow ray through a grid maze, showing wall collisions.The bottom radar displays the ray’s angle, direction vector, and current key input.</p>
+      <p>
+        A real-time 2D raycasting visualizer built with Python and Pygame. A green player emits a
+        yellow ray through a grid maze, showing wall collisions. The bottom radar displays the
+        ray’s angle, direction vector, and current key input.
+      </p>
     </section>
-
 
     <footer id="contact">
       <p>&copy; 2025 Pysics Blog. Built with ❤️ by Nishant Garg.</p>
-      <p><a href="https://www.linkedin.com/in/nishant-garg-dev/" target="_blank">linkedin</a> | <a href="https://github.com/Nishantrde" target="_blank">GitHub</a></p>
+      <p>
+        <a href="https://www.linkedin.com/in/nishant-garg-dev/" target="_blank">LinkedIn</a> |
+        <a href="https://github.com/Nishantrde" target="_blank">GitHub</a>
+      </p>
     </footer>
   </div>
 
   <script>
-    // Fetch and render top 4 viewed Shorts
+    // =============================
+    // 1) THEME TOGGLE LOGIC
+    // =============================
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const bodyEl = document.body;
+
+    // On load: check saved preference
+    const savedTheme = localStorage.getItem('pysics-blog-theme');
+    if (savedTheme === 'dark') {
+      bodyEl.classList.add('dark-theme');
+      themeToggleBtn.textContent = '🌞';
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+      bodyEl.classList.toggle('dark-theme');
+
+      if (bodyEl.classList.contains('dark-theme')) {
+        themeToggleBtn.textContent = '🌞';
+        localStorage.setItem('pysics-blog-theme', 'dark');
+      } else {
+        themeToggleBtn.textContent = '🌙';
+        localStorage.setItem('pysics-blog-theme', 'light');
+      }
+    });
+
+    // =============================
+    // 2) FETCH & RENDER LATEST 4 SHORTS
+    // =============================
     (async () => {
-      const API_KEY = 'AIzaSyC7bZy8WWuSOOuVw903zJ0FpNvhl5I3U60';
-      const CHANNEL_ID = 'UCFoIYk0NwGIMb34cx23LizQ';
-      const res = await fetch(
-        `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&order=viewCount&maxResults=4&type=video&videoDuration=short&key=${API_KEY}`
-      );
-      const { items } = await res.json();
-      const grid = document.getElementById('shortsGrid');
-      items.forEach(item => {
-        grid.innerHTML += `
-          <div class="short-card">
-            <img src="https://img.youtube.com/vi/${item.id.videoId}/hqdefault.jpg" alt="${item.snippet.title}">
-            <div class="short-content">
-              <h4>${item.snippet.title}</h4>
-              <p>${item.snippet.description}</p>
-              <a href="https://youtu.be/${item.id.videoId}" target="_blank">Watch →</a>
+      try {
+        const API_KEY = 'AIzaSyC7bZy8WWuSOOuVw903zJ0FpNvhl5I3U60';
+        const CHANNEL_ID = 'UCFoIYk0NwGIMb34cx23LizQ';
+        // Changed order to "date" to fetch the most recent uploads instead of oldest or highest view count
+        const res = await fetch(
+          `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&order=date&maxResults=4&type=video&videoDuration=short&key=${API_KEY}`
+        );
+        const { items } = await res.json();
+        const grid = document.getElementById('shortsGrid');
+        items.forEach(item => {
+          grid.innerHTML += `
+            <div class="short-card">
+              <img
+                src="https://img.youtube.com/vi/${item.id.videoId}/hqdefault.jpg"
+                alt="${item.snippet.title}"
+              />
+              <div class="short-content">
+                <h4>${item.snippet.title}</h4>
+                <p>${item.snippet.description}</p>
+                <a href="https://youtu.be/${item.id.videoId}" target="_blank">Watch →</a>
+              </div>
             </div>
-          </div>
-        `;
-      });
-    })().catch(console.error);
+          `;
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    })();
   </script>
 </body>
 </html>
