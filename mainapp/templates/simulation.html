@@ -397,6 +397,13 @@
 
     let autoRotate = false;
 
+    let θA = radians(-angle);
+    let xA = R * cos(θA);
+    let yA = R * sin(θA);
+    // world‐coords of that tip:
+    let worldXA = xA;
+    let worldYA = -2*R + yA;
+
 
     function setup() {
       const canvas = createCanvas(windowWidth, windowHeight);
@@ -641,33 +648,29 @@ function GripSimulator() {
   // arc(0, 0, arcR * 2, arcR * 2, radians(-angle), 0);
 
   // lever‐arm end
-  let cx = (circleRadius*0.7) * cos(radians(-angle));
-  let cy = (circleRadius*0.7) * sin(radians(-angle));
+  let cx = (circleRadius * 0.7) * cos(radians(-angle));
+  let cy = (circleRadius * 0.7) * sin(radians(-angle));
   strokeWeight(5);
 
   // colors
-  let red = [255, 0, 0],
+  let red   = [255, 0, 0],
       green = [0, 255, 0],
-      blue = [0, 0, 255],
+      blue  = [0, 0, 255],
       yelow = [255, 165, 0];
-      
 
   noFill();
   stroke(0);
   strokeWeight(2);
-  ellipse(0, -(circleRadius*2), circleRadius*2, circleRadius*2);
-  let c_x, c_y, sign;
+  ellipse(0, -(circleRadius * 2), circleRadius * 2, circleRadius * 2);
+
   // drawing coil 
-  let s = 25, c_a = 2;
-  for (let i = 0; i <= 360; i += c_a*2) {
-    // Compute the two points at angles -i and -(i+5), each offset by +5 or -5
+  let s   = 25,
+      c_a = 2;
+  for (let i = 0; i <= 360; i += c_a * 2) {
     let ang1 = radians(-i);
     let ang2 = radians(-(i + c_a));
-    let ang3 = radians(-(i + c_a*2));
+    let ang3 = radians(-(i + c_a * 2));
 
-    // Alternate “sign” so the coil zig-zags
-    // (you could also do something like: sign = (i / 5) % 2 === 0 ? +5 : -5)
-    
     let sign1 = +s;
     let sign2 = -s;
 
@@ -678,63 +681,102 @@ function GripSimulator() {
     let x3 = (circleRadius + sign1) * cos(ang3);
     let y3 = (circleRadius + sign1) * sin(ang3);
 
-    if(i>=0 && i<=60 || i>=180 && i<=240){
+    if ((i >= 0 && i <= 60) || (i >= 180 && i <= 240)) {
       stroke(yelow);
-    }
-    else if(i>=60 && i<=120 || i>=240 && i<=300){
+    } else if ((i >= 60 && i <= 120) || (i >= 240 && i <= 300)) {
       stroke(green);
-    }
-    else if(i>=120 && i<=180 || i>=300 && i<=360){
+    } else if ((i >= 120 && i <= 180) || (i >= 300 && i <= 360)) {
       stroke(red);
     }
-    
-    line(x1, (circleRadius*-2) + y1, x2, (circleRadius*-2) + y2);
-    line(x2, (circleRadius*-2) + y2, x3, (circleRadius*-2) + y3);
+
+    line(x1, (circleRadius * -2) + y1, x2, (circleRadius * -2) + y2);
+    line(x2, (circleRadius * -2) + y2, x3, (circleRadius * -2) + y3);
   }
 
   strokeWeight(5);
-  // 1st phase
-  let amplitude = 100, freq = 0.01;
+  // 1st phase (offset +60°)
+  let amplitude = 100,
+      freq      = 0.01;
   stroke(yelow);
   beginShape();
-  for (let x = 0; x <= width / 2; x++) {
-    let y =  amplitude * sin(TWO_PI * freq * x + radians(angle+60));
+  for (let x = -width / 2; x <= width / 2; x++) {
+    let y = amplitude * sin(TWO_PI * freq * x + radians(angle + 60));
     vertex(x, y);
   }
   endShape();
 
-  // 2nd phase
-  amplitude = 100, freq = 0.01;
+  // 2nd phase (offset 0°)
+  amplitude = 100; 
+  freq      = 0.01;
   stroke(green);
   beginShape();
-  for (let x = 0; x <= width / 2; x++) {
-    let y =  amplitude * sin(TWO_PI * freq * x + radians(angle));
+  for (let x = -width / 2; x <= width / 2; x++) {
+    let y = amplitude * sin(TWO_PI * freq * x + radians(angle));
     vertex(x, y);
   }
   endShape();
 
-  // 3rd phase
-  amplitude = 100, freq = 0.01;
+  // 3rd phase (offset +120°)
+  amplitude = 100; 
+  freq      = 0.01;
   stroke(red);
   beginShape();
-  for (let x = 0; x <= width / 2; x++) {
-    let y =  amplitude * sin(TWO_PI * freq * x + radians(angle+120));
+  for (let x = -width / 2; x <= width / 2; x++) {
+    let y = amplitude * sin(TWO_PI * freq * x + radians(angle + 120));
     vertex(x, y);
   }
   endShape();
 
-  stroke(red)
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Display instantaneous voltages (peak = 12 V) for each phase
+  // ─────────────────────────────────────────────────────────────────────────────
+  let maxVolts = 12;
+  let offsets  = [60, 0, 120]; // must match the waveform offsets above
+  let voltA    = maxVolts * sin(radians(angle + offsets[0]));
+  let voltB    = maxVolts * sin(radians(angle + offsets[1]));
+  let voltC    = maxVolts * sin(radians(angle + offsets[2]));
+
+  // Position text above the horizontal 0 line:
+  let textY  = -amplitude - 20;
+  let leftX  = -width / 4;
+  let midX   = 0;
+  let rightX = +width / 4;
+
+  noStroke();
+  textSize(24);
+  textAlign(CENTER, CENTER);
+
+  fill(yelow);
+  i = voltA.toFixed(2)<0 ? -1 : 1
+  text(`A: ${(voltA.toFixed(2))*i} V`, leftX, textY);
+  fill(green);
+  i = voltB.toFixed(2)<0 ? -1 : 1
+  text(`B: ${(voltB.toFixed(2))*i} V`, midX, textY);
+  fill(red);
+  i = voltC.toFixed(2)<0 ? -1 : 1
+  text(`C: ${(voltC.toFixed(2))*i} V`, rightX, textY);
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Draw “voltage” lines from each phasor tip on the circle down to the waveform
+  // ─────────────────────────────────────────────────────────────────────────────
+  let R       = circleRadius;
+  let centerY = -2 * R;
+
+  
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Draw the lever‐arm lines (unchanged)
+  // ─────────────────────────────────────────────────────────────────────────────
+  stroke(red);
   strokeWeight(25);
-  line(0, (circleRadius*-2), cx, (circleRadius  *-2)+cy);
-  stroke(blue)
-  line(0, (circleRadius*-2), -cx, -1*((circleRadius  *2)+cy));
-  stroke(0)
-  line(0, (circleRadius*-2), 0, (circleRadius*-2));
+  line(0, (circleRadius * -2), cx, (circleRadius * -2) + cy);
+  stroke(blue);
+  line(0, (circleRadius * -2), -cx, -1 * ((circleRadius * 2) + cy));
+  stroke(0);
+  line(0, (circleRadius * -2), 0, (circleRadius * -2));
 
   pop();
   prevAngle = angle;
-
-
 }
 
 
