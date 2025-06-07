@@ -322,7 +322,7 @@
     <div class="logo">
       <a href="/"><img
           src="https://yt3.googleusercontent.com/so_LhC39A37h8HZqVIoIwu4NXuJ4AUBUY_C-K_2mmOInhadB-lsQHeAKursNZ4Zy1swMt-ibXQ=s72-c-k-c0x00ffffff-no-rj"
-          alt="Pysics Logo" /></a>
+          alt="Pysics Logo"/></a>
       <h2>Pysics Sim</h2>
       <br>
       <button class="yt-button" id="yt-btn" title="Show Controls">
@@ -359,7 +359,6 @@
         <button type="button" id="btn-auto">Auto</button>
         <button type="button" id="btn-radius">Radius</button>
         <button type="button" id="btn-graph">Graph On/Off</button>
-
       </div>
       <label>
         <span>Circle Radius (px)</span>
@@ -369,6 +368,15 @@
         <span>Angle (°)</span>
         <input type="number" id="angle-input" step="1" />
       </label>
+      <h3 id="graph_set">Graph Settings</h3>
+      <label>
+        <span>Amplitude</span>
+        <input type="number" id="amplitude" step="1" />
+      </label>
+      <label>
+        <span>Frequency</span>
+        <input type="number" id="frequency" step="1" />
+      </label>
     </div>
   </div>
 
@@ -377,6 +385,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
   <script>
     const INITIAL_GRID_SIZE = 40;
+
+    let amplitudeInput;
+    let graphAmplitude = 100;      // default amplitude
+    let graphFrequency = 0.01;
+
+
     let gridSize = INITIAL_GRID_SIZE, cols, rows;
     let offsetX = 0, offsetY = 0, gridDragging = false, prevX, prevY;
     let showCircle = false, angle = 0, circleRadius;
@@ -557,7 +571,7 @@
       if (!graphEnabled) {
         // Only draw sine‐wave when sin θ is active
         if (trigStates.sin) {
-          let amplitude = 100, freq = 0.01;
+          let amplitude = graphAmplitude , freq = graphFrequency;
           stroke(sin_color);
           beginShape();
           for (let x = 0; x <= width / 2; x++) {
@@ -569,7 +583,7 @@
 
         // Only draw cosine‐wave when cos θ is active
         if (trigStates.cos) {
-          let amplitude = 100, freq = 0.01;
+          let amplitude = graphAmplitude, freq = graphFrequency;
           stroke(cos_color);
           beginShape();
           for (let x = 0; x <= width / 2; x++) {
@@ -581,7 +595,7 @@
 
         // Only draw tangent‐wave when tan θ is active
         if (trigStates.tan) {
-          let amplitude = 50, freq = 0.005;
+          let amplitude = graphAmplitude, freq = graphFrequency;
           stroke(tan_color);
           beginShape();
           for (let x = 0; x <= width / 2; x++) {
@@ -593,7 +607,7 @@
 
         // Only draw cotangent‐wave when cot θ is active
         if (trigStates.cot) {
-          let amplitude = 50, freq = 0.005;
+          let amplitude = graphAmplitude, freq = graphFrequency;
           stroke(cot_color);
           beginShape();
           for (let x = 0; x <= width / 2; x++) {
@@ -605,7 +619,7 @@
 
         // Only draw secant‐wave when sec θ is active
         if (trigStates.sec) {
-          let amplitude = 75, freq = 0.005;
+          let amplitude = graphAmplitude, freq = graphFrequency;
           stroke(sec_color);
           beginShape();
           for (let x = 0; x <= width / 2; x++) {
@@ -617,7 +631,7 @@
 
         // Only draw cosecant‐wave when csc θ is active
         if (trigStates.csc) {
-          let amplitude = 75, freq = 0.005;
+          let amplitude = graphAmplitude, freq = graphFrequency;
           stroke(csc_color);
           beginShape();
           for (let x = 0; x <= width / 2; x++) {
@@ -695,8 +709,8 @@ function GripSimulator() {
 
   strokeWeight(5);
   // 1st phase (offset +60°)
-  let amplitude = 100,
-      freq      = 0.01;
+  let amplitude = graphAmplitude,
+      freq      = graphFrequency;
   stroke(yelow);
   beginShape();
   for (let x = -width / 2; x <= width / 2; x++) {
@@ -706,8 +720,8 @@ function GripSimulator() {
   endShape();
 
   // 2nd phase (offset 0°)
-  amplitude = 100; 
-  freq      = 0.01;
+  amplitude = graphAmplitude; 
+  freq      = graphFrequency;
   stroke(green);
   beginShape();
   for (let x = -width / 2; x <= width / 2; x++) {
@@ -717,8 +731,8 @@ function GripSimulator() {
   endShape();
 
   // 3rd phase (offset +120°)
-  amplitude = 100; 
-  freq      = 0.01;
+  amplitude = graphAmplitude; 
+  freq      = graphFrequency;
   stroke(red);
   beginShape();
   for (let x = -width / 2; x <= width / 2; x++) {
@@ -823,7 +837,19 @@ function GripSimulator() {
     function initController() {
       radiusInput = document.getElementById('radius-input');
       angleInput = document.getElementById('angle-input');
+      amplitudeInput   = document.getElementById('amplitude');
+      frequencyInput  = document.getElementById('frequency');
+      amplitudeInput.value  = graphAmplitude;
+      frequencyInput.value = graphFrequency;
 
+      amplitudeInput.addEventListener('input', () => {
+        const v = parseFloat(amplitudeInput.value);
+        if (!isNaN(v)) graphAmplitude = v;
+      });
+      frequencyInput.addEventListener('input', () => {
+        const v = parseFloat(frequencyInput.value);
+        if (!isNaN(v)) graphFrequency = v;
+      });
 
       radiusInput.addEventListener('input', () => {
         const v = parseFloat(radiusInput.value);
