@@ -33,11 +33,19 @@ def simulation(request, email):
     for e in emails:
         logger.info(f"Google SSO user email: {e}")
     if email in emails:
-        return render(request, "simulation.html")
+        email = email
+        email_name = request.user.first_name
+        log_in = True
+        cred = {"log_in":log_in, "email_name":email_name, "email":email}
+        return render(request, "simulation.html", cred)
     else:
         email = None
         email_name = None
         log_in = False
         cred = {"log_in":log_in, "email_name":email_name, "email":email}
         return render(request, "index.html", cred)
+    
+def compiler(request, email):
+    return render(request, "compiler.html")
+
 
