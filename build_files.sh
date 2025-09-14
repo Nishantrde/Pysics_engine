@@ -1,2 +1,2 @@
 pip3 install -r requirements.txt
-python manage.py migrate --noinput
+pip3 manage.py migrate --noinput
