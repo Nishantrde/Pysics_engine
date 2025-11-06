@@ -103,7 +103,7 @@ WSGI_APPLICATION = 'pysics_web.wsgi.application'
 
 # Postgress
 DATABASES = {
-    'default':dj_database_url.parse('postgresql://pysic_db_m94d_user:rehJR63W39PnS29XTaEVOTFzHjsulV97@dpg-d3q8fkbipnbc73accdng-a.singapore-postgres.render.com/pysic_db_m94d')
+    'default':dj_database_url.parse('postgresql://yt_world_4n8s_user:wQPyrO5GBOQfAkKvoswULL4ER5D214Tb@dpg-d46d2tf5r7bs73aikif0-a.singapore-postgres.render.com/yt_world_4n8s')
 }
 
 
